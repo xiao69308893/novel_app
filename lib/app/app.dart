@@ -5,8 +5,6 @@ import 'routes/app_routes.dart';
 import 'routes/route_generator.dart';
 import 'themes/theme_config.dart';
 import '../core/utils/logger.dart';
-import '../features/auth/presentation/bloc/auth_bloc.dart';
-import '../features/auth/data/repositories/auth_repository.dart';
 
 class NovelApp extends StatelessWidget {
   const NovelApp({Key? key}) : super(key: key);

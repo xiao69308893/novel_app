@@ -1,3 +1,4 @@
+// 需要先运行 flutter pub add dartz 添加依赖
 import 'package:dartz/dartz.dart';
 import '../../../../core/errors/app_error.dart';
 import '../entities/auth_user.dart';

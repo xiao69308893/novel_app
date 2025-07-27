@@ -1,9 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:dio_certificate_pinning/dio_certificate_pinning.dart';
+import 'package:http_certificate_pinning/http_certificate_pinning.dart';
 import 'package:flutter/foundation.dart';
 import '../constants/api_constants.dart';
 import '../utils/logger.dart';
-import '../utils/preferences_helper.dart';
 import 'network_interceptor.dart';
 import 'api_response.dart';
 
@@ -369,7 +368,7 @@ class ApiClient {
         // 尝试解析错误响应
         if (error.response?.data is Map<String, dynamic>) {
           final data = error.response!.data as Map<String, dynamic>;
-          message = data['message'] ?? data['error'] ?? message;
+          message = (data['message'] ?? data['error'] ?? message).toString();
         }
         break;
       case DioExceptionType.cancel:
@@ -495,7 +494,7 @@ class ApiClient {
 
   // 取消所有请求
   void cancelAllRequests([String? reason]) {
-    _dio.clear();
+    _dio.close(force: true); // 强制关闭所有请求连接
     Logger.warning('取消所有网络请求: ${reason ?? '用户操作'}');
   }
 }

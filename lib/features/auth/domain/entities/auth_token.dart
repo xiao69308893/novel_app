@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 class AuthToken extends Equatable {
   final String accessToken;
   final String refreshToken;

@@ -32,6 +32,7 @@ analyzer:
     fixme: ignore              # 忽略 FIXME 注释
     deprecated_member_use: warning
     deprecated_member_use_from_same_package: warning
+    avoid_dynamic_calls: ignore
     
   # 语言配置
   language:

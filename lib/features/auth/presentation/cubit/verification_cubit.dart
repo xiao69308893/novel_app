@@ -1,6 +1,7 @@
 // 验证码状态管理
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+// 需要先运行 flutter pub add equatable 添加依赖
 import 'package:equatable/equatable.dart';
 import '../../domain/repositories/auth_repository.dart';
 

@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 import 'app_routes.dart';
-import '../../features/auth/presentation/pages/splash_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/auth/presentation/pages/forgot_password_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/book/presentation/pages/book_detail_page.dart';
-import '../../features/book/presentation/pages/book_search_page.dart';
-import '../../features/reader/presentation/pages/reader_page.dart';
-import '../../features/bookshelf/presentation/pages/bookshelf_page.dart';
-import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../shared/widgets/error_widget.dart';
 import '../../core/utils/logger.dart';
 

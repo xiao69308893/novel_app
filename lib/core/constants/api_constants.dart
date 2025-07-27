@@ -57,7 +57,7 @@ class ApiConstants {
   // 用户信息
   static const String userProfile = '/user/profile';
   static const String updateProfile = '/user/profile';
-  static const String uploadAvatar = '/user/avatar';
+  static const String userAvatar = '/user/avatar';
   static const String userPreferences = '/user/preferences';
   static const String userStats = '/user/stats';
   
@@ -269,6 +269,10 @@ class ApiConstants {
   static const int statusBadGateway = 502;
   static const int statusServiceUnavailable = 503;
   static const int statusGatewayTimeout = 504;
+
+  // ==================== 链接超时=====================
+  static const int connectTimeout = 60;
+  static const int receiveTimeout = 60;
   
   // ==================== 错误代码 ====================
   
