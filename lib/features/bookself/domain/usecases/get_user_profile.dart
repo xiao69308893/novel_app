@@ -1,0 +1,17 @@
+import 'package:dartz/dartz.dart';
+import '../../../../core/errors/failures.dart';
+import '../../../../core/usecases/usecase.dart';
+import '../entities/user_profile.dart';
+import '../repositories/bookshelf_repository.dart';
+
+/// 获取用户档案用例
+class GetUserProfile implements UseCase<UserProfile, NoParams> {
+  final BookshelfRepository repository;
+
+  const GetUserProfile(this.repository);
+
+  @override
+  Future<Either<Failure, UserProfile>> call(NoParams params) async {
+    return await repository.getUserProfile();
+  }
+}
