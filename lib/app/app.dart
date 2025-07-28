@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'routes/app_routes.dart';
 import 'routes/route_generator.dart';
 import 'themes/theme_config.dart';
 import '../core/utils/logger.dart';
+import '../features/auth/presentation/cubit/auth_cubit.dart';
 
 class NovelApp extends StatelessWidget {
   const NovelApp({Key? key}) : super(key: key);
@@ -19,10 +21,8 @@ class NovelApp extends StatelessWidget {
         return MultiBlocProvider(
           providers: [
             // 认证状态管理
-            BlocProvider<AuthBloc>(
-              create: (context) => AuthBloc(
-                authRepository: AuthRepository(),
-              ),
+            BlocProvider<AuthCubit>(
+              create: (context) => AuthCubit(),
             ),
             // 可以在这里添加其他的全局BLoC
           ],
@@ -49,6 +49,11 @@ class NovelApp extends StatelessWidget {
             supportedLocales: const [
               Locale('zh', 'CN'), // 中文
               Locale('en', 'US'), // 英文
+            ],
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
             ],
             
             // 错误页面构建器

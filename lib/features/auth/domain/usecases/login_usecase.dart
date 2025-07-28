@@ -13,10 +13,10 @@ class LoginUseCase implements UseCase<AuthToken, LoginParams> {
   Future<Either<AppError, AuthToken>> call(LoginParams params) async {
     // 参数验证
     if (params.username.isEmpty) {
-      return Left(AppError.validation('用户名不能为空'));
+      return Left(DataError.validation(message: '用户名不能为空'));
     }
     if (params.password.isEmpty) {
-      return Left(AppError.validation('密码不能为空'));
+      return Left(DataError.validation(message: '密码不能为空'));
     }
 
     // 执行登录

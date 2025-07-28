@@ -40,7 +40,7 @@ class GetRecommendationsUseCase implements UseCase<List<NovelSimpleModel>, GetRe
       
       case RecommendationType.category:
         if (params.categoryId == null) {
-          return Left(AppError.validation('分类推荐需要指定分类ID'));
+          return Left(DataError.validation(message: '分类推荐需要指定分类ID'));
         }
         return await repository.getCategoryHotNovels(
           categoryId: params.categoryId!,

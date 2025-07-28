@@ -1,5 +1,6 @@
 // 管理收藏用例
 import 'package:dartz/dartz.dart';
+import 'package:equatable/equatable.dart';
 import '../../../../core/errors/app_error.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../repositories/book_repository.dart';
@@ -12,7 +13,7 @@ class ManageFavoriteUseCase implements UseCase<bool, ManageFavoriteParams> {
   @override
   Future<Either<AppError, bool>> call(ManageFavoriteParams params) async {
     if (params.bookId.isEmpty) {
-      return Left(AppError.validation('小说ID不能为空'));
+      return Left(DataError.validation(message: '小说ID不能为空'));
     }
 
     if (params.isFavorite) {

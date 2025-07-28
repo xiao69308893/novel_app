@@ -198,7 +198,7 @@ class ThemeConfig {
       ),
       
       // 卡片主题
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppTheme.surfaceColor,
         elevation: 2,
         shadowColor: Colors.black.withOpacity(0.1),
@@ -225,7 +225,7 @@ class ThemeConfig {
       ),
       
       // 对话框主题
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: AppTheme.surfaceColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
@@ -367,7 +367,7 @@ class ThemeConfig {
       ),
       
       // 卡片主题
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppTheme.darkSurfaceColor,
         elevation: 4,
         shadowColor: Colors.black.withOpacity(0.3),
@@ -394,7 +394,7 @@ class ThemeConfig {
       ),
       
       // 对话框主题
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: AppTheme.darkSurfaceColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppTheme.radiusMedium),

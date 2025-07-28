@@ -73,11 +73,9 @@ abstract class AppError implements Exception {
     this.originalError,
     this.stackTrace,
     this.severity = ErrorSeverity.medium,
-    DateTime? timestamp,
+    required this.timestamp,
     this.data,
-  }) : timestamp = timestamp ?? const Duration().inMilliseconds != 0 
-         ? DateTime.now() 
-         : DateTime.fromMillisecondsSinceEpoch(0);
+  });
 
   /// 是否为网络相关错误
   bool get isNetworkError => type == AppErrorType.network || 
@@ -122,6 +120,39 @@ abstract class AppError implements Exception {
   String toString() {
     return 'AppError{type: $type, message: $message, code: $code}';
   }
+
+  /// 创建未知错误
+  factory AppError.unknown(String message, {
+    dynamic originalError,
+    StackTrace? stackTrace,
+    Map<String, dynamic>? data,
+  }) {
+    return _UnknownError(
+      message: message,
+      originalError: originalError,
+      stackTrace: stackTrace,
+      data: data,
+    );
+  }
+}
+
+/// 未知错误实现类
+class _UnknownError extends AppError {
+  _UnknownError({
+    required String message,
+    dynamic originalError,
+    StackTrace? stackTrace,
+    Map<String, dynamic>? data,
+  }) : super(
+         type: AppErrorType.unknown,
+         message: message,
+         code: 'UNKNOWN_ERROR',
+         originalError: originalError,
+         stackTrace: stackTrace,
+         severity: ErrorSeverity.medium,
+         timestamp: DateTime.now(),
+         data: data,
+       );
 }
 
 /// 网络错误
@@ -135,7 +166,7 @@ class NetworkError extends AppError {
   /// 请求方法
   final String? method;
 
-  const NetworkError({
+  NetworkError({
     required String message,
     String? code,
     this.statusCode,
@@ -152,6 +183,7 @@ class NetworkError extends AppError {
          originalError: originalError,
          stackTrace: stackTrace,
          severity: severity,
+         timestamp: DateTime.now(),
          data: data,
        );
 
@@ -240,7 +272,7 @@ class TimeoutError extends AppError {
   /// 超时时长（毫秒）
   final int timeoutDuration;
 
-  const TimeoutError({
+  TimeoutError({
     required String message,
     required this.timeoutDuration,
     String? code,
@@ -254,6 +286,7 @@ class TimeoutError extends AppError {
          originalError: originalError,
          stackTrace: stackTrace,
          severity: ErrorSeverity.medium,
+         timestamp: DateTime.now(),
          data: data,
        );
 
@@ -267,7 +300,7 @@ class TimeoutError extends AppError {
 
 /// 认证错误
 class AuthError extends AppError {
-  const AuthError({
+  AuthError({
     required String message,
     String? code,
     AppErrorType type = AppErrorType.unauthorized,
@@ -282,6 +315,7 @@ class AuthError extends AppError {
          originalError: originalError,
          stackTrace: stackTrace,
          severity: severity,
+         timestamp: DateTime.now(),
          data: data,
        );
 
@@ -318,7 +352,7 @@ class AuthError extends AppError {
 
 /// 数据错误
 class DataError extends AppError {
-  const DataError({
+  DataError({
     required String message,
     AppErrorType type = AppErrorType.parsing,
     String? code,
@@ -333,6 +367,7 @@ class DataError extends AppError {
          originalError: originalError,
          stackTrace: stackTrace,
          severity: severity,
+         timestamp: DateTime.now(),
          data: data,
        );
 
@@ -386,7 +421,7 @@ class DataError extends AppError {
 
 /// 系统错误
 class SystemError extends AppError {
-  const SystemError({
+  SystemError({
     required String message,
     AppErrorType type = AppErrorType.platform,
     String? code,
@@ -401,6 +436,7 @@ class SystemError extends AppError {
          originalError: originalError,
          stackTrace: stackTrace,
          severity: severity,
+         timestamp: DateTime.now(),
          data: data,
        );
 
@@ -440,7 +476,7 @@ class SystemError extends AppError {
 
 /// 业务错误
 class BusinessError extends AppError {
-  const BusinessError({
+  BusinessError({
     required String message,
     String? code,
     dynamic originalError,
@@ -454,6 +490,7 @@ class BusinessError extends AppError {
          originalError: originalError,
          stackTrace: stackTrace,
          severity: severity,
+         timestamp: DateTime.now(),
          data: data,
        );
 
@@ -486,7 +523,7 @@ class BusinessError extends AppError {
 
 /// 存储错误
 class StorageError extends AppError {
-  const StorageError({
+  StorageError({
     required String message,
     AppErrorType type = AppErrorType.storage,
     String? code,
@@ -501,6 +538,7 @@ class StorageError extends AppError {
          originalError: originalError,
          stackTrace: stackTrace,
          severity: severity,
+         timestamp: DateTime.now(),
          data: data,
        );
 
@@ -546,7 +584,7 @@ class StorageError extends AppError {
 
 /// 用户取消错误
 class UserCancelledError extends AppError {
-  const UserCancelledError({
+  UserCancelledError({
     String? message,
     String? operation,
   }) : super(
@@ -554,18 +592,20 @@ class UserCancelledError extends AppError {
          message: message ?? '用户取消操作',
          code: 'USER_CANCELLED',
          severity: ErrorSeverity.low,
-         data: {'operation': operation},
+         timestamp: DateTime.now(),
+         data: operation != null ? {'operation': operation} : null,
        );
 }
 
 /// 无网络连接错误
 class NoInternetError extends AppError {
-  const NoInternetError({
+  NoInternetError({
     String? message,
   }) : super(
          type: AppErrorType.noInternet,
          message: message ?? '网络连接不可用，请检查网络设置',
          code: 'NO_INTERNET',
          severity: ErrorSeverity.high,
+         timestamp: DateTime.now(),
        );
 }

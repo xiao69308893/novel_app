@@ -1,8 +1,8 @@
 // 小说详情状态管理
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../../../shared/models/novel_model.dart';
-import '../../../shared/models/chapter_model.dart';
+import '../../../../shared/models/novel_model.dart';
+import '../../../../shared/models/chapter_model.dart';
 import '../../domain/entities/book_detail.dart';
 import '../../domain/usecases/get_book_detail_usecase.dart';
 import '../../domain/usecases/manage_favorite_usecase.dart';
@@ -86,17 +86,17 @@ class BookDetailCubit extends Cubit<BookDetailState> {
 
         final chapters = results[0].fold(
           (error) => <ChapterSimpleModel>[],
-          (chapters) => chapters,
+          (chapters) => chapters as List<ChapterSimpleModel>,
         );
 
         final similarBooks = results[1].fold(
           (error) => <NovelSimpleModel>[],
-          (books) => books,
+          (books) => books as List<NovelSimpleModel>,
         );
 
         final authorOtherBooks = results[2].fold(
           (error) => <NovelSimpleModel>[],
-          (books) => books,
+          (books) => books as List<NovelSimpleModel>,
         );
 
         emit(BookDetailLoaded(

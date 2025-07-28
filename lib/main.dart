@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'app/app.dart';
 import 'core/utils/logger.dart';
 import 'core/utils/preferences_helper.dart';
@@ -9,14 +8,11 @@ void main() async {
   // 确保Flutter绑定初始化
   WidgetsFlutterBinding.ensureInitialized();
   
-  // 初始化Firebase
-  await Firebase.initializeApp();
+  // 初始化日志系统
+  await Logger.init();
   
   // 初始化本地存储
   await PreferencesHelper.init();
-  
-  // 初始化日志系统
-  Logger.init();
   
   // 设置系统UI样式
   SystemChrome.setSystemUIOverlayStyle(

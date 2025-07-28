@@ -1,6 +1,6 @@
-// 推荐内容实体
+// 推荐实体
 import 'package:equatable/equatable.dart';
-import '../../../shared/models/novel_model.dart';
+import '../../../../shared/models/novel_model.dart';
 
 enum RecommendationType {
   hot(0, '热门推荐'),

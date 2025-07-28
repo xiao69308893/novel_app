@@ -1,7 +1,7 @@
 // 首页仓储接口
 import 'package:dartz/dartz.dart';
 import '../../../../core/errors/app_error.dart';
-import '../../../shared/models/novel_model.dart';
+import '../../../../shared/models/novel_model.dart';
 import '../entities/banner.dart';
 import '../entities/recommendation.dart';
 import '../entities/ranking.dart';

@@ -13,14 +13,14 @@ class PostCommentUseCase implements UseCase<Comment, PostCommentParams> {
   @override
   Future<Either<AppError, Comment>> call(PostCommentParams params) async {
     // 参数验证
-    if (params.targetId.isEmpty) {
-      return Left(AppError.validation('目标ID不能为空'));
+    if (params.targetId.trim().isEmpty) {
+      return Left(DataError.validation(message: '目标ID不能为空'));
     }
     if (params.content.trim().isEmpty) {
-      return Left(AppError.validation('评论内容不能为空'));
+      return Left(DataError.validation(message: '评论内容不能为空'));
     }
     if (params.content.length > 500) {
-      return Left(AppError.validation('评论内容不能超过500字'));
+      return Left(DataError.validation(message: '评论内容不能超过500字'));
     }
 
     return await repository.postComment(

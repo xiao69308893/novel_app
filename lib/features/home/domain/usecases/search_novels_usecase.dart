@@ -1,8 +1,9 @@
 // 搜索小说用例
 import 'package:dartz/dartz.dart';
+import 'package:equatable/equatable.dart';
 import '../../../../core/errors/app_error.dart';
 import '../../../../core/usecases/usecase.dart';
-import '../../../shared/models/novel_model.dart';
+import '../../../../shared/models/novel_model.dart';
 import '../repositories/home_repository.dart';
 
 class SearchNovelsUseCase implements UseCase<List<NovelSimpleModel>, SearchNovelsParams> {
@@ -14,7 +15,7 @@ class SearchNovelsUseCase implements UseCase<List<NovelSimpleModel>, SearchNovel
   Future<Either<AppError, List<NovelSimpleModel>>> call(SearchNovelsParams params) async {
     // 参数验证
     if (params.keyword.trim().isEmpty) {
-      return Left(AppError.validation('搜索关键词不能为空'));
+      return Left(DataError.validation(message: '搜索关键词不能为空'));
     }
 
     // 记录搜索历史

@@ -1,7 +1,8 @@
 // 章节预览区域组件
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../app/themes/app_theme.dart';
-import '../../../shared/models/chapter_model.dart';
+import '../../../../shared/models/chapter_model.dart';
 
 class ChapterPreviewSection extends StatelessWidget {
   final List<ChapterSimpleModel> chapters;

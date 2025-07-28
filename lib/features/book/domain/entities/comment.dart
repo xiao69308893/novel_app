@@ -1,6 +1,6 @@
 // 评论实体
 import 'package:equatable/equatable.dart';
-import '../../../shared/models/user_model.dart';
+import '../../../../shared/models/user_model.dart';
 
 enum CommentType {
   book(0, '书评'),

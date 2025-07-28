@@ -1,7 +1,7 @@
 // 小说列表组件
 import 'package:flutter/material.dart';
 import '../../../../app/themes/app_theme.dart';
-import '../../../shared/models/novel_model.dart';
+import '../../../../shared/models/novel_model.dart';
 
 class NovelList extends StatelessWidget {
   final List<NovelSimpleModel> novels;

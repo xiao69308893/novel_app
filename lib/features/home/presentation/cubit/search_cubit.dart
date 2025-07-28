@@ -1,7 +1,8 @@
 // 搜索状态管理
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../../../shared/models/novel_model.dart';
+import 'package:dartz/dartz.dart';
+import '../../../../shared/models/novel_model.dart';
 import '../../domain/usecases/search_novels_usecase.dart';
 import '../../domain/repositories/home_repository.dart';
 
@@ -130,29 +131,31 @@ class SearchCubit extends Cubit<SearchState> {
   Future<void> getSearchSuggestions({String? keyword}) async {
     try {
       // 并行获取数据
-      final futures = [
-        keyword != null && keyword.isNotEmpty
-            ? homeRepository.getSearchSuggestions(keyword)
-            : Future.value(const Right(<String>[])),
-        homeRepository.getHotSearchKeywords(),
-        homeRepository.getSearchHistory(),
-      ];
+      final suggestionsFuture = keyword != null && keyword.isNotEmpty
+          ? homeRepository.getSearchSuggestions(keyword)
+          : Future.value(const Right(<String>[]));
+      final hotKeywordsFuture = homeRepository.getHotSearchKeywords();
+      final historyFuture = homeRepository.getSearchHistory();
 
-      final results = await Future.wait(futures);
+      final results = await Future.wait([
+        suggestionsFuture,
+        hotKeywordsFuture,
+        historyFuture,
+      ]);
 
-      final suggestions = results[0].fold(
+      final suggestions = (results[0] as Either).fold(
         (error) => <String>[],
-        (suggestions) => suggestions,
+        (suggestions) => suggestions as List<String>,
       );
 
-      final hotKeywords = results[1].fold(
+      final hotKeywords = (results[1] as Either).fold(
         (error) => <String>[],
-        (keywords) => keywords,
+        (keywords) => keywords as List<String>,
       );
 
-      final history = results[2].fold(
+      final history = (results[2] as Either).fold(
         (error) => <String>[],
-        (history) => history,
+        (history) => history as List<String>,
       );
 
       emit(SearchSuggestions(

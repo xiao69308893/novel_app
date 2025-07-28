@@ -6,14 +6,14 @@ class RegisterUseCase implements UseCase<AuthUser, RegisterParams> {
   @override
   Future<Either<AppError, AuthUser>> call(RegisterParams params) async {
     // 参数验证
-    if (params.username.isEmpty) {
-      return Left(AppError.validation('用户名不能为空'));
+    if (params.username.trim().isEmpty) {
+      return Left(DataError.validation(message: '用户名不能为空'));
     }
-    if (params.password.isEmpty) {
-      return Left(AppError.validation('密码不能为空'));
+    if (params.password.trim().isEmpty) {
+      return Left(DataError.validation(message: '密码不能为空'));
     }
     if (params.password.length < 6) {
-      return Left(AppError.validation('密码长度不能少于6位'));
+      return Left(DataError.validation(message: '密码长度不能少于6位'));
     }
 
     // 执行注册

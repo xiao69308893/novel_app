@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:logger/logger.dart';
+import 'package:logger/logger.dart' as logger;
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
 
@@ -30,11 +30,11 @@ class Logger {
     final instance = Logger.instance;
     
     // 创建日志输出器
-    final outputs = <LogOutput>[];
+    final outputs = <logger.LogOutput>[];
     
     // 在调试模式下添加控制台输出
     if (kDebugMode) {
-      outputs.add(ConsoleOutput());
+      outputs.add(logger.ConsoleOutput());
     }
     
     // 在生产模式下添加文件输出
@@ -257,11 +257,11 @@ class Logger {
 }
 
 // 自定义日志打印器
-class CustomLogPrinter extends LogPrinter {
+class CustomLogPrinter extends logger.LogPrinter {
   static final _dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss.SSS');
   
   @override
-  List<String> log(LogEvent event) {
+  List<String> log(logger.LogEvent event) {
     final time = _dateFormat.format(DateTime.now());
     final level = event.level.name.toUpperCase().padRight(7);
     final message = event.message;
@@ -281,20 +281,20 @@ class CustomLogPrinter extends LogPrinter {
 }
 
 // 文件输出器
-class FileOutput extends LogOutput {
+class FileOutput extends logger.LogOutput {
   final File file;
   IOSink? _sink;
   
   FileOutput({required this.file});
   
   @override
-  void init() {
+  Future<void> init() async {
     super.init();
     _sink = file.openWrite(mode: FileMode.append);
   }
   
   @override
-  void output(OutputEvent event) {
+  void output(logger.OutputEvent event) {
     if (_sink != null) {
       for (final line in event.lines) {
         _sink!.writeln(line);
@@ -304,37 +304,37 @@ class FileOutput extends LogOutput {
   }
   
   @override
-  void destroy() {
-    _sink?.close();
+  Future<void> destroy() async {
+    await _sink?.close();
     super.destroy();
   }
 }
 
 // 多输出器
-class MultiOutput extends LogOutput {
-  final List<LogOutput> outputs;
+class MultiOutput extends logger.LogOutput {
+  final List<logger.LogOutput> outputs;
   
   MultiOutput(this.outputs);
   
   @override
-  void init() {
+  Future<void> init() async {
     super.init();
     for (final output in outputs) {
-      output.init();
+      await output.init();
     }
   }
   
   @override
-  void output(OutputEvent event) {
+  void output(logger.OutputEvent event) {
     for (final output in outputs) {
       output.output(event);
     }
   }
   
   @override
-  void destroy() {
+  Future<void> destroy() async {
     for (final output in outputs) {
-      output.destroy();
+      await output.destroy();
     }
     super.destroy();
   }

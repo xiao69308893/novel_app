@@ -1,10 +1,10 @@
 // 首页轮播图组件
 import 'package:flutter/material.dart';
 import '../../../../app/themes/app_theme.dart';
-import '../../domain/entities/banner.dart';
+import '../../domain/entities/banner.dart' as home_banner;
 
 class HomeBanner extends StatefulWidget {
-  final List<Banner> banners;
+  final List<home_banner.Banner> banners;
 
   const HomeBanner({
     Key? key,
@@ -88,7 +88,7 @@ class _HomeBannerState extends State<HomeBanner> {
     );
   }
 
-  Widget _buildBannerItem(Banner banner) {
+  Widget _buildBannerItem(home_banner.Banner banner) {
     return GestureDetector(
       onTap: () => _handleBannerTap(banner),
       child: Container(
@@ -163,9 +163,9 @@ class _HomeBannerState extends State<HomeBanner> {
     );
   }
 
-  void _handleBannerTap(Banner banner) {
+  void _handleBannerTap(home_banner.Banner banner) {
     switch (banner.type) {
-      case BannerType.novel:
+      case home_banner.BannerType.novel:
         if (banner.targetId != null) {
           Navigator.pushNamed(
             context,
@@ -174,7 +174,7 @@ class _HomeBannerState extends State<HomeBanner> {
           );
         }
         break;
-      case BannerType.external:
+      case home_banner.BannerType.external:
         if (banner.targetUrl != null) {
           // TODO: 打开外部链接
         }

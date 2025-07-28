@@ -1,8 +1,8 @@
 // 小说仓储接口
 import 'package:dartz/dartz.dart';
 import '../../../../core/errors/app_error.dart';
-import '../../../shared/models/novel_model.dart';
-import '../../../shared/models/chapter_model.dart';
+import '../../../../shared/models/novel_model.dart';
+import '../../../../shared/models/chapter_model.dart';
 import '../entities/book_detail.dart';
 import '../entities/comment.dart';
 

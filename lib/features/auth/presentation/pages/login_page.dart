@@ -314,8 +314,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       // 密码登录
       if (_passwordFormKey.currentState!.validate()) {
         context.read<AuthCubit>().login(
-          username: _usernameController.text.trim(),
-          password: _passwordController.text,
+          _usernameController.text.trim(),
+          _passwordController.text.trim(),
         );
       }
     } else {

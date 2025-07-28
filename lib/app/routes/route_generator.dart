@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'app_routes.dart';
+import '../../features/auth/presentation/pages/splash_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/auth/presentation/pages/forgot_password_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/book/presentation/pages/book_detail_page.dart';
+import '../../features/book/presentation/pages/book_search_page.dart';
+import '../../features/bookself/presentation/pages/bookshelf_page.dart';
 import '../../shared/widgets/error_widget.dart';
+import '../../shared/widgets/placeholder_page.dart';
 import '../../core/utils/logger.dart';
 
 class RouteGenerator {
@@ -45,35 +49,179 @@ class RouteGenerator {
         }
         return _buildErrorRoute(settings, '缺少书籍ID参数');
         
+      // 书籍搜索页面
       case AppRoutes.bookSearch:
         return _buildRoute(
-          BookSearchPage(keyword: args?['keyword'] as String?),
+          BookSearchPage(initialKeyword: args?['keyword'] as String?),
           settings,
         );
         
-      // 阅读器路由
-      case AppRoutes.reader:
-        if (args != null && 
-            args.containsKey('bookId') && 
-            args.containsKey('chapterId')) {
-          return _buildRoute(
-            ReaderPage(
-              bookId: args['bookId'] as String,
-              chapterId: args['chapterId'] as String,
-              chapterNumber: args['chapterNumber'] as int?,
-            ),
-            settings,
-          );
-        }
-        return _buildErrorRoute(settings, '缺少阅读器参数');
-        
-      // 书架路由
+      // 书架页面
       case AppRoutes.bookshelf:
         return _buildRoute(const BookshelfPage(), settings);
         
-      // 用户相关路由
-      case AppRoutes.profile:
-        return _buildRoute(const ProfilePage(), settings);
+      // TODO: 实现书籍分类页面
+      // case AppRoutes.bookCategory:
+      //   return _buildRoute(const BookCategoryPage(), settings);
+        
+      // TODO: 实现书籍排行榜页面
+      // case AppRoutes.bookRanking:
+      //   return _buildRoute(const BookRankingPage(), settings);
+        
+      // TODO: 实现阅读历史页面
+      // case AppRoutes.readingHistory:
+      //   return _buildRoute(const ReadingHistoryPage(), settings);
+        
+      // TODO: 实现阅读器页面
+      // case AppRoutes.reader:
+      //   if (args != null && 
+      //       args.containsKey('bookId') && 
+      //       args.containsKey('chapterId')) {
+      //     return _buildRoute(
+      //       ReaderPage(
+      //         bookId: args['bookId'] as String,
+      //         chapterId: args['chapterId'] as String,
+      //         chapterNumber: args['chapterNumber'] as int?,
+      //       ),
+      //       settings,
+      //     );
+      //   }
+      //   return _buildErrorRoute(settings, '缺少阅读器参数');
+        
+      // TODO: 实现用户资料页面
+      // case AppRoutes.profile:
+      //   return _buildRoute(const ProfilePage(), settings);
+        
+      // Profile相关路由 (临时使用占位页面)
+      case '/profile/edit':
+        return _buildRoute(
+          const PlaceholderPage(
+            title: '编辑资料',
+            icon: Icons.person_outline,
+          ),
+          settings,
+        );
+        
+      case '/profile/settings':
+        return _buildRoute(
+          const PlaceholderPage(
+            title: '设置',
+            icon: Icons.settings,
+          ),
+          settings,
+        );
+        
+      case '/profile/bookmarks':
+        return _buildRoute(
+          const PlaceholderPage(
+            title: '我的书签',
+            icon: Icons.bookmark_outline,
+          ),
+          settings,
+        );
+        
+      case '/profile/cache':
+        return _buildRoute(
+          const PlaceholderPage(
+            title: '缓存管理',
+            icon: Icons.storage,
+          ),
+          settings,
+        );
+        
+      case '/profile/stats':
+        return _buildRoute(
+          const PlaceholderPage(
+            title: '阅读统计',
+            icon: Icons.assessment,
+          ),
+          settings,
+        );
+        
+      case '/profile/help':
+        return _buildRoute(
+          const PlaceholderPage(
+            title: '帮助与反馈',
+            icon: Icons.help_outline,
+          ),
+          settings,
+        );
+        
+      case '/profile/about':
+        return _buildRoute(
+          const PlaceholderPage(
+            title: '关于',
+            icon: Icons.info_outline,
+          ),
+          settings,
+        );
+        
+      // 其他缺失路由的占位页面
+      case AppRoutes.bookCategory:
+        return _buildRoute(
+          const PlaceholderPage(
+            title: '图书分类',
+            icon: Icons.category,
+          ),
+          settings,
+        );
+        
+      case AppRoutes.bookRanking:
+        return _buildRoute(
+          const PlaceholderPage(
+            title: '排行榜',
+            icon: Icons.trending_up,
+          ),
+          settings,
+        );
+        
+      case AppRoutes.readingHistory:
+        return _buildRoute(
+          const PlaceholderPage(
+            title: '阅读历史',
+            icon: Icons.history,
+          ),
+          settings,
+        );
+        
+      case AppRoutes.reader:
+        return _buildRoute(
+          const PlaceholderPage(
+            title: '阅读器',
+            icon: Icons.book,
+            message: '阅读器功能正在开发中',
+          ),
+          settings,
+        );
+        
+      case AppRoutes.settings:
+        return _buildRoute(
+          const PlaceholderPage(
+            title: '设置',
+            icon: Icons.settings,
+          ),
+          settings,
+        );
+        
+      case AppRoutes.feedback:
+        return _buildRoute(
+          const PlaceholderPage(
+            title: '意见反馈',
+            icon: Icons.feedback,
+          ),
+          settings,
+        );
+        
+      // 权限相关路由
+      case '/no-permission':
+        return _buildRoute(
+          const PlaceholderPage(
+            title: '权限不足',
+            icon: Icons.lock,
+            message: '您没有权限访问此页面',
+          ),
+          settings,
+        );
         
       // 默认错误路由
       default:

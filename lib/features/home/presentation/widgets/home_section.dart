@@ -1,16 +1,16 @@
 // 首页区块组件
 import 'package:flutter/material.dart';
 import '../../../../app/themes/app_theme.dart';
-import '../../../shared/models/novel_model.dart';
+import '../../../../shared/models/novel_model.dart';
 import 'novel_card.dart';
 
-class HomeSection extends StatelessWidget {
+class HomeSectionWidget extends StatelessWidget {
   final String title;
   final List<NovelSimpleModel> novels;
   final VoidCallback? onMoreTap;
   final int maxItems;
 
-  const HomeSection({
+  const HomeSectionWidget({
     Key? key,
     required this.title,
     required this.novels,

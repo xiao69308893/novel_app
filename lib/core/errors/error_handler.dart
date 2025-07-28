@@ -399,7 +399,7 @@ class DefaultErrorHandler implements ErrorHandler {
     // 跳转到登录页
     Navigator.pushNamedAndRemoveUntil(
       context,
-      '/login',
+      '/auth/login',
       (route) => false,
     );
   }

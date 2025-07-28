@@ -1,7 +1,7 @@
 // 小说网格组件
 import 'package:flutter/material.dart';
 import '../../../../app/themes/app_theme.dart';
-import '../../../shared/models/novel_model.dart';
+import '../../../../shared/models/novel_model.dart';
 import 'novel_card.dart';
 
 class NovelGrid extends StatelessWidget {

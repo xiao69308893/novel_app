@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../shared/models/novel_model.dart';
+import '../../../../shared/models/novel_model.dart';
 
 enum RankingType {
   hot(0, '热门榜'),

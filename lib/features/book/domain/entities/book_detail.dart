@@ -1,7 +1,7 @@
 // 小说详情实体
 import 'package:equatable/equatable.dart';
-import '../../../shared/models/novel_model.dart';
-import '../../../shared/models/chapter_model.dart';
+import '../../../../shared/models/novel_model.dart';
+import '../../../../shared/models/chapter_model.dart';
 
 class BookDetail extends Equatable {
   final NovelModel novel;
@@ -26,10 +26,13 @@ class BookDetail extends Equatable {
   /// 当前阅读章节
   ChapterSimpleModel? get currentChapter {
     if (readingProgress == null) return null;
-    return chapters.firstWhere(
-      (chapter) => chapter.id == readingProgress!.chapterId,
-      orElse: () => chapters.isNotEmpty ? chapters.first : null,
-    );
+    try {
+      return chapters.firstWhere(
+        (chapter) => chapter.id == readingProgress!.chapterId,
+      );
+    } catch (e) {
+      return chapters.isNotEmpty ? chapters.first : null;
+    }
   }
 
   /// 下一章节

@@ -310,17 +310,11 @@ class _RegisterPageState extends State<RegisterPage> {
   void _handleRegister() {
     if (_formKey.currentState!.validate()) {
       context.read<AuthCubit>().register(
-        username: _usernameController.text.trim(),
-        password: _passwordController.text,
-        email: _emailController.text.trim().isEmpty 
-            ? null 
+        _emailController.text.trim().isEmpty 
+            ? _usernameController.text.trim() + '@example.com'
             : _emailController.text.trim(),
-        phone: _phoneController.text.trim().isEmpty 
-            ? null 
-            : _phoneController.text.trim(),
-        inviteCode: _inviteCodeController.text.trim().isEmpty 
-            ? null 
-            : _inviteCodeController.text.trim(),
+        _passwordController.text.trim(),
+        _usernameController.text.trim(),
       );
     }
   }

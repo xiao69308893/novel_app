@@ -5,6 +5,7 @@ import '../../../../app/themes/app_theme.dart';
 import '../../../../shared/widgets/common_app_bar.dart';
 import '../../../../shared/widgets/loading_widget.dart';
 import '../../../../shared/widgets/error_widget.dart';
+import '../../domain/entities/home_config.dart';
 import '../cubit/home_cubit.dart';
 import '../widgets/home_banner.dart';
 import '../widgets/home_section.dart';
@@ -43,7 +44,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
-              Navigator.pushNamed(context, '/search');
+              Navigator.pushNamed(context, '/book/search');
             },
           ),
           IconButton(
@@ -107,12 +108,12 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
           _buildFunctionItem(
             icon: Icons.trending_up,
             title: '排行榜',
-            onTap: () => Navigator.pushNamed(context, '/ranking'),
+            onTap: () => Navigator.pushNamed(context, '/book/ranking'),
           ),
           _buildFunctionItem(
             icon: Icons.category,
             title: '分类',
-            onTap: () => Navigator.pushNamed(context, '/category'),
+            onTap: () => Navigator.pushNamed(context, '/book/category'),
           ),
           _buildFunctionItem(
             icon: Icons.library_books,
@@ -122,7 +123,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
           _buildFunctionItem(
             icon: Icons.history,
             title: '历史',
-            onTap: () => Navigator.pushNamed(context, '/history'),
+            onTap: () => Navigator.pushNamed(context, '/reading-history'),
           ),
         ],
       ),
@@ -172,7 +173,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
         
         if (recommendations.isNotEmpty) {
           return SliverToBoxAdapter(
-            child: HomeSection(
+            child: HomeSectionWidget(
               title: section.title,
               novels: recommendations.first.novels,
               onMoreTap: () {
