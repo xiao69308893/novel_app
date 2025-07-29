@@ -2,6 +2,7 @@
 import 'package:dio/dio.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/errors/app_error.dart';
+import '../../../../core/errors/error_handler.dart';
 import '../models/auth_user_model.dart';
 import '../models/auth_token_model.dart';
 
@@ -85,7 +86,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       return AuthTokenModel.fromJson(response.data['data']);
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -107,7 +108,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       return AuthTokenModel.fromJson(response.data['data']);
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -135,7 +136,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       return AuthUserModel.fromJson(response.data['data']);
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -156,7 +157,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
       return true;
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -177,7 +178,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
       return true;
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -200,7 +201,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
       return true;
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -218,7 +219,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       return AuthTokenModel.fromJson(response.data['data']);
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -230,7 +231,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final response = await apiClient.get('/auth/user');
       return AuthUserModel.fromJson(response.data['data']);
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -242,7 +243,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       await apiClient.post('/auth/logout');
       return true;
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -254,7 +255,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       await apiClient.delete('/auth/account');
       return true;
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -275,7 +276,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
       return true;
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -296,7 +297,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
       return true;
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -317,7 +318,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
       return true;
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }

@@ -109,6 +109,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     
                     // 注册链接
                     _buildRegisterLink(theme),
+                    
+                    const SizedBox(height: AppTheme.spacingLarge),
+                    
+                    // 临时跳过登录按钮（用于测试）
+                    _buildSkipLoginButton(),
                   ],
                 ),
               ),
@@ -306,6 +311,26 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           child: const Text('立即注册'),
         ),
       ],
+    );
+  }
+
+  Widget _buildSkipLoginButton() {
+    return TextButton(
+      onPressed: () {
+        // 临时跳过登录，直接进入主页
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/home',
+          (route) => false,
+        );
+      },
+      child: Text(
+        '跳过登录（测试用）',
+        style: TextStyle(
+          color: Colors.grey[600],
+          fontSize: 14,
+        ),
+      ),
     );
   }
 

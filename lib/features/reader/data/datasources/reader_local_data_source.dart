@@ -1,6 +1,6 @@
 import 'dart:convert';
 import '../../../../core/cache/cache_manager.dart';
-import '../../../../core/error/exceptions.dart';
+import '../../../../core/errors/app_error.dart';
 import '../../../../shared/models/chapter_model.dart';
 import '../../../../shared/models/novel_model.dart';
 import '../../domain/entities/reader_config.dart';

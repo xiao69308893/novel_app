@@ -6,6 +6,7 @@ import '../../../../shared/widgets/common_app_bar.dart';
 import '../../../../shared/widgets/loading_widget.dart';
 import '../../../../shared/widgets/error_widget.dart';
 import '../../domain/entities/home_config.dart';
+import '../../data/datasources/home_local_datasource.dart';
 import '../cubit/home_cubit.dart';
 import '../widgets/home_banner.dart';
 import '../widgets/home_section.dart';
@@ -27,7 +28,18 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
   void initState() {
     super.initState();
     // 延迟加载首页数据，避免与其他初始化冲突
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // 先初始化模拟数据（仅在开发环境）
+      try {
+        print('开始初始化模拟数据...');
+        final localDataSource = HomeLocalDataSourceImpl();
+        await localDataSource.initMockData();
+        print('模拟数据初始化完成');
+      } catch (e) {
+        print('初始化模拟数据时出错: $e');
+      }
+      
+      // 加载首页数据
       context.read<HomeCubit>().loadHomeData();
     });
   }

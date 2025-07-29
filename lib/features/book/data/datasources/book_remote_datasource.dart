@@ -2,6 +2,7 @@
 import 'package:dio/dio.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/errors/app_error.dart';
+import '../../../../core/errors/error_handler.dart';
 import '../../../shared/models/novel_model.dart';
 import '../../../shared/models/chapter_model.dart';
 import '../models/book_detail_model.dart';
@@ -83,7 +84,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
       final response = await apiClient.get('/books/$bookId');
       return BookDetailModel.fromJson(response.data['data']);
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -106,7 +107,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
       final List<dynamic> data = response.data['data'];
       return data.map((json) => ChapterSimpleModel.fromJson(json)).toList();
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -118,7 +119,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
       final response = await apiClient.get('/chapters/$chapterId');
       return ChapterModel.fromJson(response.data['data']);
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -141,7 +142,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
       final List<dynamic> data = response.data['data'];
       return data.map((json) => CommentModel.fromJson(json)).toList();
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -164,7 +165,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
       final List<dynamic> data = response.data['data'];
       return data.map((json) => CommentModel.fromJson(json)).toList();
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -189,7 +190,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
       );
       return CommentModel.fromJson(response.data['data']);
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -201,7 +202,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
       await apiClient.post('/comments/$commentId/like');
       return true;
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -213,7 +214,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
       await apiClient.delete('/comments/$commentId/like');
       return true;
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -225,7 +226,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
       await apiClient.delete('/comments/$commentId');
       return true;
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -237,7 +238,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
       await apiClient.post('/books/$bookId/favorite');
       return true;
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -249,7 +250,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
       await apiClient.delete('/books/$bookId/favorite');
       return true;
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -271,7 +272,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
       );
       return true;
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -291,7 +292,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
       );
       return true;
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -316,7 +317,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
       );
       return true;
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -330,7 +331,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
       );
       return response.data['data']['task_id'] as String;
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -344,7 +345,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
       );
       return response.data['data']['task_id'] as String;
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -356,7 +357,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
       await apiClient.delete('/downloads/$taskId');
       return true;
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -369,7 +370,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
       final data = response.data['data'];
       return data != null ? ReadingProgress.fromJson(data) : null;
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -393,7 +394,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
       );
       return true;
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -414,7 +415,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
       final List<dynamic> data = response.data['data'];
       return data.map((json) => NovelSimpleModel.fromJson(json)).toList();
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -437,7 +438,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
       final List<dynamic> data = response.data['data'];
       return data.map((json) => NovelSimpleModel.fromJson(json)).toList();
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }

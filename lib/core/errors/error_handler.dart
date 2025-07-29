@@ -139,7 +139,6 @@ class DefaultErrorHandler implements ErrorHandler {
     if (error is ArgumentError) {
       return DataError.validation(
         message: '参数错误：${error.message}',
-        originalError: error,
       );
     }
 
@@ -152,9 +151,9 @@ class DefaultErrorHandler implements ErrorHandler {
     }
 
     // 默认未知错误
-    return AppError(
-      type: AppErrorType.unknown,
+    return SystemError(
       message: error?.toString() ?? '未知错误',
+      code: 'UNKNOWN_ERROR',
       originalError: error,
       stackTrace: stackTrace,
       severity: ErrorSeverity.medium,

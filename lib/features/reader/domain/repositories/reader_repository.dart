@@ -1,4 +1,4 @@
-import '../../../../core/error/failures.dart';
+import '../../../../core/errors/failures.dart';
 import '../../../../core/utils/typedef.dart';
 import '../../../../shared/models/chapter_model.dart';
 import '../../../../shared/models/novel_model.dart';

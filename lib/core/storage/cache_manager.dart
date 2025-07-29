@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import '../utils/logger.dart';
@@ -337,6 +338,11 @@ class CacheManager {
     String? type,
     Map<String, dynamic>? metadata,
   }) async {
+    if (kIsWeb) {
+      Logger.cache('SKIP_DATABASE_PUT', key, 'Web环境不支持数据库缓存');
+      return;
+    }
+    
     try {
       final db = DatabaseHelper.instance;
       final jsonData = json.encode(data);
@@ -375,6 +381,12 @@ class CacheManager {
 
   /// 从数据库缓存获取
   Future<T?> getDatabase<T>(String key) async {
+    if (kIsWeb) {
+      Logger.cache('SKIP_DATABASE_GET', key, 'Web环境不支持数据库缓存');
+      _missCount++;
+      return null;
+    }
+    
     try {
       final db = DatabaseHelper.instance;
       final result = await db.query(
@@ -414,6 +426,11 @@ class CacheManager {
 
   /// 从数据库缓存删除
   Future<bool> removeDatabase(String key) async {
+    if (kIsWeb) {
+      Logger.cache('SKIP_DATABASE_REMOVE', key, 'Web环境不支持数据库缓存');
+      return false;
+    }
+    
     try {
       final db = DatabaseHelper.instance;
       final count = await db.delete(
@@ -556,8 +573,14 @@ class CacheManager {
         }
       }
 
-      // 清理数据库缓存
-      await DatabaseHelper.instance.cleanExpiredCache();
+      // 清理数据库缓存（仅在非Web环境）
+      if (!kIsWeb) {
+        try {
+          await DatabaseHelper.instance.cleanExpiredCache();
+        } catch (e) {
+          Logger.error('数据库缓存清理失败', e);
+        }
+      }
 
       Logger.info('过期缓存清理完成');
     } catch (e) {
@@ -593,8 +616,14 @@ class CacheManager {
         await _cacheDirectory!.create(recursive: true);
       }
 
-      // 清空数据库缓存
-      await DatabaseHelper.instance.delete('cache');
+      // 清空数据库缓存（仅在非Web环境）
+      if (!kIsWeb) {
+        try {
+          await DatabaseHelper.instance.delete('cache');
+        } catch (e) {
+          Logger.error('数据库缓存清空失败', e);
+        }
+      }
 
       Logger.warning('所有缓存已清空');
     } catch (e) {
@@ -613,9 +642,16 @@ class CacheManager {
         diskItems = files.where((file) => file.path.endsWith('.cache')).length;
       }
 
-      final db = DatabaseHelper.instance;
-      final dbResult = await db.rawQuery('SELECT COUNT(*) as count FROM cache');
-      final databaseItems = dbResult.first['count'] as int;
+      int databaseItems = 0;
+      if (!kIsWeb) {
+        try {
+          final db = DatabaseHelper.instance;
+          final dbResult = await db.rawQuery('SELECT COUNT(*) as count FROM cache');
+          databaseItems = dbResult.first['count'] as int;
+        } catch (e) {
+          Logger.error('获取数据库缓存统计失败', e);
+        }
+      }
 
       final totalItems = memoryItems + diskItems + databaseItems;
       final totalRequests = _hitCount + _missCount;

@@ -39,7 +39,7 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -61,7 +61,7 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -89,7 +89,7 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -111,7 +111,7 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -133,7 +133,7 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -157,7 +157,7 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -173,7 +173,7 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -189,7 +189,7 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -205,7 +205,7 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -221,7 +221,7 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -243,7 +243,7 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -265,7 +265,7 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -287,7 +287,7 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 

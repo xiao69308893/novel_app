@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
-import '../../../../core/errors/failures.dart';
+import '../../../../core/errors/app_error.dart';
 import '../../../../core/usecases/usecase.dart';
-import '../../../../shared/models/chapter_model.dart';
+import '../entities/bookmark_model.dart';
 import '../repositories/bookshelf_repository.dart';
 
 /// 获取书签列表参数
@@ -25,10 +25,10 @@ class GetBookmarksParams extends Equatable {
 class GetBookmarks implements UseCase<List<BookmarkModel>, GetBookmarksParams> {
   final BookshelfRepository repository;
 
-  const GetBookmarks(this.repository);
+  GetBookmarks(this.repository);
 
   @override
-  Future<Either<Failure, List<BookmarkModel>>> call(GetBookmarksParams params) async {
+  Future<Either<AppError, List<BookmarkModel>>> call(GetBookmarksParams params) async {
     return await repository.getBookmarks(
       novelId: params.novelId,
       page: params.page,
@@ -59,10 +59,10 @@ class AddBookmarkParams extends Equatable {
 class AddBookmark implements UseCase<BookmarkModel, AddBookmarkParams> {
   final BookshelfRepository repository;
 
-  const AddBookmark(this.repository);
+  AddBookmark(this.repository);
 
   @override
-  Future<Either<Failure, BookmarkModel>> call(AddBookmarkParams params) async {
+  Future<Either<AppError, BookmarkModel>> call(AddBookmarkParams params) async {
     return await repository.addBookmark(
       novelId: params.novelId,
       chapterId: params.chapterId,
@@ -76,10 +76,10 @@ class AddBookmark implements UseCase<BookmarkModel, AddBookmarkParams> {
 class DeleteBookmark implements UseCase<void, String> {
   final BookshelfRepository repository;
 
-  const DeleteBookmark(this.repository);
+  DeleteBookmark(this.repository);
 
   @override
-  Future<Either<Failure, void>> call(String bookmarkId) async {
+  Future<Either<AppError, void>> call(String bookmarkId) async {
     return await repository.deleteBookmark(bookmarkId);
   }
 }

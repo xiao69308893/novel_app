@@ -1,5 +1,5 @@
 // 轮播图数据模型
-import '../../../domain/entities/banner.dart';
+import '../../domain/entities/banner.dart';
 
 class BannerModel extends Banner {
   const BannerModel({
@@ -56,19 +56,6 @@ class BannerModel extends Banner {
   }
 
   Banner toEntity() {
-    return Banner(
-      id: id,
-      title: title,
-      subtitle: subtitle,
-      imageUrl: imageUrl,
-      type: type,
-      targetId: targetId,
-      targetUrl: targetUrl,
-      sort: sort,
-      isActive: isActive,
-      startTime: startTime,
-      endTime: endTime,
-      createdAt: createdAt,
-    );
+    return this;
   }
 }

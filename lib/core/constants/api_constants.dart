@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'dart:io';
 
 class ApiConstants {
   // 禁止实例化
@@ -22,16 +21,19 @@ class ApiConstants {
   static const String appVersion = '1.0.0';
   
   static String get platform {
-    if (Platform.isAndroid) return 'android';
-    if (Platform.isIOS) return 'ios';
-    if (Platform.isMacOS) return 'macos';
-    if (Platform.isWindows) return 'windows';
-    if (Platform.isLinux) return 'linux';
-    return 'unknown';
+    if (kIsWeb) {
+      return 'web';
+    }
+    // 对于非Web平台，返回通用标识
+    return defaultTargetPlatform.name.toLowerCase();
   }
   
   static String get osVersion {
-    return Platform.operatingSystemVersion;
+    if (kIsWeb) {
+      return 'Web Browser';
+    }
+    // 对于非Web平台，返回通用版本信息
+    return 'Mobile Platform';
   }
   
   // ==================== 认证相关API ====================
@@ -345,7 +347,7 @@ class ApiConstants {
   
   // 获取用户代理字符串
   static String getUserAgent() {
-    return 'NovelApp/$appVersion ($platform; ${Platform.operatingSystemVersion})';
+    return 'NovelApp/$appVersion ($platform; $osVersion)';
   }
   
   // 检查是否为成功状态码

@@ -422,7 +422,6 @@ class _SkeletonLoadingIndicatorState extends State<SkeletonLoadingIndicator>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final baseColor = widget.baseColor ?? Colors.grey[300]!;
     final highlightColor = widget.highlightColor ?? Colors.grey[100]!;
 

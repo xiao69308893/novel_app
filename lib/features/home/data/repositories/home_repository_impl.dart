@@ -2,7 +2,7 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/errors/app_error.dart';
 import '../../../../core/network/network_info.dart';
-import '../../../shared/models/novel_model.dart';
+import '../../../../shared/models/novel_model.dart';
 import '../../domain/entities/banner.dart';
 import '../../domain/entities/recommendation.dart';
 import '../../domain/entities/ranking.dart';
@@ -46,7 +46,7 @@ class HomeRepositoryImpl implements HomeRepository {
       if (localConfig != null) {
         return Right(localConfig.toEntity());
       }
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -74,7 +74,7 @@ class HomeRepositoryImpl implements HomeRepository {
       if (localBanners != null) {
         return Right(localBanners.map((model) => model.toEntity()).toList());
       }
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -118,7 +118,7 @@ class HomeRepositoryImpl implements HomeRepository {
           return Right(localRecommendations.map((model) => model.toEntity()).toList());
         }
       }
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -142,7 +142,7 @@ class HomeRepositoryImpl implements HomeRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -164,7 +164,7 @@ class HomeRepositoryImpl implements HomeRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -186,7 +186,7 @@ class HomeRepositoryImpl implements HomeRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -208,7 +208,7 @@ class HomeRepositoryImpl implements HomeRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -230,7 +230,7 @@ class HomeRepositoryImpl implements HomeRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -254,7 +254,7 @@ class HomeRepositoryImpl implements HomeRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -284,7 +284,7 @@ class HomeRepositoryImpl implements HomeRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -300,7 +300,7 @@ class HomeRepositoryImpl implements HomeRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -316,7 +316,7 @@ class HomeRepositoryImpl implements HomeRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 

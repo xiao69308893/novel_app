@@ -2,7 +2,8 @@
 import 'package:dio/dio.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/errors/app_error.dart';
-import '../../../shared/models/novel_model.dart';
+import '../../../../core/errors/error_handler.dart';
+import '../../../../shared/models/novel_model.dart';
 import '../models/banner_model.dart';
 import '../models/recommendation_model.dart';
 import '../models/ranking_model.dart';
@@ -65,7 +66,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       final response = await apiClient.get('/home/config');
       return HomeConfigModel.fromJson(response.data['data']);
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -78,7 +79,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       final List<dynamic> data = response.data['data'];
       return data.map((json) => BannerModel.fromJson(json)).toList();
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -102,7 +103,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       final List<dynamic> data = response.data['data'];
       return data.map((json) => RecommendationModel.fromJson(json)).toList();
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -125,7 +126,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       );
       return RankingModel.fromJson(response.data['data']);
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -147,7 +148,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       final List<dynamic> data = response.data['data'];
       return data.map((json) => NovelSimpleModel.fromJson(json)).toList();
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -169,7 +170,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       final List<dynamic> data = response.data['data'];
       return data.map((json) => NovelSimpleModel.fromJson(json)).toList();
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -191,7 +192,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       final List<dynamic> data = response.data['data'];
       return data.map((json) => NovelSimpleModel.fromJson(json)).toList();
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -213,7 +214,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       final List<dynamic> data = response.data['data'];
       return data.map((json) => NovelSimpleModel.fromJson(json)).toList();
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -236,7 +237,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       final List<dynamic> data = response.data['data'];
       return data.map((json) => NovelSimpleModel.fromJson(json)).toList();
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -266,7 +267,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       final List<dynamic> data = response.data['data'];
       return data.map((json) => NovelSimpleModel.fromJson(json)).toList();
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -279,7 +280,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       final List<dynamic> data = response.data['data'];
       return data.cast<String>();
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }
@@ -295,7 +296,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       final List<dynamic> data = response.data['data'];
       return data.cast<String>();
     } on DioException catch (e) {
-      throw AppError.fromDioException(e);
+      throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
       throw AppError.unknown(e.toString());
     }

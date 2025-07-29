@@ -71,8 +71,8 @@ class BookshelfInitial extends BookshelfState {}
 class BookshelfLoading extends BookshelfState {}
 
 class BookshelfLoaded extends BookshelfState {
-  final List<dynamic> books; // 使用dynamic因为具体的Book模型可能还未定义
-  final dynamic user; // 用户信息
+  final List<dynamic> books;
+  final dynamic user;
   final BookshelfSortType sortType;
   final BookshelfViewType viewType;
 
@@ -129,13 +129,8 @@ class BookshelfBloc extends Bloc<BookshelfEvent, BookshelfState> {
     try {
       emit(BookshelfLoading());
       
-      // 模拟数据加载
+      // 暂时使用模拟数据，避免网络请求错误
       await Future.delayed(const Duration(milliseconds: 500));
-      
-      // 这里应该调用实际的用例来获取书架数据
-      // final result = await getBookshelf?.call(NoParams());
-      
-      // 暂时使用模拟数据
       final books = <dynamic>[];
       
       emit(BookshelfLoaded(
@@ -155,13 +150,7 @@ class BookshelfBloc extends Bloc<BookshelfEvent, BookshelfState> {
     try {
       if (state is BookshelfLoaded) {
         final currentState = state as BookshelfLoaded;
-        
-        // 这里应该调用实际的用例来获取用户信息
-        // final result = await getUserProfile?.call(NoParams());
-        
-        // 暂时使用模拟数据
-        final user = null;
-        
+        final user = null; // 暂时使用模拟数据
         emit(currentState.copyWith(user: user));
       }
     } catch (e) {
@@ -176,22 +165,6 @@ class BookshelfBloc extends Bloc<BookshelfEvent, BookshelfState> {
     if (state is BookshelfLoaded) {
       final currentState = state as BookshelfLoaded;
       final sortedBooks = List<dynamic>.from(currentState.books);
-      
-      // 根据排序类型对书籍进行排序
-      switch (event.sortType) {
-        case BookshelfSortType.recentRead:
-          // sortedBooks.sort((a, b) => b.lastReadTime.compareTo(a.lastReadTime));
-          break;
-        case BookshelfSortType.addTime:
-          // sortedBooks.sort((a, b) => b.addTime.compareTo(a.addTime));
-          break;
-        case BookshelfSortType.updateTime:
-          // sortedBooks.sort((a, b) => b.updateTime.compareTo(a.updateTime));
-          break;
-        case BookshelfSortType.name:
-          // sortedBooks.sort((a, b) => a.title.compareTo(b.title));
-          break;
-      }
       
       emit(currentState.copyWith(
         books: sortedBooks,
@@ -215,11 +188,8 @@ class BookshelfBloc extends Bloc<BookshelfEvent, BookshelfState> {
     Emitter<BookshelfState> emit,
   ) async {
     try {
-      // 这里应该调用实际的用例来添加书籍到书架
-      // final result = await manageBookshelf?.addToBookshelf(event.bookId);
-      
-      // 重新加载书架
-      add(const LoadBookshelf());
+      // 暂时使用模拟实现
+      emit(BookshelfError('添加到书架功能暂未实现'));
     } catch (e) {
       emit(BookshelfError('添加到书架失败：${e.toString()}'));
     }
@@ -230,9 +200,6 @@ class BookshelfBloc extends Bloc<BookshelfEvent, BookshelfState> {
     Emitter<BookshelfState> emit,
   ) async {
     try {
-      // 这里应该调用实际的用例来从书架移除书籍
-      // final result = await manageBookshelf?.removeFromBookshelf(event.bookId);
-      
       if (state is BookshelfLoaded) {
         final currentState = state as BookshelfLoaded;
         final updatedBooks = currentState.books

@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
-import '../../../../core/errors/failures.dart';
+import '../../../../core/errors/app_error.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../entities/reading_history.dart';
 import '../repositories/bookshelf_repository.dart';
@@ -23,10 +23,10 @@ class GetReadingHistoryParams extends Equatable {
 class GetReadingHistory implements UseCase<List<ReadingHistory>, GetReadingHistoryParams> {
   final BookshelfRepository repository;
 
-  const GetReadingHistory(this.repository);
+  GetReadingHistory(this.repository);
 
   @override
-  Future<Either<Failure, List<ReadingHistory>>> call(GetReadingHistoryParams params) async {
+  Future<Either<AppError, List<ReadingHistory>>> call(GetReadingHistoryParams params) async {
     return await repository.getReadingHistory(
       page: params.page,
       limit: params.limit,
@@ -38,22 +38,22 @@ class GetReadingHistory implements UseCase<List<ReadingHistory>, GetReadingHisto
 class ClearReadingHistory implements UseCase<void, NoParams> {
   final BookshelfRepository repository;
 
-  const ClearReadingHistory(this.repository);
+  ClearReadingHistory(this.repository);
 
   @override
-  Future<Either<Failure, void>> call(NoParams params) async {
+  Future<Either<AppError, void>> call(NoParams params) async {
     return await repository.clearReadingHistory();
   }
 }
 
-/// 删除历史记录用例
+/// 删除历史记录项用例
 class DeleteHistoryItem implements UseCase<void, String> {
   final BookshelfRepository repository;
 
-  const DeleteHistoryItem(this.repository);
+  DeleteHistoryItem(this.repository);
 
   @override
-  Future<Either<Failure, void>> call(String historyId) async {
+  Future<Either<AppError, void>> call(String historyId) async {
     return await repository.deleteHistoryItem(historyId);
   }
 }

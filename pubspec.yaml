@@ -25,6 +25,7 @@ dependencies:
   # 网络请求
   dio: ^5.3.2
   http_certificate_pinning: ^3.0.1
+  connectivity_plus: ^5.0.1
   
   # 路径处理
   path: ^1.8.3

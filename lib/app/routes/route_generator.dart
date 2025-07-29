@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'app_routes.dart';
 import '../../features/auth/presentation/pages/splash_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/auth/presentation/pages/forgot_password_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
+import '../../features/home/presentation/cubit/home_cubit.dart';
+import '../../features/home/domain/usecases/get_home_data_usecase.dart';
+import '../../features/home/data/repositories/home_repository_impl.dart';
+import '../../features/home/data/datasources/home_remote_datasource.dart';
+import '../../features/home/data/datasources/home_local_datasource.dart';
 import '../../features/book/presentation/pages/book_detail_page.dart';
 import '../../features/book/presentation/pages/book_search_page.dart';
 import '../../features/bookself/presentation/pages/bookshelf_page.dart';
 import '../../shared/widgets/error_widget.dart';
 import '../../shared/widgets/placeholder_page.dart';
 import '../../core/utils/logger.dart';
+import '../../core/network/api_client.dart';
+import '../../core/network/network_info.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import '../../features/bookself/presentation/blocs/bookshelf/bookshelf_bloc.dart';
 
 class RouteGenerator {
   // 禁止实例化
@@ -27,7 +38,13 @@ class RouteGenerator {
         return _buildRoute(const SplashPage(), settings);
         
       case AppRoutes.home:
-        return _buildRoute(const HomePage(), settings);
+        return _buildRoute(
+          BlocProvider(
+            create: (context) => _createHomeCubit(),
+            child: const HomePage(),
+          ),
+          settings,
+        );
         
       // 认证相关路由
       case AppRoutes.login:
@@ -58,7 +75,13 @@ class RouteGenerator {
         
       // 书架页面
       case AppRoutes.bookshelf:
-        return _buildRoute(const BookshelfPage(), settings);
+        return _buildRoute(
+          BlocProvider(
+            create: (context) => GetIt.instance<BookshelfBloc>(),
+            child: const BookshelfPage(),
+          ),
+          settings,
+        );
         
       // TODO: 实现书籍分类页面
       // case AppRoutes.bookCategory:
@@ -335,4 +358,31 @@ class RouteGenerator {
     if (routeName == null) return false;
     return AppRoutes.authRoutes.contains(routeName);
   }
+
+  // 创建 HomeCubit 实例
+  static HomeCubit _createHomeCubit() {
+    // 创建依赖项
+    final apiClient = ApiClient.instance;
+    final remoteDataSource = HomeRemoteDataSourceImpl(apiClient: apiClient);
+    final localDataSource = HomeLocalDataSourceImpl();
+    final networkInfo = NetworkInfoImpl(connectivity: Connectivity());
+    
+    // 创建仓储
+    final repository = HomeRepositoryImpl(
+      remoteDataSource: remoteDataSource,
+      localDataSource: localDataSource,
+      networkInfo: networkInfo,
+    );
+    
+    // 创建用例
+    final getHomeDataUseCase = GetHomeDataUseCase(repository);
+    
+    // 创建并返回 HomeCubit
+    return HomeCubit(getHomeDataUseCase: getHomeDataUseCase);
+  }
+}
+
+// 临时的网络信息实现
+class _MockNetworkInfo {
+  Future<bool> get isConnected async => true;
 }

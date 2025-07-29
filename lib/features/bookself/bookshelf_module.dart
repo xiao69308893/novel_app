@@ -1,9 +1,6 @@
 import 'package:get_it/get_it.dart';
-import '../../core/api/api_client.dart';
-import '../../core/cache/cache_manager.dart';
-import '../../core/network/network_info.dart';
-import 'data/datasources/bookshelf_remote_data_source.dart';
-import 'data/datasources/bookshelf_local_data_source.dart';
+import 'data/datasources/bookshelf_remote_data_source_impl.dart';
+import 'data/datasources/bookshelf_local_data_source_impl.dart';
 import 'data/repositories/bookshelf_repository_impl.dart';
 import 'domain/repositories/bookshelf_repository.dart';
 import 'domain/usecases/get_favorite_novels.dart';
@@ -41,11 +38,7 @@ class BookshelfModule {
 
     // BLoC
     getIt.registerFactory(
-      () => BookshelfBloc(
-        getFavoriteNovels: getIt(),
-        addToFavorites: getIt(),
-        removeFromFavorites: getIt(),
-      ),
+      () => BookshelfBloc(),
     );
   }
 }

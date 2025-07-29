@@ -1,5 +1,5 @@
 // 推荐内容数据模型
-import '../../../shared/models/novel_model.dart';
+import '../../../../shared/models/novel_model.dart';
 import '../../domain/entities/recommendation.dart';
 
 class RecommendationModel extends Recommendation {
@@ -24,6 +24,7 @@ class RecommendationModel extends Recommendation {
       type: RecommendationType.fromValue(json['type'] as int?),
       novels: (json['novels'] as List?)
           ?.map((novel) => NovelSimpleModel.fromJson(novel as Map<String, dynamic>))
+          .cast<NovelSimpleModel>()
           .toList() ?? [],
       coverUrl: json['cover_url'] as String?,
       sort: json['sort'] as int? ?? 0,

@@ -1,5 +1,5 @@
-/ 排行榜数据模型
-import '../../../shared/models/novel_model.dart';
+// 排行榜数据模型
+import '../../../../shared/models/novel_model.dart';
 import '../../domain/entities/ranking.dart';
 
 class RankingItemModel extends RankingItem {

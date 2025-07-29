@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/errors/failures.dart';
+import '../../../../core/errors/app_error.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../repositories/bookshelf_repository.dart';
 
@@ -7,10 +7,10 @@ import '../repositories/bookshelf_repository.dart';
 class UserCheckIn implements UseCase<Map<String, dynamic>, NoParams> {
   final BookshelfRepository repository;
 
-  const UserCheckIn(this.repository);
+  UserCheckIn(this.repository);
 
   @override
-  Future<Either<Failure, Map<String, dynamic>>> call(NoParams params) async {
+  Future<Either<AppError, Map<String, dynamic>>> call(NoParams params) async {
     return await repository.checkIn();
   }
 }
@@ -19,10 +19,10 @@ class UserCheckIn implements UseCase<Map<String, dynamic>, NoParams> {
 class GetCheckInStatus implements UseCase<bool, NoParams> {
   final BookshelfRepository repository;
 
-  const GetCheckInStatus(this.repository);
+  GetCheckInStatus(this.repository);
 
   @override
-  Future<Either<Failure, bool>> call(NoParams params) async {
+  Future<Either<AppError, bool>> call(NoParams params) async {
     return await repository.getCheckInStatus();
   }
 }

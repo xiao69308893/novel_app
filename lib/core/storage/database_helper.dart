@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter/foundation.dart';
 import '../utils/logger.dart';
 
 class DatabaseHelper {
@@ -21,6 +22,10 @@ class DatabaseHelper {
 
   // 获取数据库实例
   Future<Database> get database async {
+    if (kIsWeb) {
+      // Web环境暂时不支持数据库，抛出异常
+      throw UnsupportedError('Web环境暂时不支持本地数据库功能');
+    }
     _database ??= await _initDatabase();
     return _database!;
   }
@@ -28,10 +33,15 @@ class DatabaseHelper {
   // 初始化数据库
   Future<Database> _initDatabase() async {
     try {
+      if (kIsWeb) {
+        // Web环境：这个方法不应该被调用
+        throw UnsupportedError('Web环境不支持数据库初始化');
+      }
+      
+      // 移动端环境：使用文档目录
       final documentsDirectory = await getApplicationDocumentsDirectory();
       final path = join(documentsDirectory.path, _databaseName);
-      
-      Logger.info('初始化数据库: $path');
+      Logger.info('移动端环境：初始化数据库: $path');
       
       return await openDatabase(
         path,
@@ -538,8 +548,12 @@ class DatabaseHelper {
       final path = db.path;
       final version = await db.getVersion();
       
-      File dbFile = File(path);
-      final size = await dbFile.length();
+      int size = 0;
+      if (!kIsWeb) {
+        // 只在非Web环境中获取文件大小
+        File dbFile = File(path);
+        size = await dbFile.length();
+      }
       
       // 获取各表记录数
       final tables = ['users', 'novels', 'chapters', 'bookshelf', 
@@ -560,6 +574,7 @@ class DatabaseHelper {
         'version': version,
         'size': size,
         'tables': tableCounts,
+        'isWeb': kIsWeb,
       };
     } catch (e) {
       Logger.error('获取数据库信息失败', e);
@@ -570,6 +585,11 @@ class DatabaseHelper {
   // 备份数据库
   Future<String> backupDatabase() async {
     try {
+      if (kIsWeb) {
+        // Web环境不支持文件备份
+        throw UnsupportedError('Web环境不支持数据库备份');
+      }
+      
       final db = await database;
       final documentsDir = await getApplicationDocumentsDirectory();
       final timestamp = DateTime.now().millisecondsSinceEpoch;
@@ -599,10 +619,18 @@ class DatabaseHelper {
   Future<void> deleteDatabase() async {
     try {
       await close();
-      final documentsDirectory = await getApplicationDocumentsDirectory();
-      final path = join(documentsDirectory.path, _databaseName);
-      await databaseFactory.deleteDatabase(path);
-      Logger.warning('数据库已删除: $path');
+      
+      if (kIsWeb) {
+        // Web环境：直接删除数据库
+        await databaseFactory.deleteDatabase(_databaseName);
+        Logger.warning('Web环境：数据库已删除');
+      } else {
+        // 移动端环境：使用文档目录路径
+        final documentsDirectory = await getApplicationDocumentsDirectory();
+        final path = join(documentsDirectory.path, _databaseName);
+        await databaseFactory.deleteDatabase(path);
+        Logger.warning('移动端环境：数据库已删除: $path');
+      }
     } catch (e) {
       Logger.error('删除数据库失败', e);
       rethrow;

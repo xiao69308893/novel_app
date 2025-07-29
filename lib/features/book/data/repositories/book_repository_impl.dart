@@ -60,7 +60,7 @@ class BookRepositoryImpl implements BookRepository {
       if (localDetail != null) {
         return Right(localDetail.toEntity());
       }
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -104,7 +104,7 @@ class BookRepositoryImpl implements BookRepository {
           return Right(localChapters);
         }
       }
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -134,7 +134,7 @@ class BookRepositoryImpl implements BookRepository {
       if (localChapter != null) {
         return Right(localChapter);
       }
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -158,7 +158,7 @@ class BookRepositoryImpl implements BookRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -182,7 +182,7 @@ class BookRepositoryImpl implements BookRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -208,7 +208,7 @@ class BookRepositoryImpl implements BookRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -224,7 +224,7 @@ class BookRepositoryImpl implements BookRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -240,7 +240,7 @@ class BookRepositoryImpl implements BookRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -256,7 +256,7 @@ class BookRepositoryImpl implements BookRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -276,7 +276,7 @@ class BookRepositoryImpl implements BookRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -296,7 +296,7 @@ class BookRepositoryImpl implements BookRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -320,7 +320,7 @@ class BookRepositoryImpl implements BookRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -342,7 +342,7 @@ class BookRepositoryImpl implements BookRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -368,7 +368,7 @@ class BookRepositoryImpl implements BookRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -385,7 +385,7 @@ class BookRepositoryImpl implements BookRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -403,7 +403,7 @@ class BookRepositoryImpl implements BookRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -425,7 +425,7 @@ class BookRepositoryImpl implements BookRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -518,7 +518,7 @@ class BookRepositoryImpl implements BookRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 
@@ -542,7 +542,7 @@ class BookRepositoryImpl implements BookRepository {
         return Left(AppError.unknown(e.toString()));
       }
     } else {
-      return Left(AppError.noInternet());
+      return Left(NoInternetError());
     }
   }
 }
