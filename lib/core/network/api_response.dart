@@ -244,7 +244,7 @@ class ApiResponse<T> {
   /// 获取分页信息
   PaginationInfo? get pagination {
     if (extra?['pagination'] != null) {
-      return PaginationInfo.fromJson(extra!['pagination']);
+      return PaginationInfo.fromJson(extra!['pagination'] as Map<String, dynamic>);
     }
     
     // 从extra中直接提取分页信息
@@ -396,7 +396,7 @@ class ListResponse<T> {
 
     PaginationInfo? pagination;
     if (json.containsKey('pagination')) {
-      pagination = PaginationInfo.fromJson(json['pagination']);
+      pagination = PaginationInfo.fromJson(json['pagination'] as Map<String, dynamic>);
     } else {
       // 尝试从根级别提取分页信息
       final page = json['page'] as int?;

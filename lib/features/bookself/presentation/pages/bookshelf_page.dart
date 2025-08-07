@@ -141,7 +141,7 @@ class _BookshelfPageState extends State<BookshelfPage>
     super.build(context);
     
     return Scaffold(
-      appBar: CommonAppBar(
+      appBar: AppBarUtils.simple(
         title: '我的书架',
         actions: [
           IconButton(
@@ -318,7 +318,7 @@ class _BookshelfPageState extends State<BookshelfPage>
               onTap: () {
                 Navigator.pop(context);
                 context.read<BookshelfBloc>().add(
-                  RemoveFromBookshelf(book.id),
+                  RemoveFromBookshelf(book.id as String),
                 );
               },
             ),

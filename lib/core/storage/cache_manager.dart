@@ -5,7 +5,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import '../utils/logger.dart';
 import '../utils/preferences_helper.dart';
-import '../constants/app_constants.dart';
 import 'database_helper.dart';
 
 /// 缓存类型枚举

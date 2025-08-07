@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../shared/widgets/common_app_bar.dart';
 import '../../../../shared/widgets/loading_widget.dart';
-import '../../../../shared/models/user_model.dart';
 import '../../../../app/themes/app_theme.dart';
 import '../blocs/bookshelf/bookshelf_bloc.dart';
 import '../widgets/profile_header.dart';
@@ -28,7 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarUtils.simple(
+      appBar: CommonAppBar(
         title: '个人中心',
         actions: [
           IconButton(

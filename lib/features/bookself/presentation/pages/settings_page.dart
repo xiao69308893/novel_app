@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../shared/widgets/common_app_bar.dart';
-import '../../../../shared/models/user_model.dart';
 import '../../../../app/themes/app_theme.dart';
 import '../blocs/bookshelf/bookshelf_bloc.dart';
 
@@ -16,10 +15,8 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    
     return Scaffold(
-      appBar: AppBarUtils.simple(title: '设置'),
+      appBar: CommonAppBar(title: '设置'),
       body: BlocBuilder<BookshelfBloc, BookshelfState>(
         builder: (context, state) {
           if (state is BookshelfLoaded && state.user?.settings != null) {
@@ -36,7 +33,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     _buildSliderSetting(
                       context,
                       title: '字体大小',
-                      value: settings.reader.fontSize,
+                      value: settings.reader.fontSize as double,
                       min: 12.0,
                       max: 24.0,
                       divisions: 12,
@@ -47,7 +44,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     _buildSliderSetting(
                       context,
                       title: '行间距',
-                      value: settings.reader.lineSpacing,
+                      value: settings.reader.lineSpacing as double,
                       min: 1.0,
                       max: 2.5,
                       divisions: 15,
@@ -58,7 +55,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     _buildDropdownSetting(
                       context,
                       title: '阅读主题',
-                      value: settings.reader.theme,
+                      value: settings.reader.theme as String,
                       items: const {
                         'light': '明亮主题',
                         'dark': '暗黑主题',
@@ -72,7 +69,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       context,
                       title: '屏幕常亮',
                       subtitle: '阅读时保持屏幕常亮',
-                      value: settings.reader.keepScreenOn,
+                      value: settings.reader.keepScreenOn as bool,
                       onChanged: (value) {
                         // 更新屏幕常亮设置
                       },
@@ -81,7 +78,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       context,
                       title: '音量键翻页',
                       subtitle: '使用音量键进行翻页',
-                      value: settings.reader.volumeKeyTurnPage,
+                      value: settings.reader.volumeKeyTurnPage as bool,
                       onChanged: (value) {
                         // 更新音量键翻页设置
                       },
@@ -100,7 +97,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       context,
                       title: '推送通知',
                       subtitle: '接收应用推送通知',
-                      value: settings.notifications.enabled,
+                      value: settings.notifications.enabled as bool,
                       onChanged: (value) {
                         // 更新推送通知设置
                       },
@@ -109,7 +106,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       context,
                       title: '更新通知',
                       subtitle: '小说更新时通知',
-                      value: settings.notifications.updateNotification,
+                      value: settings.notifications.updateNotification as bool,
                       onChanged: (value) {
                         // 更新更新通知设置
                       },
@@ -118,7 +115,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       context,
                       title: '推荐通知',
                       subtitle: '接收小说推荐通知',
-                      value: settings.notifications.recommendationNotification,
+                      value: settings.notifications.recommendationNotification as bool,
                       onChanged: (value) {
                         // 更新推荐通知设置
                       },
@@ -137,7 +134,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       context,
                       title: '个人资料可见',
                       subtitle: '允许他人查看你的个人资料',
-                      value: settings.privacy.profileVisible,
+                      value: settings.privacy.profileVisible as bool,
                       onChanged: (value) {
                         // 更新个人资料可见性
                       },
@@ -146,7 +143,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       context,
                       title: '阅读记录可见',
                       subtitle: '允许他人查看你的阅读记录',
-                      value: settings.privacy.readingHistoryVisible,
+                      value: settings.privacy.readingHistoryVisible as bool,
                       onChanged: (value) {
                         // 更新阅读记录可见性
                       },
@@ -155,7 +152,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       context,
                       title: '允许搜索',
                       subtitle: '允许其他用户搜索到你',
-                      value: settings.privacy.allowSearch,
+                      value: settings.privacy.allowSearch as bool,
                       onChanged: (value) {
                         // 更新搜索可见性
                       },

@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../../../core/utils/typedef.dart';
@@ -24,12 +25,30 @@ class UpdateUserProfile extends UseCase<UserModel, UpdateUserProfileParams> {
 
   @override
   ResultFuture<UserModel> call(UpdateUserProfileParams params) async {
-    return await repository.updateUserProfile(
-      nickname: params.nickname,
-      avatar: params.avatar,
-      bio: params.bio,
-      email: params.email,
-      phone: params.phone,
+    // 需要先获取当前用户信息，然后更新
+    final currentUserResult = await repository.getUserProfile();
+    return currentUserResult.fold(
+      (error) => Left(error),
+      (userProfile) {
+        // 创建更新后的UserModel
+        final updatedUser = UserModel(
+          id: userProfile.user.id,
+          username: userProfile.user.username,
+          email: params.email ?? userProfile.user.email,
+          phone: params.phone ?? userProfile.user.phone,
+          nickname: params.nickname ?? userProfile.user.nickname,
+          avatar: params.avatar ?? userProfile.user.avatar,
+          bio: params.bio ?? userProfile.user.bio,
+          gender: userProfile.user.gender,
+          birthday: userProfile.user.birthday,
+          status: userProfile.user.status,
+          vipLevel: userProfile.user.vipLevel,
+          vipExpiredAt: userProfile.user.vipExpiredAt,
+          createdAt: userProfile.user.createdAt,
+          updatedAt: DateTime.now(),
+        );
+        return repository.updateUserProfile(updatedUser);
+      },
     );
   }
 }
@@ -86,10 +105,20 @@ class UpdateUserSettings extends UseCase<void, UpdateUserSettingsParams> {
 
   @override
   ResultFuture<void> call(UpdateUserSettingsParams params) async {
-    return await repository.updateUserSettings(
-      reader: params.reader,
-      notifications: params.notifications,
-      privacy: params.privacy,
+    // 需要先获取当前设置，然后更新
+    final currentSettingsResult = await repository.getUserSettings();
+    return currentSettingsResult.fold(
+      (error) => Left(error),
+      (currentSettings) {
+        // 创建更新后的UserSettings
+        final updatedSettings = UserSettings(
+          notifications: params.notifications ?? currentSettings.notifications,
+          reader: params.reader ?? currentSettings.reader,
+          privacy: params.privacy ?? currentSettings.privacy,
+          other: currentSettings.other,
+        );
+        return repository.updateUserSettings(updatedSettings);
+      },
     );
   }
 }
@@ -111,26 +140,26 @@ class UpdateUserSettingsParams extends Equatable {
 }
 
 /// 签到用例
-class Checkin extends UseCase<CheckinResult, NoParams> {
+class Checkin extends UseCase<Map<String, dynamic>, NoParams> {
   final BookshelfRepository repository;
 
   const Checkin(this.repository);
 
   @override
-  ResultFuture<CheckinResult> call(NoParams params) async {
-    return await repository.checkin();
+  ResultFuture<Map<String, dynamic>> call(NoParams params) async {
+    return await repository.checkIn();
   }
 }
 
 /// 获取签到状态用例
-class GetCheckinStatus extends UseCase<CheckinStatus, NoParams> {
+class GetCheckinStatus extends UseCase<bool, NoParams> {
   final BookshelfRepository repository;
 
   const GetCheckinStatus(this.repository);
 
   @override
-  ResultFuture<CheckinStatus> call(NoParams params) async {
-    return await repository.getCheckinStatus();
+  ResultFuture<bool> call(NoParams params) async {
+    return await repository.getCheckInStatus();
   }
 }
 

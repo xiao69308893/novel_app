@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import '../../../../core/errors/app_error.dart';
 import '../../../../core/usecases/usecase.dart';
-import '../entities/bookmark_model.dart';
+import '../../../../shared/models/chapter_model.dart';
 import '../repositories/bookshelf_repository.dart';
 
 /// 获取书签列表参数
