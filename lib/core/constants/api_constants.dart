@@ -5,8 +5,9 @@ class ApiConstants {
   ApiConstants._();
   
   // 基础URL配置
-  static const String _devBaseUrl = 'https://dev-api.novelapp.com';
-  static const String _prodBaseUrl = 'https://api.novelapp.com';
+  static const String _devBaseUrl = 'http://127.0.0.1:8001';
+
+  static const String _prodBaseUrl = 'https://novel.xiaozhuo.top';
   
   // 根据环境选择基础URL
   static String get baseUrl => kDebugMode ? _devBaseUrl : _prodBaseUrl;

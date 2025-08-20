@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'core/utils/logger.dart';
+import 'core/utils/preferences_helper.dart';
 import 'core/storage/database_helper.dart';
 import 'core/storage/cache_manager.dart';
 import 'core/network/api_client.dart';
@@ -17,6 +18,10 @@ void main() async {
 
   // 初始化日志系统
   Logger.init();
+
+  // 初始化SharedPreferences
+  await PreferencesHelper.init();
+  Logger.info('本地存储初始化完成');
 
   // 初始化本地存储
   if (!kIsWeb) {
