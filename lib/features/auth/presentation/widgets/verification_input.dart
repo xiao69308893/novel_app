@@ -51,7 +51,7 @@ class VerificationInput extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: _canSendCode(state) ? () => _sendCode(context) : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+                  backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                   foregroundColor: Theme.of(context).primaryColor,
                   elevation: 0,
                   shape: RoundedRectangleBorder(

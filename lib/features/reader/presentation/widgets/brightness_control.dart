@@ -75,7 +75,7 @@ class _BrightnessControlState extends State<BrightnessControl>
     return GestureDetector(
       onTap: _close,
       child: Container(
-        color: Colors.black.withOpacity(0.5),
+        color: Colors.black.withValues(alpha: 0.5),
         child: FadeTransition(
           opacity: _animation,
           child: Center(

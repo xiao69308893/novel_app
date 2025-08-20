@@ -107,7 +107,7 @@ class _HomeBannerState extends State<HomeBanner> {
               end: Alignment.bottomCenter,
               colors: [
                 Colors.transparent,
-                Colors.black.withOpacity(0.3),
+                Colors.black.withValues(alpha: 0.3),
               ],
             ),
           ),
@@ -155,7 +155,7 @@ class _HomeBannerState extends State<HomeBanner> {
           height: 4,
           margin: const EdgeInsets.symmetric(horizontal: 2),
           decoration: BoxDecoration(
-            color: isActive ? Colors.white : Colors.white.withOpacity(0.5),
+            color: isActive ? Colors.white : Colors.white.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(2),
           ),
         );

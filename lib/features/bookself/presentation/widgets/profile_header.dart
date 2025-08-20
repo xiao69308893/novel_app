@@ -22,7 +22,7 @@ class ProfileHeader extends StatelessWidget {
         gradient: LinearGradient(
           colors: user.isVip 
               ? [Colors.amber[400]!, Colors.amber[200]!]
-              : [theme.primaryColor, theme.primaryColor.withOpacity(0.7)],
+              : [theme.primaryColor, theme.primaryColor.withValues(alpha: 0.7)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -121,7 +121,7 @@ class ProfileHeader extends StatelessWidget {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
+                                color: Colors.white.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
@@ -145,7 +145,7 @@ class ProfileHeader extends StatelessWidget {
                               'ID: ${user.id}',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.white.withOpacity(0.8),
+                                color: Colors.white.withValues(alpha: 0.8),
                               ),
                             ),
                             const SizedBox(width: AppTheme.spacingSmall),
@@ -154,7 +154,7 @@ class ProfileHeader extends StatelessWidget {
                               child: Icon(
                                 Icons.copy,
                                 size: 16,
-                                color: Colors.white.withOpacity(0.8),
+                                color: Colors.white.withValues(alpha: 0.8),
                               ),
                             ),
                           ],
@@ -165,7 +165,7 @@ class ProfileHeader extends StatelessWidget {
                           '注册于 ${_formatDate(user.createdAt)}',
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.white.withOpacity(0.7),
+                            color: Colors.white.withValues(alpha: 0.7),
                           ),
                         ),
                         
@@ -177,7 +177,7 @@ class ProfileHeader extends StatelessWidget {
                               fontSize: 12,
                               color: user.isVipExpiringSoon 
                                   ? Colors.red[200] 
-                                  : Colors.white.withOpacity(0.7),
+                                  : Colors.white.withValues(alpha: 0.7),
                             ),
                           ),
                       ],
@@ -204,14 +204,14 @@ class ProfileHeader extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(AppTheme.spacingRegular),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(AppTheme.radiusRegular),
                 ),
                 child: Text(
                   user.bio ?? '这个用户很懒，什么都没有写~',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     fontStyle: user.bio == null ? FontStyle.italic : FontStyle.normal,
                   ),
                   textAlign: TextAlign.center,

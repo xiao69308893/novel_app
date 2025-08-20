@@ -36,7 +36,7 @@ class ThemeConfig {
         backgroundColor: AppTheme.surfaceColor,
         foregroundColor: AppTheme.textPrimaryColor,
         elevation: 1,
-        shadowColor: Colors.black.withOpacity(0.1),
+        shadowColor: Colors.black.withValues(alpha: 0.1),
         centerTitle: true,
         titleTextStyle: const TextStyle(
           color: AppTheme.textPrimaryColor,
@@ -201,7 +201,7 @@ class ThemeConfig {
       cardTheme: CardThemeData(
         color: AppTheme.surfaceColor,
         elevation: 2,
-        shadowColor: Colors.black.withOpacity(0.1),
+        shadowColor: Colors.black.withValues(alpha: 0.1),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
         ),
@@ -236,7 +236,7 @@ class ThemeConfig {
       // Chip主题
       chipTheme: ChipThemeData(
         backgroundColor: Colors.grey.shade100,
-        selectedColor: AppTheme.primaryColor.withOpacity(0.2),
+        selectedColor: AppTheme.primaryColor.withValues(alpha: 0.2),
         labelStyle: const TextStyle(
           color: AppTheme.textPrimaryColor,
           fontSize: AppTheme.fontSizeSmall,
@@ -278,7 +278,7 @@ class ThemeConfig {
         backgroundColor: AppTheme.darkSurfaceColor,
         foregroundColor: AppTheme.darkTextPrimaryColor,
         elevation: 1,
-        shadowColor: Colors.black.withOpacity(0.3),
+        shadowColor: Colors.black.withValues(alpha: 0.3),
         centerTitle: true,
         titleTextStyle: const TextStyle(
           color: AppTheme.darkTextPrimaryColor,
@@ -370,7 +370,7 @@ class ThemeConfig {
       cardTheme: CardThemeData(
         color: AppTheme.darkSurfaceColor,
         elevation: 4,
-        shadowColor: Colors.black.withOpacity(0.3),
+        shadowColor: Colors.black.withValues(alpha: 0.3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
         ),
@@ -379,7 +379,7 @@ class ThemeConfig {
       
       // 分隔线主题
       dividerTheme: DividerThemeData(
-        color: Colors.white.withOpacity(0.12),
+        color: Colors.white.withValues(alpha: 0.12),
         thickness: 1,
         space: 1,
       ),
@@ -404,8 +404,8 @@ class ThemeConfig {
       
       // Chip主题
       chipTheme: ChipThemeData(
-        backgroundColor: Colors.white.withOpacity(0.1),
-        selectedColor: AppTheme.primaryColor.withOpacity(0.3),
+        backgroundColor: Colors.white.withValues(alpha: 0.1),
+        selectedColor: AppTheme.primaryColor.withValues(alpha: 0.3),
         labelStyle: const TextStyle(
           color: AppTheme.darkTextPrimaryColor,
           fontSize: AppTheme.fontSizeSmall,

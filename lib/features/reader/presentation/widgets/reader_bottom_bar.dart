@@ -38,7 +38,7 @@ class ReaderBottomBar extends StatelessWidget {
           bottom: MediaQuery.of(context).padding.bottom + AppTheme.spacingRegular,
         ),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.7),
+          color: Colors.black.withValues(alpha: 0.7),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

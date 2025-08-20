@@ -227,7 +227,7 @@ class _SearchAppBarState extends State<SearchAppBar> {
           hintText: widget.hintText ?? '搜索...',
           border: InputBorder.none,
           hintStyle: TextStyle(
-            color: theme.appBarTheme.foregroundColor?.withOpacity(0.6),
+            color: theme.appBarTheme.foregroundColor?.withValues(alpha: 0.6),
           ),
         ),
         style: TextStyle(
@@ -321,7 +321,7 @@ class TabAppBar extends StatelessWidget implements PreferredSizeWidget {
         indicatorColor: indicatorColor ?? theme.primaryColor,
         labelColor: labelColor ?? theme.primaryColor,
         unselectedLabelColor: unselectedLabelColor ?? 
-            theme.textTheme.bodyMedium?.color?.withOpacity(0.6),
+            theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.6),
         labelStyle: const TextStyle(
           fontSize: AppTheme.fontSizeMedium,
           fontWeight: FontWeight.w600,

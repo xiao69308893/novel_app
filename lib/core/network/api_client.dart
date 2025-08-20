@@ -89,9 +89,9 @@ class ApiClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     try {
-      final stopwatch = Stopwatch()..start();
+      final Stopwatch stopwatch = Stopwatch()..start();
       
-      final response = await _dio.get(
+      final Response<dynamic> response = await _dio.get<dynamic>(
         path,
         queryParameters: queryParameters,
         options: options,
@@ -129,9 +129,9 @@ class ApiClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     try {
-      final stopwatch = Stopwatch()..start();
+      final Stopwatch stopwatch = Stopwatch()..start();
       
-      final response = await _dio.post(
+      final Response<dynamic> response = await _dio.post<dynamic>(
         path,
         data: data,
         queryParameters: queryParameters,
@@ -171,9 +171,9 @@ class ApiClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     try {
-      final stopwatch = Stopwatch()..start();
+      final Stopwatch stopwatch = Stopwatch()..start();
       
-      final response = await _dio.put(
+      final Response<dynamic> response = await _dio.put<dynamic>(
         path,
         data: data,
         queryParameters: queryParameters,
@@ -211,9 +211,9 @@ class ApiClient {
     CancelToken? cancelToken,
   }) async {
     try {
-      final stopwatch = Stopwatch()..start();
+      final Stopwatch stopwatch = Stopwatch()..start();
       
-      final response = await _dio.delete(
+      final Response<dynamic> response = await _dio.delete<dynamic>(
         path,
         data: data,
         queryParameters: queryParameters,
@@ -250,9 +250,9 @@ class ApiClient {
     ProgressCallback? onSendProgress,
   }) async {
     try {
-      final stopwatch = Stopwatch()..start();
+      final Stopwatch stopwatch = Stopwatch()..start();
       
-      final response = await _dio.post(
+      final Response<dynamic> response = await _dio.post<dynamic>(
         path,
         data: formData,
         queryParameters: queryParameters,
@@ -292,7 +292,7 @@ class ApiClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     try {
-      final stopwatch = Stopwatch()..start();
+      final Stopwatch stopwatch = Stopwatch()..start();
       
       await _dio.download(
         url,

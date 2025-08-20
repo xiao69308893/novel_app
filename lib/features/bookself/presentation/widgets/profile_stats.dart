@@ -23,7 +23,7 @@ class ProfileStats extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppTheme.radiusRegular),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -117,7 +117,7 @@ class ProfileStats extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(AppTheme.spacingRegular),
             decoration: BoxDecoration(
-              color: theme.primaryColor.withOpacity(0.1),
+              color: theme.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
             ),
             child: Column(
@@ -172,7 +172,7 @@ class ProfileStats extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: Icon(

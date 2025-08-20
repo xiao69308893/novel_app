@@ -31,7 +31,7 @@ class PlaceholderPage extends StatelessWidget {
             Icon(
               icon,
               size: 80,
-              color: theme.primaryColor.withOpacity(0.5),
+              color: theme.primaryColor.withValues(alpha: 0.5),
             ),
             const SizedBox(height: AppTheme.spacingLarge),
             Text(

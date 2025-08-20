@@ -60,9 +60,9 @@ class ReadingProgressIndicator extends StatelessWidget {
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
               activeTrackColor: Colors.white,
-              inactiveTrackColor: Colors.white.withOpacity(0.3),
+              inactiveTrackColor: Colors.white.withValues(alpha: 0.3),
               thumbColor: Colors.white,
-              overlayColor: Colors.white.withOpacity(0.1),
+              overlayColor: Colors.white.withValues(alpha: 0.1),
               trackHeight: 2,
               thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
             ),

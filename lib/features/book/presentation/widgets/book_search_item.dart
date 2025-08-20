@@ -76,7 +76,7 @@ class BookSearchItem extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: AppTheme.primaryColor.withOpacity(0.1),
+                              color: AppTheme.primaryColor.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
@@ -96,8 +96,8 @@ class BookSearchItem extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: novel.isFinished 
-                                ? Colors.green.withOpacity(0.1)
-                                : Colors.orange.withOpacity(0.1),
+                                ? Colors.green.withValues(alpha: 0.1)
+                                : Colors.orange.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
@@ -178,7 +178,7 @@ class BookSearchItem extends StatelessWidget {
           TextSpan(
             text: text.substring(index, index + keyword.length),
             style: style.copyWith(
-              backgroundColor: Colors.yellow.withOpacity(0.3),
+              backgroundColor: Colors.yellow.withValues(alpha: 0.3),
             ),
           ),
           if (index + keyword.length < text.length)

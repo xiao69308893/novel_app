@@ -34,7 +34,7 @@ class NovelCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -56,7 +56,7 @@ class NovelCard extends StatelessWidget {
                   height: double.infinity,
                   fit: BoxFit.cover,
                   placeholder: Container(
-                    color: theme.colorScheme.surfaceVariant,
+                    color: theme.colorScheme.surfaceContainerHighest,
                     child: Icon(
                       Icons.book,
                       size: 40.sp,
@@ -109,30 +109,28 @@ class NovelCard extends StatelessWidget {
                     // 状态信息
                     Row(
                       children: [
-                        if (novel.status != null) ...[
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 6.w,
-                              vertical: 2.h,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _getStatusColor(novel.status!),
-                              borderRadius: BorderRadius.circular(4.r),
-                            ),
-                            child: Text(
-                              _getStatusText(novel.status!),
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: Colors.white,
-                                fontSize: 10.sp,
-                              ),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 6.w,
+                            vertical: 2.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _getStatusColor(novel.status),
+                            borderRadius: BorderRadius.circular(4.r),
+                          ),
+                          child: Text(
+                            _getStatusText(novel.status),
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: Colors.white,
+                              fontSize: 10.sp,
                             ),
                           ),
-                          SizedBox(width: 4.w),
-                        ],
+                        ),
+                        SizedBox(width: 4.w),
                         
                         Expanded(
                           child: Text(
-                            '${novel.wordCount ?? 0}字',
+                            '${novel.wordCount}字',
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),

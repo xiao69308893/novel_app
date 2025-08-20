@@ -206,7 +206,7 @@ class _ChapterListDrawerState extends State<ChapterListDrawer> {
     return Container(
       decoration: BoxDecoration(
         color: isCurrentChapter
-            ? theme.primaryColor.withOpacity(0.1)
+            ? theme.primaryColor.withValues(alpha: 0.1)
             : null,
         border: Border(
           left: BorderSide(

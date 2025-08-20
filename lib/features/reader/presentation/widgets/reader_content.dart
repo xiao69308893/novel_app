@@ -174,14 +174,14 @@ class _ReaderContentState extends State<ReaderContent>
                     '${widget.session.currentPage + 1}/${widget.session.pages.length}',
                     style: TextStyle(
                       fontSize: 12,
-                      color: widget.config.theme.textColor.withOpacity(0.6),
+                      color: widget.config.theme.textColor.withValues(alpha: 0.6),
                     ),
                   ),
                   Text(
                     DateTime.now().toString().substring(11, 16),
                     style: TextStyle(
                       fontSize: 12,
-                      color: widget.config.theme.textColor.withOpacity(0.6),
+                      color: widget.config.theme.textColor.withValues(alpha: 0.6),
                     ),
                   ),
                 ],

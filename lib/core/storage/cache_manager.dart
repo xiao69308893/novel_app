@@ -151,15 +151,20 @@ class CacheManager {
   /// 初始化缓存
   Future<void> _initializeCache() async {
     try {
-      // 初始化磁盘缓存目录
-      final tempDir = await getTemporaryDirectory();
-      _cacheDirectory = Directory(path.join(tempDir.path, 'cache'));
-      if (!await _cacheDirectory!.exists()) {
-        await _cacheDirectory!.create(recursive: true);
-      }
+      // Web环境跳过磁盘缓存初始化
+      if (!kIsWeb) {
+        // 初始化磁盘缓存目录
+        final tempDir = await getTemporaryDirectory();
+        _cacheDirectory = Directory(path.join(tempDir.path, 'cache'));
+        if (!await _cacheDirectory!.exists()) {
+          await _cacheDirectory!.create(recursive: true);
+        }
 
-      // 清理过期缓存
-      await _cleanExpiredCache();
+        // 清理过期缓存
+        await _cleanExpiredCache();
+      } else {
+        Logger.info('Web环境：跳过磁盘缓存初始化');
+      }
       
       // 加载统计信息
       _loadStats();
@@ -251,6 +256,11 @@ class CacheManager {
     DateTime? expiresAt,
     Map<String, dynamic>? metadata,
   }) async {
+    if (kIsWeb) {
+      Logger.cache('SKIP_DISK_PUT', key, 'Web环境不支持磁盘缓存');
+      return;
+    }
+    
     try {
       if (_cacheDirectory == null) return;
 
@@ -275,6 +285,11 @@ class CacheManager {
 
   /// 从磁盘缓存获取
   Future<T?> getDisk<T>(String key) async {
+    if (kIsWeb) {
+      _missCount++;
+      return null;
+    }
+    
     try {
       if (_cacheDirectory == null) {
         _missCount++;
@@ -310,6 +325,10 @@ class CacheManager {
 
   /// 从磁盘缓存删除
   Future<bool> removeDisk(String key) async {
+    if (kIsWeb) {
+      return false;
+    }
+    
     try {
       if (_cacheDirectory == null) return false;
 
@@ -551,8 +570,8 @@ class CacheManager {
         _memoryCache.remove(key);
       }
 
-      // 清理磁盘缓存
-      if (_cacheDirectory != null && await _cacheDirectory!.exists()) {
+      // 清理磁盘缓存（Web环境跳过）
+      if (!kIsWeb && _cacheDirectory != null && await _cacheDirectory!.exists()) {
         final files = await _cacheDirectory!.list().toList();
         for (final file in files) {
           if (file is File && file.path.endsWith('.cache')) {
@@ -609,8 +628,8 @@ class CacheManager {
       // 清空内存缓存
       _memoryCache.clear();
 
-      // 清空磁盘缓存
-      if (_cacheDirectory != null && await _cacheDirectory!.exists()) {
+      // 清空磁盘缓存（Web环境跳过）
+      if (!kIsWeb && _cacheDirectory != null && await _cacheDirectory!.exists()) {
         await _cacheDirectory!.delete(recursive: true);
         await _cacheDirectory!.create(recursive: true);
       }
@@ -636,7 +655,7 @@ class CacheManager {
       final memoryItems = _memoryCache.length;
       
       int diskItems = 0;
-      if (_cacheDirectory != null && await _cacheDirectory!.exists()) {
+      if (!kIsWeb && _cacheDirectory != null && await _cacheDirectory!.exists()) {
         final files = await _cacheDirectory!.list().toList();
         diskItems = files.where((file) => file.path.endsWith('.cache')).length;
       }
@@ -686,8 +705,8 @@ class CacheManager {
     int totalSize = 0;
 
     try {
-      // 计算磁盘缓存大小
-      if (_cacheDirectory != null && await _cacheDirectory!.exists()) {
+      // 计算磁盘缓存大小（Web环境跳过）
+      if (!kIsWeb && _cacheDirectory != null && await _cacheDirectory!.exists()) {
         final files = await _cacheDirectory!.list().toList();
         for (final file in files) {
           if (file is File) {

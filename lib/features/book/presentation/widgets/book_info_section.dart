@@ -22,8 +22,8 @@ class BookInfoSection extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            theme.primaryColor.withOpacity(0.8),
-            theme.primaryColor.withOpacity(0.6),
+            theme.primaryColor.withValues(alpha: 0.8),
+            theme.primaryColor.withValues(alpha: 0.6),
           ],
         ),
       ),
@@ -99,7 +99,7 @@ class BookInfoSection extends StatelessWidget {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
+                                  color: Colors.white.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Text(
@@ -117,8 +117,8 @@ class BookInfoSection extends StatelessWidget {
                               ),
                               decoration: BoxDecoration(
                                 color: novel.isFinished 
-                                    ? Colors.green.withOpacity(0.2)
-                                    : Colors.orange.withOpacity(0.2),
+                                    ? Colors.green.withValues(alpha: 0.2)
+                                    : Colors.orange.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
@@ -194,7 +194,7 @@ class BookInfoSection extends StatelessWidget {
 
   Widget _buildPlaceholder() {
     return Container(
-      color: Colors.white.withOpacity(0.2),
+      color: Colors.white.withValues(alpha: 0.2),
       child: const Icon(
         Icons.book,
         color: Colors.white,

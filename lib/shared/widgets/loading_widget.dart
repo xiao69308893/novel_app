@@ -75,7 +75,7 @@ class LoadingWidget extends StatelessWidget {
     if (showBackground) {
       loadingWidget = Container(
         decoration: BoxDecoration(
-          color: backgroundColor ?? Colors.black.withOpacity(0.5),
+          color: backgroundColor ?? Colors.black.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(AppTheme.radiusRegular),
         ),
         padding: const EdgeInsets.all(AppTheme.spacingLarge),
@@ -110,7 +110,7 @@ class LoadingWidget extends StatelessWidget {
           width: size ?? 200.0,
           child: LinearProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(color),
-            backgroundColor: color.withOpacity(0.2),
+            backgroundColor: color.withValues(alpha: 0.2),
           ),
         );
         
@@ -483,7 +483,7 @@ class LoadingOverlay extends StatelessWidget {
         child,
         if (isLoading)
           Container(
-            color: overlayColor ?? Colors.black.withOpacity(0.3),
+            color: overlayColor ?? Colors.black.withValues(alpha: 0.3),
             child: loadingWidget ?? 
                 const LoadingWidget(
                   message: AppConstants.loadingMessage,
@@ -647,7 +647,7 @@ class LoadingUtils {
     String? message,
     bool barrierDismissible = false,
   }) {
-    showDialog(
+    showDialog<void>(
       context: context,
       barrierDismissible: barrierDismissible,
       builder: (context) => Dialog(

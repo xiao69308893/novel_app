@@ -31,7 +31,7 @@ class ReaderAppBar extends StatelessWidget implements PreferredSizeWidget {
       duration: const Duration(milliseconds: 300),
       transform: Matrix4.translationValues(0, isVisible ? 0 : -100, 0),
       child: AppBar(
-        backgroundColor: Colors.black.withOpacity(0.7),
+        backgroundColor: Colors.black.withValues(alpha: 0.7),
         elevation: 0,
         systemOverlayStyle: SystemUiOverlayStyle.light,
         leading: IconButton(

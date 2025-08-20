@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../app/themes/app_theme.dart';
+import '../../../../app/themes/app_theme.dart' hide ReaderTheme;
 import '../../domain/entities/reader_config.dart';
 
 /// 阅读器设置面板组件
@@ -69,7 +69,7 @@ class _ReaderSettingsPanelState extends State<ReaderSettingsPanel>
     return GestureDetector(
       onTap: _closePanel,
       child: Container(
-        color: Colors.black.withOpacity(0.5),
+        color: Colors.black.withValues(alpha: 0.5),
         child: SlideTransition(
           position: _slideAnimation,
           child: Align(

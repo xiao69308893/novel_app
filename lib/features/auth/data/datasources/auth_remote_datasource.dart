@@ -1,6 +1,7 @@
 // 认证远程数据源
 import 'package:dio/dio.dart';
 import '../../../../core/network/api_client.dart';
+import '../../../../core/network/api_response.dart';
 import '../../../../core/errors/app_error.dart';
 import '../../../../core/errors/error_handler.dart';
 import '../models/auth_user_model.dart';
@@ -76,7 +77,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String password,
   }) async {
     try {
-      final response = await apiClient.post(
+      final ApiResponse<Map<String, dynamic>> response = await apiClient.post<Map<String, dynamic>>(
         '/auth/login',
         data: {
           'username': username,
@@ -84,7 +85,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         },
       );
 
-      return AuthTokenModel.fromJson(response.data['data']);
+      return AuthTokenModel.fromJson(response.data?['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -98,7 +99,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String verificationCode,
   }) async {
     try {
-      final response = await apiClient.post(
+      final ApiResponse<Map<String, dynamic>> response = await apiClient.post<Map<String, dynamic>>(
         '/auth/login/phone',
         data: {
           'phone': phone,
@@ -106,7 +107,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         },
       );
 
-      return AuthTokenModel.fromJson(response.data['data']);
+      return AuthTokenModel.fromJson(response.data?['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -123,7 +124,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     String? inviteCode,
   }) async {
     try {
-      final data = {
+      final Map<String, dynamic> data = {
         'username': username,
         'password': password,
       };
@@ -132,9 +133,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (phone != null) data['phone'] = phone;
       if (inviteCode != null) data['invite_code'] = inviteCode;
 
-      final response = await apiClient.post('/auth/register', data: data);
+      final response = await apiClient.post<Map<String, dynamic>>(
+        '/auth/register', 
+        data: data,
+      );
 
-      return AuthUserModel.fromJson(response.data['data']);
+      return AuthUserModel.fromJson(
+        response.data?['data'] as Map<String, dynamic>,
+      );
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -148,7 +154,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String type,
   }) async {
     try {
-      await apiClient.post(
+      await apiClient.post<Map<String, dynamic>>(
         '/auth/sms/send',
         data: {
           'phone': phone,
@@ -169,7 +175,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String type,
   }) async {
     try {
-      await apiClient.post(
+      await apiClient.post<Map<String, dynamic>>(
         '/auth/email/send',
         data: {
           'email': email,
@@ -191,7 +197,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String newPassword,
   }) async {
     try {
-      await apiClient.post(
+      await apiClient.post<Map<String, dynamic>>(
         '/auth/password/forgot',
         data: {
           'account': account,
@@ -210,14 +216,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<AuthTokenModel> refreshToken(String refreshToken) async {
     try {
-      final response = await apiClient.post(
+      final response = await apiClient.post<Map<String, dynamic>>(
         '/auth/token/refresh',
         data: {
           'refresh_token': refreshToken,
         },
       );
 
-      return AuthTokenModel.fromJson(response.data['data']);
+      return AuthTokenModel.fromJson(
+        response.data?['data'] as Map<String, dynamic>,
+      );
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -228,8 +236,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<AuthUserModel> getCurrentUser() async {
     try {
-      final response = await apiClient.get('/auth/user');
-      return AuthUserModel.fromJson(response.data['data']);
+      final ApiResponse<Map<String, dynamic>> response = await apiClient.get<Map<String, dynamic>>('/auth/user');
+      return AuthUserModel.fromJson(
+        response.data?['data'] as Map<String, dynamic>,
+      );
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -240,7 +250,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<bool> logout() async {
     try {
-      await apiClient.post('/auth/logout');
+      await apiClient.post<Map<String, dynamic>>('/auth/logout');
       return true;
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
@@ -252,7 +262,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<bool> deleteAccount() async {
     try {
-      await apiClient.delete('/auth/account');
+      await apiClient.delete<Map<String, dynamic>>('/auth/account');
       return true;
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
@@ -267,7 +277,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String newPassword,
   }) async {
     try {
-      await apiClient.put(
+      await apiClient.put<Map<String, dynamic>>(
         '/auth/password/change',
         data: {
           'old_password': oldPassword,
@@ -288,7 +298,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String verificationCode,
   }) async {
     try {
-      await apiClient.post(
+      await apiClient.post<Map<String, dynamic>>(
         '/auth/phone/bind',
         data: {
           'phone': phone,
@@ -309,7 +319,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String verificationCode,
   }) async {
     try {
-      await apiClient.post(
+      await apiClient.post<Map<String, dynamic>>(
         '/auth/email/bind',
         data: {
           'email': email,

@@ -656,7 +656,7 @@ class ErrorWidgetUtils {
     VoidCallback? onRetry,
     String? retryText,
   }) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(title ?? '错误'),

@@ -47,15 +47,15 @@ class AuthModule {
     // ===================================
     // Use Cases - 用例
     // ===================================
-    _getIt.registerLazySingleton(() => LoginUseCase(_getIt<AuthRepository>()));
-    _getIt.registerLazySingleton(() => RegisterUseCase(_getIt<AuthRepository>()));
-    _getIt.registerLazySingleton(() => LogoutUseCase(_getIt<AuthRepository>()));
-    _getIt.registerLazySingleton(() => AutoLoginUseCase(_getIt<AuthRepository>()));
+    _getIt.registerLazySingleton<LoginUseCase>(() => LoginUseCase(_getIt<AuthRepository>()));
+    _getIt.registerLazySingleton<RegisterUseCase>(() => RegisterUseCase(_getIt<AuthRepository>()));
+    _getIt.registerLazySingleton<LogoutUseCase>(() => LogoutUseCase(_getIt<AuthRepository>()));
+    _getIt.registerLazySingleton<AutoLoginUseCase>(() => AutoLoginUseCase(_getIt<AuthRepository>()));
 
     // ===================================
     // Presentation - 表现层
     // ===================================
-    _getIt.registerFactory(
+    _getIt.registerFactory<AuthCubit>(
       () => AuthCubit(
         loginUseCase: _getIt<LoginUseCase>(),
         registerUseCase: _getIt<RegisterUseCase>(),
@@ -64,7 +64,7 @@ class AuthModule {
       ),
     );
 
-    _getIt.registerFactory(
+    _getIt.registerFactory<VerificationCubit>(
       () => VerificationCubit(
         authRepository: _getIt<AuthRepository>(),
       ),

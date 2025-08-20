@@ -35,7 +35,7 @@ class NovelCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -130,7 +130,7 @@ class NovelCard extends StatelessWidget {
             Text(
               novel.authorName,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -144,13 +144,13 @@ class NovelCard extends StatelessWidget {
                 Icon(
                   Icons.visibility,
                   size: 12,
-                  color: theme.textTheme.bodySmall?.color?.withOpacity(0.5),
+                  color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.5),
                 ),
                 const SizedBox(width: 2),
                 Text(
                   '${novel.wordCount ~/ 10000}万字',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                    color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
                   ),
                 ),
               ],
