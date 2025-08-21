@@ -10,28 +10,22 @@ enum BookshelfSortType { recentRead, addTime, updateTime, name }
 
 /// 书架项组件
 class BookshelfItem extends StatelessWidget {
+
+  const BookshelfItem({
+    required this.book, required this.viewType, required this.onTap, super.key,
+    this.onLongPress,
+  });
   final dynamic book; // 使用dynamic因为具体的Book模型可能还未定义
   final BookshelfViewType viewType;
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
 
-  const BookshelfItem({
-    Key? key,
-    required this.book,
-    required this.viewType,
-    required this.onTap,
-    this.onLongPress,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return viewType == BookshelfViewType.grid
+  Widget build(BuildContext context) => viewType == BookshelfViewType.grid
         ? _buildGridItem(context)
         : _buildListItem(context);
-  }
 
-  Widget _buildGridItem(BuildContext context) {
-    return GestureDetector(
+  Widget _buildGridItem(BuildContext context) => GestureDetector(
       onTap: onTap,
       onLongPress: onLongPress,
       child: Column(
@@ -56,7 +50,7 @@ class BookshelfItem extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: CachedImage(
-                      imageUrl: book.coverUrl ?? '',
+                      imageUrl: book.coverUrl as String ?? '',
                       width: double.infinity,
                       height: double.infinity,
                       fit: BoxFit.cover,
@@ -64,7 +58,7 @@ class BookshelfItem extends StatelessWidget {
                   ),
                   
                   // 阅读进度指示器
-                  if (book.readingProgress != null && book.readingProgress > 0)
+                  if (book.readingProgress != null && book.readingProgress as int > 0)
                     Positioned(
                       bottom: 0,
                       left: 0,
@@ -80,7 +74,7 @@ class BookshelfItem extends StatelessWidget {
                         ),
                         child: FractionallySizedBox(
                           alignment: Alignment.centerLeft,
-                          widthFactor: book.readingProgress / 100,
+                          widthFactor: (book.readingProgress as int) / 100,
                           child: Container(
                             decoration: const BoxDecoration(
                               borderRadius: BorderRadius.only(
@@ -116,7 +110,7 @@ class BookshelfItem extends StatelessWidget {
           
           // 书名
           Text(
-            book.title ?? '',
+            book.title as String ?? '',
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
@@ -127,10 +121,8 @@ class BookshelfItem extends StatelessWidget {
         ],
       ),
     );
-  }
 
-  Widget _buildListItem(BuildContext context) {
-    return Card(
+  Widget _buildListItem(BuildContext context) => Card(
       margin: const EdgeInsets.only(bottom: AppTheme.spacingSmall),
       child: InkWell(
         onTap: onTap,
@@ -146,7 +138,7 @@ class BookshelfItem extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(6),
                     child: CachedImage(
-                      imageUrl: book.coverUrl ?? '',
+                      imageUrl: book.coverUrl as String ?? '',
                       width: 50,
                       height: 70,
                       fit: BoxFit.cover,
@@ -178,7 +170,7 @@ class BookshelfItem extends StatelessWidget {
                   children: [
                     // 书名
                     Text(
-                      book.title ?? '',
+                      book.title as String ?? '',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -190,7 +182,7 @@ class BookshelfItem extends StatelessWidget {
                     
                     // 作者
                     Text(
-                      book.author ?? '',
+                      book.author as String ?? '',
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
@@ -211,14 +203,14 @@ class BookshelfItem extends StatelessWidget {
                       ),
                     
                     // 阅读进度条
-                    if (book.readingProgress != null && book.readingProgress > 0)
+                    if (book.readingProgress != null && book.readingProgress as int > 0)
                       Padding(
                         padding: const EdgeInsets.only(top: AppTheme.spacingSmall),
                         child: Row(
                           children: [
                             Expanded(
                               child: LinearProgressIndicator(
-                                value: book.readingProgress / 100,
+                                value: (book.readingProgress as num) / 100,
                                 backgroundColor: Colors.grey[300],
                                 valueColor: const AlwaysStoppedAnimation<Color>(
                                   AppTheme.primaryColor,
@@ -250,5 +242,4 @@ class BookshelfItem extends StatelessWidget {
         ),
       ),
     );
-  }
 }

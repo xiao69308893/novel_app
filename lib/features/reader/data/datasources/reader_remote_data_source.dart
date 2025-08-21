@@ -1,8 +1,7 @@
 import '../../../../core/api/api_client.dart';
-import '../../../../core/errors/app_error.dart';
 import '../../../../shared/models/chapter_model.dart';
 import '../../../../shared/models/novel_model.dart';
-import '../../domain/repositories/reader_repository.dart';
+import '../../domain/repositories/reader_repository.dart' hide ReadingProgress;
 
 /// 阅读器远程数据源接口
 abstract class ReaderRemoteDataSource {

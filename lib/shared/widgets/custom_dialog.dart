@@ -314,7 +314,7 @@ class _InputDialogState extends State<InputDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    Theme.of(context);
     
     return AlertDialog(
       shape: RoundedRectangleBorder(

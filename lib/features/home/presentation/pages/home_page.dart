@@ -10,8 +10,6 @@ import '../../data/datasources/home_local_datasource.dart';
 import '../cubit/home_cubit.dart';
 import '../widgets/home_banner.dart';
 import '../widgets/home_section.dart';
-import '../widgets/novel_grid.dart';
-import '../widgets/novel_list.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);

@@ -10,6 +10,7 @@ import 'core/storage/cache_manager.dart';
 import 'core/network/api_client.dart';
 import 'core/network/network_info.dart';
 import 'features/bookself/bookshelf_module.dart';
+import 'features/auth/auth_module.dart';
 import 'app/app.dart';
 
 void main() async {
@@ -70,6 +71,7 @@ Future<void> _initializeDependencies() async {
   getIt.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(connectivity: Connectivity()));
 
   // 初始化模块
+  await AuthModule.init();
   BookshelfModule.init();
 
   Logger.info('依赖注入初始化完成');

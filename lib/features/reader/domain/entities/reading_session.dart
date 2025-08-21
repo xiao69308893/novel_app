@@ -3,6 +3,22 @@ import '../../../../shared/models/chapter_model.dart';
 
 /// 阅读会话实体
 class ReadingSession extends Equatable {
+
+  /// 从Map创建
+  factory ReadingSession.fromMap(Map<String, dynamic> map) => ReadingSession(
+      id: (map['id'] as String?) ?? '',
+      userId: (map['userId'] as String?) ?? '',
+      novelId: (map['novelId'] as String?) ?? '',
+      currentChapter: ChapterModel.fromJson(map),
+      pages: List<String>.from(map['pages'] as List<dynamic>),
+      currentPage: (map['currentPage'] as int?) ?? 0,
+      startTime: DateTime.parse((map['startTime'] as String?) ?? DateTime.now().toIso8601String()),
+      lastUpdateTime: map['lastUpdateTime'] != null 
+          ? DateTime.parse((map['lastUpdateTime'] as String?) ?? DateTime.now().toIso8601String())
+          : null,
+      isAutoPage: (map['isAutoPage'] as bool?) ?? false,
+      progressPercent: (map['progressPercent'] as double?) ?? 0.0,
+    );
   /// 会话ID
   final String id;
   
@@ -94,8 +110,7 @@ class ReadingSession extends Equatable {
     DateTime? lastUpdateTime,
     bool? isAutoPage,
     double? progressPercent,
-  }) {
-    return ReadingSession(
+  }) => ReadingSession(
       id: id ?? this.id,
       userId: userId ?? this.userId,
       novelId: novelId ?? this.novelId,
@@ -107,7 +122,6 @@ class ReadingSession extends Equatable {
       isAutoPage: isAutoPage ?? this.isAutoPage,
       progressPercent: progressPercent ?? this.progressPercent,
     );
-  }
 
   /// 跳转到下一页
   ReadingSession nextPage() {
@@ -137,20 +151,17 @@ class ReadingSession extends Equatable {
   }
 
   /// 切换自动翻页状态
-  ReadingSession toggleAutoPage() {
-    return copyWith(
+  ReadingSession toggleAutoPage() => copyWith(
       isAutoPage: !isAutoPage,
       lastUpdateTime: DateTime.now(),
     );
-  }
 
   /// 转换为Map
-  Map<String, dynamic> toMap() {
-    return {
+  Map<String, dynamic> toMap() => {
       'id': id,
       'userId': userId,
       'novelId': novelId,
-      'currentChapter': currentChapter.toMap(),
+      'currentChapter': currentChapter.toJson(),
       'pages': pages,
       'currentPage': currentPage,
       'startTime': startTime.toIso8601String(),
@@ -158,25 +169,6 @@ class ReadingSession extends Equatable {
       'isAutoPage': isAutoPage,
       'progressPercent': progressPercent,
     };
-  }
-
-  /// 从Map创建
-  factory ReadingSession.fromMap(Map<String, dynamic> map) {
-    return ReadingSession(
-      id: map['id'] ?? '',
-      userId: map['userId'] ?? '',
-      novelId: map['novelId'] ?? '',
-      currentChapter: ChapterModel.fromMap(map['currentChapter'] ?? {}),
-      pages: List<String>.from(map['pages'] ?? []),
-      currentPage: map['currentPage'] ?? 0,
-      startTime: DateTime.parse(map['startTime'] ?? DateTime.now().toIso8601String()),
-      lastUpdateTime: map['lastUpdateTime'] != null 
-          ? DateTime.parse(map['lastUpdateTime'])
-          : null,
-      isAutoPage: map['isAutoPage'] ?? false,
-      progressPercent: map['progressPercent']?.toDouble() ?? 0.0,
-    );
-  }
 
   @override
   List<Object?> get props => [

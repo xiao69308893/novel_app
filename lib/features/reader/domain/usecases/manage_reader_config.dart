@@ -5,9 +5,9 @@ import '../repositories/reader_repository.dart';
 
 /// 保存阅读器配置用例
 class SaveReaderConfig extends UseCase<void, ReaderConfig> {
-  final ReaderRepository repository;
 
-  const SaveReaderConfig(this.repository);
+  SaveReaderConfig(this.repository);
+  final ReaderRepository repository;
 
   @override
   ResultFuture<void> call(ReaderConfig config) async {
@@ -17,9 +17,9 @@ class SaveReaderConfig extends UseCase<void, ReaderConfig> {
 
 /// 获取阅读器配置用例
 class GetReaderConfig extends UseCase<ReaderConfig, NoParams> {
-  final ReaderRepository repository;
 
-  const GetReaderConfig(this.repository);
+  GetReaderConfig(this.repository);
+  final ReaderRepository repository;
 
   @override
   ResultFuture<ReaderConfig> call(NoParams params) async {
@@ -29,9 +29,9 @@ class GetReaderConfig extends UseCase<ReaderConfig, NoParams> {
 
 /// 重置阅读器配置用例
 class ResetReaderConfig extends UseCase<void, NoParams> {
-  final ReaderRepository repository;
 
-  const ResetReaderConfig(this.repository);
+  ResetReaderConfig(this.repository);
+  final ReaderRepository repository;
 
   @override
   ResultFuture<void> call(NoParams params) async {
@@ -43,9 +43,9 @@ class ResetReaderConfig extends UseCase<void, NoParams> {
 
 /// 更新字体大小用例
 class UpdateFontSize extends UseCase<void, double> {
-  final ReaderRepository repository;
 
-  const UpdateFontSize(this.repository);
+  UpdateFontSize(this.repository);
+  final ReaderRepository repository;
 
   @override
   ResultFuture<void> call(double fontSize) async {
@@ -63,9 +63,9 @@ class UpdateFontSize extends UseCase<void, double> {
 
 /// 更新阅读主题用例
 class UpdateReaderTheme extends UseCase<void, ReaderTheme> {
-  final ReaderRepository repository;
 
-  const UpdateReaderTheme(this.repository);
+  UpdateReaderTheme(this.repository);
+  final ReaderRepository repository;
 
   @override
   ResultFuture<void> call(ReaderTheme theme) async {
@@ -83,9 +83,9 @@ class UpdateReaderTheme extends UseCase<void, ReaderTheme> {
 
 /// 更新翻页模式用例
 class UpdatePageMode extends UseCase<void, PageMode> {
-  final ReaderRepository repository;
 
-  const UpdatePageMode(this.repository);
+  UpdatePageMode(this.repository);
+  final ReaderRepository repository;
 
   @override
   ResultFuture<void> call(PageMode pageMode) async {
@@ -103,9 +103,9 @@ class UpdatePageMode extends UseCase<void, PageMode> {
 
 /// 更新行间距用例
 class UpdateLineHeight extends UseCase<void, double> {
-  final ReaderRepository repository;
 
-  const UpdateLineHeight(this.repository);
+  UpdateLineHeight(this.repository);
+  final ReaderRepository repository;
 
   @override
   ResultFuture<void> call(double lineHeight) async {
@@ -123,9 +123,9 @@ class UpdateLineHeight extends UseCase<void, double> {
 
 /// 切换音量键翻页用例
 class ToggleVolumeKeyTurnPage extends UseCase<void, NoParams> {
-  final ReaderRepository repository;
 
-  const ToggleVolumeKeyTurnPage(this.repository);
+  ToggleVolumeKeyTurnPage(this.repository);
+  final ReaderRepository repository;
 
   @override
   ResultFuture<void> call(NoParams params) async {
@@ -145,9 +145,9 @@ class ToggleVolumeKeyTurnPage extends UseCase<void, NoParams> {
 
 /// 切换屏幕常亮用例
 class ToggleKeepScreenOn extends UseCase<void, NoParams> {
-  final ReaderRepository repository;
 
-  const ToggleKeepScreenOn(this.repository);
+  ToggleKeepScreenOn(this.repository);
+  final ReaderRepository repository;
 
   @override
   ResultFuture<void> call(NoParams params) async {
@@ -167,9 +167,9 @@ class ToggleKeepScreenOn extends UseCase<void, NoParams> {
 
 /// 切换全屏模式用例
 class ToggleFullScreenMode extends UseCase<void, NoParams> {
-  final ReaderRepository repository;
 
-  const ToggleFullScreenMode(this.repository);
+  ToggleFullScreenMode(this.repository);
+  final ReaderRepository repository;
 
   @override
   ResultFuture<void> call(NoParams params) async {

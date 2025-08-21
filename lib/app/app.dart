@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get_it/get_it.dart';
 import 'routes/app_routes.dart';
 import 'routes/route_generator.dart';
 import 'themes/theme_config.dart';
@@ -22,7 +23,7 @@ class NovelApp extends StatelessWidget {
           providers: [
             // 认证状态管理
             BlocProvider<AuthCubit>(
-              create: (context) => AuthCubit(),
+              create: (context) => GetIt.instance<AuthCubit>(),
             ),
             // 可以在这里添加其他的全局BLoC
           ],

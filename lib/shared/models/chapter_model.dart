@@ -414,6 +414,8 @@ class ChapterModel extends Equatable {
   String toString() {
     return 'ChapterModel{id: $id, title: $title, chapterNumber: $chapterNumber}';
   }
+
+  static fromMap(Map<String, dynamic> map) {}
 }
 
 /// 章节简化模型（用于章节列表显示）

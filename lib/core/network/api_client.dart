@@ -482,15 +482,13 @@ class ApiClient {
   }
 
   // 获取当前配置
-  Map<String, dynamic> getConfig() {
-    return {
+  Map<String, dynamic> getConfig() => {
       'baseUrl': _dio.options.baseUrl,
       'connectTimeout': _dio.options.connectTimeout?.inMilliseconds,
       'receiveTimeout': _dio.options.receiveTimeout?.inMilliseconds,
       'sendTimeout': _dio.options.sendTimeout?.inMilliseconds,
       'headers': _dio.options.headers,
     };
-  }
 
   // 取消所有请求
   void cancelAllRequests([String? reason]) {
@@ -501,13 +499,13 @@ class ApiClient {
 
 // 重试拦截器
 class RetryInterceptor extends Interceptor {
-  final int maxRetries;
-  final Duration retryDelay;
 
   RetryInterceptor({
     this.maxRetries = 3,
     this.retryDelay = const Duration(seconds: 1),
   });
+  final int maxRetries;
+  final Duration retryDelay;
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
@@ -534,12 +532,10 @@ class RetryInterceptor extends Interceptor {
     }
   }
 
-  bool _shouldRetry(DioException err) {
-    return err.type == DioExceptionType.connectionTimeout ||
+  bool _shouldRetry(DioException err) => err.type == DioExceptionType.connectionTimeout ||
            err.type == DioExceptionType.receiveTimeout ||
            err.type == DioExceptionType.connectionError ||
            (err.type == DioExceptionType.badResponse && 
             err.response?.statusCode != null &&
             err.response!.statusCode! >= 500);
-  }
 }

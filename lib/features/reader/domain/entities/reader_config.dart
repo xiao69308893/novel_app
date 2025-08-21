@@ -30,6 +30,32 @@ enum PageMode {
 
 /// 阅读器配置实体
 class ReaderConfig extends Equatable {
+
+  /// 从Map创建
+  factory ReaderConfig.fromMap(Map<String, dynamic> map) => ReaderConfig(
+      fontSize: (map['fontSize'] as num?)?.toDouble() ?? 18.0,
+      lineHeight: (map['lineHeight'] as num?)?.toDouble() ?? 1.5,
+      pageMargin: EdgeInsets.only(
+        left: (map['pageMarginLeft'] as num?)?.toDouble() ?? 20.0,
+        top: (map['pageMarginTop'] as num?)?.toDouble() ?? 20.0,
+        right: (map['pageMarginRight'] as num?)?.toDouble() ?? 20.0,
+        bottom: (map['pageMarginBottom'] as num?)?.toDouble() ?? 20.0,
+      ),
+      theme: ReaderTheme.values.firstWhere(
+        (theme) => theme.value == map['theme'],
+        orElse: () => ReaderTheme.light,
+      ),
+      pageMode: PageMode.values.firstWhere(
+        (mode) => mode.value == map['pageMode'],
+        orElse: () => PageMode.slide,
+      ),
+      volumeKeyTurnPage: (map['volumeKeyTurnPage'] as bool?) ?? false,
+      keepScreenOn: (map['keepScreenOn'] as bool?) ?? true,
+      showStatusBar: (map['showStatusBar'] as bool?) ?? true,
+      fullScreenMode: (map['fullScreenMode'] as bool?) ?? false,
+      autoPageInterval: (map['autoPageInterval'] as int?) ?? 3,
+      fontFamily: (map['fontFamily'] as String?) ?? 'System',
+    );
   /// 字体大小
   final double fontSize;
   
@@ -98,8 +124,7 @@ class ReaderConfig extends Equatable {
     bool? fullScreenMode,
     int? autoPageInterval,
     String? fontFamily,
-  }) {
-    return ReaderConfig(
+  }) => ReaderConfig(
       fontSize: fontSize ?? this.fontSize,
       lineHeight: lineHeight ?? this.lineHeight,
       pageMargin: pageMargin ?? this.pageMargin,
@@ -112,11 +137,9 @@ class ReaderConfig extends Equatable {
       autoPageInterval: autoPageInterval ?? this.autoPageInterval,
       fontFamily: fontFamily ?? this.fontFamily,
     );
-  }
 
   /// 转换为Map
-  Map<String, dynamic> toMap() {
-    return {
+  Map<String, dynamic> toMap() => {
       'fontSize': fontSize,
       'lineHeight': lineHeight,
       'pageMarginLeft': pageMargin.left,
@@ -132,35 +155,6 @@ class ReaderConfig extends Equatable {
       'autoPageInterval': autoPageInterval,
       'fontFamily': fontFamily,
     };
-  }
-
-  /// 从Map创建
-  factory ReaderConfig.fromMap(Map<String, dynamic> map) {
-    return ReaderConfig(
-      fontSize: map['fontSize']?.toDouble() ?? 18.0,
-      lineHeight: map['lineHeight']?.toDouble() ?? 1.5,
-      pageMargin: EdgeInsets.only(
-        left: map['pageMarginLeft']?.toDouble() ?? 20.0,
-        top: map['pageMarginTop']?.toDouble() ?? 20.0,
-        right: map['pageMarginRight']?.toDouble() ?? 20.0,
-        bottom: map['pageMarginBottom']?.toDouble() ?? 20.0,
-      ),
-      theme: ReaderTheme.values.firstWhere(
-        (theme) => theme.value == map['theme'],
-        orElse: () => ReaderTheme.light,
-      ),
-      pageMode: PageMode.values.firstWhere(
-        (mode) => mode.value == map['pageMode'],
-        orElse: () => PageMode.slide,
-      ),
-      volumeKeyTurnPage: map['volumeKeyTurnPage'] ?? false,
-      keepScreenOn: map['keepScreenOn'] ?? true,
-      showStatusBar: map['showStatusBar'] ?? true,
-      fullScreenMode: map['fullScreenMode'] ?? false,
-      autoPageInterval: map['autoPageInterval'] ?? 3,
-      fontFamily: map['fontFamily'] ?? 'System',
-    );
-  }
 
   @override
   List<Object?> get props => [

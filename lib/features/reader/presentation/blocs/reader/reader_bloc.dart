@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../../../../shared/models/chapter_model.dart';
@@ -70,10 +71,10 @@ class JumpToPage extends ReaderEvent {
 }
 
 /// 切换章节事件
-class SwitchChapter extends ReaderEvent {
-  final bool next; // true为下一章，false为上一章
+class SwitchChapter extends ReaderEvent { // true为下一章，false为上一章
 
   const SwitchChapter(this.next);
+  final bool next;
 
   @override
   List<Object> get props => [next];
@@ -81,9 +82,9 @@ class SwitchChapter extends ReaderEvent {
 
 /// 更新阅读器配置事件
 class UpdateReaderConfig extends ReaderEvent {
-  final ReaderConfig config;
 
   const UpdateReaderConfig(this.config);
+  final ReaderConfig config;
 
   @override
   List<Object> get props => [config];
@@ -91,9 +92,9 @@ class UpdateReaderConfig extends ReaderEvent {
 
 /// 添加书签事件
 class AddBookmarkEvent extends ReaderEvent {
-  final String? note;
 
   const AddBookmarkEvent({this.note});
+  final String? note;
 
   @override
   List<Object?> get props => [note];
@@ -129,9 +130,9 @@ class ReaderInitial extends ReaderState {
 
 /// 阅读器加载中状态
 class ReaderLoading extends ReaderState {
-  final String message;
-
+  
   const ReaderLoading({this.message = '正在加载...'});
+  final String message;
 
   @override
   List<Object> get props => [message];
@@ -139,14 +140,6 @@ class ReaderLoading extends ReaderState {
 
 /// 阅读器加载成功状态
 class ReaderLoaded extends ReaderState {
-  final NovelModel novel;
-  final ReadingSession session;
-  final ReaderConfig config;
-  final List<ChapterSimpleModel> chapterList;
-  final Map<String, ChapterSimpleModel?> adjacentChapters;
-  final List<BookmarkModel> bookmarks;
-  final bool isUIVisible;
-  final String? error;
 
   const ReaderLoaded({
     required this.novel,
@@ -158,6 +151,14 @@ class ReaderLoaded extends ReaderState {
     this.isUIVisible = false,
     this.error,
   });
+  final NovelModel novel;
+  final ReadingSession session;
+  final ReaderConfig config;
+  final List<ChapterSimpleModel> chapterList;
+  final Map<String, ChapterSimpleModel?> adjacentChapters;
+  final List<BookmarkModel> bookmarks;
+  final bool isUIVisible;
+  final String? error;
 
   ReaderLoaded copyWith({
     NovelModel? novel,
@@ -168,8 +169,7 @@ class ReaderLoaded extends ReaderState {
     List<BookmarkModel>? bookmarks,
     bool? isUIVisible,
     String? error,
-  }) {
-    return ReaderLoaded(
+  }) => ReaderLoaded(
       novel: novel ?? this.novel,
       session: session ?? this.session,
       config: config ?? this.config,
@@ -179,7 +179,6 @@ class ReaderLoaded extends ReaderState {
       isUIVisible: isUIVisible ?? this.isUIVisible,
       error: error ?? this.error,
     );
-  }
 
   @override
   List<Object?> get props => [

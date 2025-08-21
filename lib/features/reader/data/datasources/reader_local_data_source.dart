@@ -1,10 +1,11 @@
 import 'dart:convert';
+import 'package:novel_app/core/errors/exceptions.dart';
+
 import '../../../../core/cache/cache_manager.dart';
-import '../../../../core/errors/app_error.dart';
 import '../../../../shared/models/chapter_model.dart';
 import '../../../../shared/models/novel_model.dart';
 import '../../domain/entities/reader_config.dart';
-import '../../domain/repositories/reader_repository.dart';
+import '../../domain/repositories/reader_repository.dart' hide ReadingProgress;
 
 /// 阅读器本地数据源接口
 abstract class ReaderLocalDataSource {
@@ -96,8 +97,8 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
   Future<void> cacheChapter(ChapterModel chapter) async {
     try {
       final key = '$_chapterPrefix${chapter.novelId}_${chapter.id}';
-      final data = jsonEncode(chapter.toMap());
-      await cacheManager.setString(key, data);
+      final data = jsonEncode(chapter.toJson());
+      await cacheManager.put(key, data);
     } catch (e) {
       throw CacheException(message: '缓存章节失败：${e.toString()}');
     }
@@ -110,11 +111,13 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
   }) async {
     try {
       final key = '$_chapterPrefix${novelId}_$chapterId';
-      final data = await cacheManager.getString(key);
-      
+      final data = await cacheManager.get<String>(key);
+
       if (data != null) {
-        final Map<String, dynamic> json = jsonDecode(data);
-        return ChapterModel.fromMap(json);
+        final Map<String, dynamic> json =
+            jsonDecode(data.toString()) as Map<String, dynamic>;
+
+        return ChapterModel.fromJson(json);
       }
       return null;
     } catch (e) {
@@ -129,8 +132,8 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
   }) async {
     try {
       final key = '$_chapterListPrefix$novelId';
-      final data = jsonEncode(chapters.map((c) => c.toMap()).toList());
-      await cacheManager.setString(key, data);
+      final data = jsonEncode(chapters.map((c) => c.toJson()).toList());
+      await cacheManager.put(key, data);
     } catch (e) {
       throw CacheException(message: '缓存章节列表失败：${e.toString()}');
     }
@@ -142,11 +145,15 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
   }) async {
     try {
       final key = '$_chapterListPrefix$novelId';
-      final data = await cacheManager.getString(key);
-      
+      final data = await cacheManager.get<String>(key);
+
       if (data != null) {
-        final List<dynamic> jsonList = jsonDecode(data);
-        return jsonList.map((json) => ChapterSimpleModel.fromMap(json)).toList();
+        final List<dynamic> jsonList =
+            (jsonDecode(data.toString()) as List).cast<dynamic>();
+        return jsonList
+            .map((json) =>
+                ChapterSimpleModel.fromJson(json as Map<String, dynamic>))
+            .toList();
       }
       return null;
     } catch (e) {
@@ -158,8 +165,8 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
   Future<void> cacheNovelInfo(NovelModel novel) async {
     try {
       final key = '$_novelPrefix${novel.id}';
-      final data = jsonEncode(novel.toMap());
-      await cacheManager.setString(key, data);
+      final data = jsonEncode(novel.extra);
+      await cacheManager.put(key, data);
     } catch (e) {
       throw CacheException(message: '缓存小说信息失败：${e.toString()}');
     }
@@ -169,11 +176,12 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
   Future<NovelModel?> getCachedNovelInfo({required String novelId}) async {
     try {
       final key = '$_novelPrefix$novelId';
-      final data = await cacheManager.getString(key);
-      
+      final data = await cacheManager.get<String>(key);
+
       if (data != null) {
-        final Map<String, dynamic> json = jsonDecode(data);
-        return NovelModel.fromMap(json);
+        final Map<String, dynamic> json =
+            jsonDecode(data.toString()) as Map<String, dynamic>;
+        return NovelModel.fromJson(json);
       }
       return null;
     } catch (e) {
@@ -185,8 +193,8 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
   Future<void> saveReadingProgress(ReadingProgress progress) async {
     try {
       final key = '$_progressPrefix${progress.novelId}';
-      final data = jsonEncode(progress.toMap());
-      await cacheManager.setString(key, data);
+      final data = jsonEncode(progress);
+      await cacheManager.put(key, data);
     } catch (e) {
       throw CacheException(message: '保存阅读进度失败：${e.toString()}');
     }
@@ -196,11 +204,12 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
   Future<ReadingProgress?> getReadingProgress({required String novelId}) async {
     try {
       final key = '$_progressPrefix$novelId';
-      final data = await cacheManager.getString(key);
-      
+      final data = await cacheManager.get<String>(key);
+
+
       if (data != null) {
-        final Map<String, dynamic> json = jsonDecode(data);
-        return ReadingProgress.fromMap(json);
+        final Map<String, dynamic> json = jsonDecode(data.toString()) as Map<String, dynamic>;
+        return ReadingProgress.fromJson(json);
       }
       return null;
     } catch (e) {
@@ -213,21 +222,22 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
     try {
       // 先获取现有书签列表
       final bookmarks = await getBookmarks(novelId: bookmark.novelId);
-      
+
       // 添加新书签或更新现有书签
       final updatedBookmarks = [...bookmarks];
-      final existingIndex = updatedBookmarks.indexWhere((b) => b.id == bookmark.id);
-      
+      final existingIndex =
+          updatedBookmarks.indexWhere((b) => b.id == bookmark.id);
+
       if (existingIndex != -1) {
         updatedBookmarks[existingIndex] = bookmark;
       } else {
         updatedBookmarks.add(bookmark);
       }
-      
+
       // 保存更新后的书签列表
       final key = '$_bookmarkPrefix${bookmark.novelId}';
-      final data = jsonEncode(updatedBookmarks.map((b) => b.toMap()).toList());
-      await cacheManager.setString(key, data);
+      final data = jsonEncode(updatedBookmarks.map((b) => b.toJson()).toList());
+      await cacheManager.put(key, data);
     } catch (e) {
       throw CacheException(message: '保存书签失败：${e.toString()}');
     }
@@ -238,20 +248,23 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
     try {
       // 需要遍历所有小说的书签来找到要删除的书签
       final allKeys = await cacheManager.getKeys();
-      
+
       for (final key in allKeys) {
         if (key.startsWith(_bookmarkPrefix)) {
-          final data = await cacheManager.getString(key);
+          final data = await cacheManager.get<String>(key);
           if (data != null) {
-            final List<dynamic> jsonList = jsonDecode(data);
-            final bookmarks = jsonList.map((json) => BookmarkModel.fromMap(json)).toList();
-            
-            final updatedBookmarks = bookmarks.where((b) => b.id != bookmarkId).toList();
-            
+            final List<dynamic> jsonList = jsonDecode(data.toString()) as List<dynamic>;
+            final bookmarks =
+                jsonList.map((json) => BookmarkModel.fromJson(json as Map<String, dynamic>)).toList();
+
+            final updatedBookmarks =
+                bookmarks.where((b) => b.id != bookmarkId).toList();
+
             if (updatedBookmarks.length != bookmarks.length) {
               // 找到并删除了书签，保存更新后的列表
-              final updatedData = jsonEncode(updatedBookmarks.map((b) => b.toMap()).toList());
-              await cacheManager.setString(key, updatedData);
+              final updatedData =
+                  jsonEncode(updatedBookmarks.map((b) => b.toJson()).toList());
+              await cacheManager.put(key, updatedData);
               break;
             }
           }
@@ -269,17 +282,18 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
   }) async {
     try {
       final key = '$_bookmarkPrefix$novelId';
-      final data = await cacheManager.getString(key);
-      
+      final data = await cacheManager.get<String>(key);
+
       if (data != null) {
-        final List<dynamic> jsonList = jsonDecode(data);
-        List<BookmarkModel> bookmarks = jsonList.map((json) => BookmarkModel.fromMap(json)).toList();
-        
+        final List<dynamic> jsonList = jsonDecode(data.toString()) as List<dynamic>;
+        List<BookmarkModel> bookmarks =
+            jsonList.map((json) => BookmarkModel.fromJson(json as Map<String, dynamic>)).toList();
+
         // 如果指定了章节ID，过滤书签
         if (chapterId != null) {
           bookmarks = bookmarks.where((b) => b.chapterId == chapterId).toList();
         }
-        
+
         return bookmarks;
       }
       return [];
@@ -292,7 +306,7 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
   Future<void> saveReaderConfig(ReaderConfig config) async {
     try {
       final data = jsonEncode(config.toMap());
-      await cacheManager.setString(_configKey, data);
+      await cacheManager.put(_configKey, data);
     } catch (e) {
       throw CacheException(message: '保存阅读器配置失败：${e.toString()}');
     }
@@ -301,10 +315,11 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
   @override
   Future<ReaderConfig?> getReaderConfig() async {
     try {
-      final data = await cacheManager.getString(_configKey);
-      
+      final data = await cacheManager.get<String>(_configKey);
+
+
       if (data != null) {
-        final Map<String, dynamic> json = jsonDecode(data);
+        final Map<String, dynamic> json = jsonDecode(data.toString()) as Map<String, dynamic>;
         return ReaderConfig.fromMap(json);
       }
       return null;
@@ -317,7 +332,7 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
   Future<void> saveReadingStats(ReadingStats stats) async {
     try {
       final data = jsonEncode(stats.toMap());
-      await cacheManager.setString(_statsKey, data);
+      await cacheManager.put(_statsKey, data);
     } catch (e) {
       throw CacheException(message: '保存阅读统计失败：${e.toString()}');
     }
@@ -326,10 +341,10 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
   @override
   Future<ReadingStats?> getReadingStats() async {
     try {
-      final data = await cacheManager.getString(_statsKey);
-      
+      final data = await cacheManager.get<String>(_statsKey);
+
       if (data != null) {
-        final Map<String, dynamic> json = jsonDecode(data);
+        final Map<String, dynamic> json = jsonDecode(data.toString()) as Map<String, dynamic>;
         return ReadingStats.fromMap(json);
       }
       return null;
@@ -343,14 +358,14 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
     try {
       final allKeys = await cacheManager.getKeys();
       final chapterIds = <String>[];
-      
+
       for (final key in allKeys) {
         if (key.startsWith('$_chapterPrefix$novelId')) {
           final chapterId = key.split('_').last;
           chapterIds.add(chapterId);
         }
       }
-      
+
       return chapterIds;
     } catch (e) {
       throw CacheException(message: '获取缓存章节列表失败：${e.toString()}');
@@ -363,22 +378,23 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
       if (novelId != null) {
         // 清理指定小说的缓存
         final allKeys = await cacheManager.getKeys();
-        final keysToDelete = allKeys.where((key) => 
-          key.contains(novelId) && (
-            key.startsWith(_chapterPrefix) ||
-            key.startsWith(_chapterListPrefix) ||
-            key.startsWith(_novelPrefix) ||
-            key.startsWith(_progressPrefix) ||
-            key.startsWith(_bookmarkPrefix)
-          )
-        ).toList();
-        
+        final keysToDelete = allKeys
+            .where((key) =>
+                key.contains(novelId) as bool &&
+                (key.startsWith(_chapterPrefix) as bool ||
+                    key.startsWith(_chapterListPrefix) as bool ||
+                    key.startsWith(_novelPrefix) as bool ||
+                    key.startsWith(_progressPrefix) as bool ||
+                    key.startsWith(_bookmarkPrefix) as bool))
+            .toList();
+
         for (final key in keysToDelete) {
-          await cacheManager.remove(key);
+          await cacheManager.remove(key.toString());
         }
       } else {
         // 清理所有阅读器相关缓存
-        await cacheManager.clear();
+        await cacheManager.remove(_configKey);
+        await cacheManager.remove(_statsKey);
       }
     } catch (e) {
       throw CacheException(message: '清理缓存失败：${e.toString()}');
@@ -393,13 +409,14 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
     try {
       final today = DateTime.now().toIso8601String().split('T')[0];
       final key = '$_readingTimePrefix${novelId}_$today';
-      
+
       // 获取今日已有的阅读时长
-      final existingTime = await cacheManager.getInt(key) ?? 0;
-      
+      final existingTime = await cacheManager.get<int>(key) ?? 0;
+
+
       // 更新阅读时长
-      await cacheManager.setInt(key, existingTime + minutes);
-      
+      await cacheManager.put(key, existingTime + minutes);
+
       // 同时更新总体统计
       await _updateTotalReadingStats(novelId, minutes);
     } catch (e) {
@@ -411,7 +428,7 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
   Future<void> _updateTotalReadingStats(String novelId, int minutes) async {
     try {
       final stats = await getReadingStats() ?? const ReadingStats();
-      
+
       final updatedStats = ReadingStats(
         totalReadingTime: stats.totalReadingTime + minutes,
         booksRead: stats.booksRead,
@@ -422,11 +439,14 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
         averageReadingSpeed: stats.averageReadingSpeed,
         readingTimeByDate: {
           ...stats.readingTimeByDate,
-          DateTime.now().toIso8601String().split('T')[0]: 
-              (stats.readingTimeByDate[DateTime.now().toIso8601String().split('T')[0]] ?? 0) + minutes,
+          DateTime.now().toIso8601String().split('T')[0]:
+              (stats.readingTimeByDate[
+                          DateTime.now().toIso8601String().split('T')[0]] ??
+                      0) +
+                  minutes,
         },
       );
-      
+
       await saveReadingStats(updatedStats);
     } catch (e) {
       // 更新统计失败不应该影响主流程

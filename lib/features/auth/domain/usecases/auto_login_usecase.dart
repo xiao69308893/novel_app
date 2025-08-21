@@ -1,3 +1,9 @@
+import 'package:dartz/dartz.dart';
+import '../../../../core/errors/app_error.dart';
+import '../../../../core/usecases/usecase.dart';
+import '../entities/auth_user.dart';
+import '../repositories/auth_repository.dart';
+
 class AutoLoginUseCase implements UseCase<AuthUser, NoParams> {
   final AuthRepository repository;
 
@@ -8,7 +14,7 @@ class AutoLoginUseCase implements UseCase<AuthUser, NoParams> {
     // 获取本地令牌
     final token = await repository.getLocalToken();
     if (token == null) {
-      return Left(AppError.unauthorized('未找到本地令牌'));
+      return Left(AuthError(message: '未找到本地令牌'));
     }
 
     // 检查令牌是否过期

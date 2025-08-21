@@ -1,6 +1,9 @@
 // 认证状态管理
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:novel_app/features/auth/domain/usecases/login_usecase.dart';
+import 'package:novel_app/features/auth/domain/usecases/logout_usecase.dart';
+import 'package:novel_app/features/auth/domain/usecases/register_usecase.dart';
 import '../../../../shared/models/user_model.dart';
 
 // 认证状态
@@ -77,7 +80,7 @@ class AuthCheckRequested extends AuthEvent {}
 
 // 认证Cubit
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit() : super(AuthInitial());
+  AuthCubit({required LoginUseCase loginUseCase, required RegisterUseCase registerUseCase, required LogoutUseCase logoutUseCase, required autoLoginUseCase}) : super(AuthInitial());
 
   /// 登录
   Future<void> login(String email, String password) async {

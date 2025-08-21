@@ -5,9 +5,9 @@ import '../repositories/reader_repository.dart';
 
 /// 保存阅读进度用例
 class SaveReadingProgress extends UseCase<void, SaveProgressParams> {
-  final ReaderRepository repository;
 
-  const SaveReadingProgress(this.repository);
+  SaveReadingProgress(this.repository);
+  final ReaderRepository repository;
 
   @override
   ResultFuture<void> call(SaveProgressParams params) async {
@@ -40,40 +40,36 @@ class SaveProgressParams extends Equatable {
 
 /// 获取阅读进度用例
 class GetReadingProgress extends UseCase<ReadingProgress?, String> {
+
+  GetReadingProgress(this.repository);
   final ReaderRepository repository;
 
-  const GetReadingProgress(this.repository);
-
   @override
-  ResultFuture<ReadingProgress?> call(String novelId) async {
-    return await repository.getReadingProgress(novelId: novelId);
-  }
+  ResultFuture<ReadingProgress?> call(String novelId) async =>  repository.getReadingProgress(novelId: novelId);
 }
 
 /// 更新阅读时长用例
 class UpdateReadingTime extends UseCase<void, UpdateReadingTimeParams> {
+
+  UpdateReadingTime(this.repository);
   final ReaderRepository repository;
 
-  const UpdateReadingTime(this.repository);
-
   @override
-  ResultFuture<void> call(UpdateReadingTimeParams params) async {
-    return await repository.updateReadingTime(
+  ResultFuture<void> call(UpdateReadingTimeParams params) async => repository.updateReadingTime(
       novelId: params.novelId,
       minutes: params.minutes,
     );
-  }
 }
 
 /// 更新阅读时长参数
 class UpdateReadingTimeParams extends Equatable {
-  final String novelId;
-  final int minutes;
 
   const UpdateReadingTimeParams({
     required this.novelId,
     required this.minutes,
   });
+  final String novelId;
+  final int minutes;
 
   @override
   List<Object> get props => [novelId, minutes];
@@ -81,40 +77,36 @@ class UpdateReadingTimeParams extends Equatable {
 
 /// 获取阅读统计用例
 class GetReadingStats extends UseCase<ReadingStats, NoParams> {
+
+  GetReadingStats(this.repository);
   final ReaderRepository repository;
 
-  const GetReadingStats(this.repository);
-
   @override
-  ResultFuture<ReadingStats> call(NoParams params) async {
-    return await repository.getReadingStats();
-  }
+  ResultFuture<ReadingStats> call(NoParams params) async =>  repository.getReadingStats();
 }
 
 /// 缓存章节用例
 class CacheChapter extends UseCase<void, CacheChapterParams> {
+
+  CacheChapter(this.repository);
   final ReaderRepository repository;
 
-  const CacheChapter(this.repository);
-
   @override
-  ResultFuture<void> call(CacheChapterParams params) async {
-    return await repository.cacheChapter(
+  ResultFuture<void> call(CacheChapterParams params) async =>  repository.cacheChapter(
       novelId: params.novelId,
       chapterId: params.chapterId,
     );
-  }
 }
 
 /// 缓存章节参数
 class CacheChapterParams extends Equatable {
-  final String novelId;
-  final String chapterId;
 
   const CacheChapterParams({
     required this.novelId,
     required this.chapterId,
   });
+  final String novelId;
+  final String chapterId;
 
   @override
   List<Object> get props => [novelId, chapterId];
@@ -122,26 +114,22 @@ class CacheChapterParams extends Equatable {
 
 /// 获取缓存章节列表用例
 class GetCachedChapterIds extends UseCase<List<String>, String> {
+
+  GetCachedChapterIds(this.repository);
   final ReaderRepository repository;
 
-  const GetCachedChapterIds(this.repository);
-
   @override
-  ResultFuture<List<String>> call(String novelId) async {
-    return await repository.getCachedChapterIds(novelId: novelId);
-  }
+  ResultFuture<List<String>> call(String novelId) async =>  repository.getCachedChapterIds(novelId: novelId);
 }
 
 /// 清理缓存用例
 class ClearCache extends UseCase<void, ClearCacheParams> {
+
+  ClearCache(this.repository);
   final ReaderRepository repository;
 
-  const ClearCache(this.repository);
-
   @override
-  ResultFuture<void> call(ClearCacheParams params) async {
-    return await repository.clearCache(novelId: params.novelId);
-  }
+  ResultFuture<void> call(ClearCacheParams params) async =>  repository.clearCache(novelId: params.novelId);
 }
 
 /// 清理缓存参数

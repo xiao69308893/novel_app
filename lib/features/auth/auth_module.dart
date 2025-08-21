@@ -60,7 +60,7 @@ class AuthModule {
         loginUseCase: _getIt<LoginUseCase>(),
         registerUseCase: _getIt<RegisterUseCase>(),
         logoutUseCase: _getIt<LogoutUseCase>(),
-        autoLoginUseCase: _getIt<AutoLoginUseCase>(),
+        autoLoginUseCase: _getIt<AutoLoginUseCase>(), // 使用 AutoLoginUseCase 进行自动登录
       ),
     );
 
