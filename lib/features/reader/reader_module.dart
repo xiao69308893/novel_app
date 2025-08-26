@@ -1,7 +1,4 @@
 import 'package:get_it/get_it.dart';
-import '../../core/api/api_client.dart';
-import '../../core/cache/cache_manager.dart';
-import '../../core/network/network_info.dart';
 import 'data/datasources/reader_remote_data_source.dart';
 import 'data/datasources/reader_local_data_source.dart';
 import 'data/repositories/reader_repository_impl.dart';
@@ -10,7 +7,7 @@ import 'domain/usecases/load_chapter.dart';
 import 'domain/usecases/manage_reading_progress.dart';
 import 'domain/usecases/manage_bookmarks.dart';
 import 'domain/usecases/manage_reader_config.dart';
-import 'presentation/blocs/reader/reader_bloc.dart';
+import 'presentation/blocs/reader/reader_bloc.dart' hide LoadChapter;
 
 /// 阅读器模块依赖注入
 class ReaderModule {

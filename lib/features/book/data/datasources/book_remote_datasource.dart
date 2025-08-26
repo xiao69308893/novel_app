@@ -3,8 +3,8 @@ import 'package:dio/dio.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/errors/app_error.dart';
 import '../../../../core/errors/error_handler.dart';
-import '../../../shared/models/novel_model.dart';
-import '../../../shared/models/chapter_model.dart';
+import '../../../../shared/models/chapter_model.dart';
+import '../../../../shared/models/novel_model.dart';
 import '../models/book_detail_model.dart';
 import '../models/comment_model.dart';
 
@@ -82,7 +82,8 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
   Future<BookDetailModel> getBookDetail(String bookId) async {
     try {
       final response = await apiClient.get('/books/$bookId');
-      return BookDetailModel.fromJson(response.data['data']);
+      return BookDetailModel.fromJson(response.data['data'] as Map<String, dynamic>);
+
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -104,8 +105,8 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
           'limit': limit,
         },
       );
-      final List<dynamic> data = response.data['data'];
-      return data.map((json) => ChapterSimpleModel.fromJson(json)).toList();
+      final List<dynamic> data = response.data['data'] as List<dynamic>;
+      return data.map((json) => ChapterSimpleModel.fromJson(json as Map<String, dynamic>)).toList();
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -117,7 +118,8 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
   Future<ChapterModel> getChapterDetail(String chapterId) async {
     try {
       final response = await apiClient.get('/chapters/$chapterId');
-      return ChapterModel.fromJson(response.data['data']);
+      return ChapterModel.fromJson(response.data['data'] as Map<String, dynamic>);
+
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -139,8 +141,8 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
           'limit': limit,
         },
       );
-      final List<dynamic> data = response.data['data'];
-      return data.map((json) => CommentModel.fromJson(json)).toList();
+      final List<dynamic> data = response.data['data'] as List<dynamic>;
+      return data.map((json) => CommentModel.fromJson(json as Map<String, dynamic>)).toList();
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -162,8 +164,8 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
           'limit': limit,
         },
       );
-      final List<dynamic> data = response.data['data'];
-      return data.map((json) => CommentModel.fromJson(json)).toList();
+      final List<dynamic> data = response.data['data'] as List<dynamic>;
+      return data.map((json) => CommentModel.fromJson(json as Map<String, dynamic>)).toList();
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -188,7 +190,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
           if (parentId != null) 'parent_id': parentId,
         },
       );
-      return CommentModel.fromJson(response.data['data']);
+      return CommentModel.fromJson(response.data['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -367,7 +369,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
   Future<ReadingProgress?> getReadingProgress(String bookId) async {
     try {
       final response = await apiClient.get('/books/$bookId/progress');
-      final data = response.data['data'];
+      final data = response.data['data'] as Map<String, dynamic>;
       return data != null ? ReadingProgress.fromJson(data) : null;
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
@@ -412,8 +414,8 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
           'limit': limit,
         },
       );
-      final List<dynamic> data = response.data['data'];
-      return data.map((json) => NovelSimpleModel.fromJson(json)).toList();
+      final List<dynamic> data = response.data['data'] as List<dynamic>;
+      return data.map((json) => NovelSimpleModel.fromJson(json as Map<String, dynamic>)).toList();
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -435,8 +437,8 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
           'limit': limit,
         },
       );
-      final List<dynamic> data = response.data['data'];
-      return data.map((json) => NovelSimpleModel.fromJson(json)).toList();
+      final List<dynamic> data = response.data['data'] as List<dynamic>;
+      return data.map((json) => NovelSimpleModel.fromJson(json as Map<String, dynamic>)).toList();
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {

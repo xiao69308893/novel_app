@@ -1,12 +1,12 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/errors/app_error.dart';
-import '../../../../core/errors/failures.dart';
+import '../../../../core/errors/exceptions.dart';
 import '../../../../core/network/network_info.dart';
 import '../../../../core/utils/typedef.dart';
-import '../../../../shared/models/chapter_model.dart';
 import '../../../../shared/models/novel_model.dart';
 import '../../domain/entities/reader_config.dart';
-import '../../domain/repositories/reader_repository.dart';
+import '../../../../shared/models/chapter_model.dart' hide ReadingProgress;
+import '../../domain/repositories/reader_repository.dart' ;
 import '../datasources/reader_local_data_source.dart';
 import '../datasources/reader_remote_data_source.dart';
 
@@ -51,14 +51,23 @@ class ReaderRepositoryImpl implements ReaderRepository {
 
         return Right(chapter);
       } else {
-        return const Left(NetworkFailure(message: '网络连接不可用'));
+        // 检查本地是否有缓存
+        final cachedChapter = await localDataSource.getCachedChapter(
+          novelId: novelId,
+          chapterId: chapterId,
+        );
+        
+        if (cachedChapter != null) {
+          return Right(cachedChapter);
+        }
+        
+        return Left(NoInternetError(message: '网络连接不可用且无缓存数据'));
+
       }
     } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message));
+      return Left(SystemError(message: e.message, code: e.code));
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
-    } catch (e) {
-      return Left(GeneralFailure(message: '加载章节失败：${e.toString()}'));
+      return Left(StorageError(message: e.message));
     }
   }
 
@@ -91,14 +100,14 @@ class ReaderRepositoryImpl implements ReaderRepository {
 
         return Right(chapters);
       } else {
-        return const Left(NetworkFailure(message: '网络连接不可用'));
+        return  Left(NoInternetError(message: '网络连接不可用'));
       }
     } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message));
+      return Left(SystemError(message: e.message));
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
+      return Left(StorageError(message: e.message));
     } catch (e) {
-      return Left(GeneralFailure(message: '获取章节列表失败：${e.toString()}'));
+      return Left(StorageError(message: '获取章节列表失败：${e.toString()}'));
     }
   }
 
@@ -124,14 +133,14 @@ class ReaderRepositoryImpl implements ReaderRepository {
 
         return Right(novel);
       } else {
-        return const Left(NetworkFailure(message: '网络连接不可用'));
+        return  Left(NoInternetError(message: '网络连接不可用'));
       }
     } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message));
+      return Left(SystemError(message: e.message));
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
+      return Left(StorageError(message: e.message));
     } catch (e) {
-      return Left(GeneralFailure(message: '获取小说信息失败：${e.toString()}'));
+      return Left(StorageError(message: '获取小说信息失败：${e.toString()}'));
     }
   }
 
@@ -147,7 +156,7 @@ class ReaderRepositoryImpl implements ReaderRepository {
         novelId: novelId,
         chapterId: chapterId,
         position: position,
-        progress: progress,
+        progress: progress, 
         updatedAt: DateTime.now(),
       );
 
@@ -170,9 +179,9 @@ class ReaderRepositoryImpl implements ReaderRepository {
 
       return const Right(null);
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
+      return Left(StorageError(message: e.message));
     } catch (e) {
-      return Left(GeneralFailure(message: '保存阅读进度失败：${e.toString()}'));
+      return Left(StorageError(message: '保存阅读进度失败：${e.toString()}'));
     }
   }
 
@@ -208,9 +217,9 @@ class ReaderRepositoryImpl implements ReaderRepository {
 
       return Right(localProgress);
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
+      return Left(StorageError(message: e.message));
     } catch (e) {
-      return Left(GeneralFailure(message: '获取阅读进度失败：${e.toString()}'));
+      return Left(StorageError(message: '获取阅读进度失败：${e.toString()}'));
     }
   }
 
@@ -247,17 +256,20 @@ class ReaderRepositoryImpl implements ReaderRepository {
           note: note,
           content: content,
           createdAt: DateTime.now(),
+          userId: '', 
+          chapterNumber: 0, 
+          chapterTitle: '',
         );
 
         await localDataSource.saveBookmark(bookmark);
         return Right(bookmark);
       }
     } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message));
+      return Left(SystemError(message: e.message));
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
+      return Left(StorageError(message: e.message));
     } catch (e) {
-      return Left(GeneralFailure(message: '添加书签失败：${e.toString()}'));
+      return Left(StorageError(message: '添加书签失败：${e.toString()}'));
     }
   }
 
@@ -278,9 +290,9 @@ class ReaderRepositoryImpl implements ReaderRepository {
 
       return const Right(null);
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
+      return Left(StorageError(message: e.message));
     } catch (e) {
-      return Left(GeneralFailure(message: '删除书签失败：${e.toString()}'));
+      return Left(StorageError(message: '删除书签失败：${e.toString()}'));
     }
   }
 
@@ -318,7 +330,7 @@ class ReaderRepositoryImpl implements ReaderRepository {
           final mergedBookmarks = allBookmarks.values.toList();
           
           // 保存合并后的书签到本地
-          for (final bookmark in remgedBookmarks) {
+          for (final bookmark in mergedBookmarks) {
             await localDataSource.saveBookmark(bookmark);
           }
 
@@ -330,9 +342,9 @@ class ReaderRepositoryImpl implements ReaderRepository {
 
       return Right(localBookmarks);
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
+      return Left(StorageError(message: e.message));
     } catch (e) {
-      return Left(GeneralFailure(message: '获取书签列表失败：${e.toString()}'));
+      return Left(StorageError(message: '获取书签列表失败：${e.toString()}'));
     }
   }
 
@@ -342,9 +354,9 @@ class ReaderRepositoryImpl implements ReaderRepository {
       await localDataSource.saveReaderConfig(config);
       return const Right(null);
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
+      return Left(StorageError(message: e.message));
     } catch (e) {
-      return Left(GeneralFailure(message: '保存阅读器配置失败：${e.toString()}'));
+      return Left(StorageError(message: '保存阅读器配置失败：${e.toString()}'));
     }
   }
 
@@ -354,9 +366,9 @@ class ReaderRepositoryImpl implements ReaderRepository {
       final config = await localDataSource.getReaderConfig();
       return Right(config ?? const ReaderConfig());
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
+      return Left(StorageError(message: e.message));
     } catch (e) {
-      return Left(GeneralFailure(message: '获取阅读器配置失败：${e.toString()}'));
+      return Left(StorageError(message: '获取阅读器配置失败：${e.toString()}'));
     }
   }
 
@@ -374,14 +386,14 @@ class ReaderRepositoryImpl implements ReaderRepository {
         await localDataSource.cacheChapter(chapter);
         return const Right(null);
       } else {
-        return const Left(NetworkFailure(message: '网络连接不可用'));
+        return Left(NoInternetError(message: '网络连接不可用'));
       }
     } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message));
+      return Left(SystemError(message: e.message));
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
+      return Left(StorageError(message: e.message));
     } catch (e) {
-      return Left(GeneralFailure(message: '缓存章节失败：${e.toString()}'));
+      return Left(StorageError(message: '缓存章节失败：${e.toString()}'));
     }
   }
 
@@ -395,9 +407,9 @@ class ReaderRepositoryImpl implements ReaderRepository {
       );
       return Right(chapterIds);
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
+      return Left(StorageError(message: e.message));
     } catch (e) {
-      return Left(GeneralFailure(message: '获取缓存章节列表失败：${e.toString()}'));
+      return Left(StorageError(message: '获取缓存章节列表失败：${e.toString()}'));
     }
   }
 
@@ -407,9 +419,9 @@ class ReaderRepositoryImpl implements ReaderRepository {
       await localDataSource.clearCache(novelId: novelId);
       return const Right(null);
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
+      return Left(StorageError(message: e.message));
     } catch (e) {
-      return Left(GeneralFailure(message: '清理缓存失败：${e.toString()}'));
+      return Left(StorageError(message: '清理缓存失败：${e.toString()}'));
     }
   }
 
@@ -439,9 +451,9 @@ class ReaderRepositoryImpl implements ReaderRepository {
 
       return const Right(null);
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
+      return Left(StorageError(message: e.message));
     } catch (e) {
-      return Left(GeneralFailure(message: '更新阅读时长失败：${e.toString()}'));
+      return Left(StorageError(message: '更新阅读时长失败：${e.toString()}'));
     }
   }
 
@@ -467,9 +479,9 @@ class ReaderRepositoryImpl implements ReaderRepository {
 
       return Right(localStats ?? const ReadingStats());
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
+      return Left(StorageError(message: e.message));
     } catch (e) {
-      return Left(GeneralFailure(message: '获取阅读统计失败：${e.toString()}'));
+      return Left(StorageError(message: '获取阅读统计失败：${e.toString()}'));
     }
   }
 
@@ -499,15 +511,15 @@ class ReaderRepositoryImpl implements ReaderRepository {
           
           return Right(filteredChapters);
         } else {
-          return const Left(NetworkFailure(message: '网络连接不可用且无缓存数据'));
+          return Left(NoInternetError(message: '网络连接不可用且无缓存数据'));
         }
       }
     } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message));
+      return Left(SystemError(message: e.message));
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
+      return Left(StorageError(message: e.message));
     } catch (e) {
-      return Left(GeneralFailure(message: '搜索章节失败：${e.toString()}'));
+      return Left(StorageError(message: '搜索章节失败：${e.toString()}'));
     }
   }
 
@@ -543,14 +555,14 @@ class ReaderRepositoryImpl implements ReaderRepository {
           }
         }
         
-        return const Left(NetworkFailure(message: '网络连接不可用且无缓存数据'));
+        return Left(NoInternetError(message: '网络连接不可用且无缓存数据'));
       }
     } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message));
+      return Left(SystemError(message: e.message));
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message));
+      return Left(StorageError(message: e.message));
     } catch (e) {
-      return Left(GeneralFailure(message: '获取相邻章节失败：${e.toString()}'));
+      return Left(StorageError(message: '获取相邻章节失败：${e.toString()}'));
     }
   }
 
@@ -567,12 +579,12 @@ class ReaderRepositoryImpl implements ReaderRepository {
         );
         return const Right(null);
       } else {
-        return const Left(NetworkFailure(message: '购买章节需要网络连接'));
+        return Left(NoInternetError(message: '购买章节需要网络连接'));
       }
     } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message));
+      return Left(SystemError(message: e.message));
     } catch (e) {
-      return Left(GeneralFailure(message: '购买章节失败：${e.toString()}'));
+      return Left(StorageError(message: '购买章节失败：${e.toString()}'));
     }
   }
 
@@ -589,12 +601,15 @@ class ReaderRepositoryImpl implements ReaderRepository {
         );
         return Right(isPurchased);
       } else {
-        return const Left(NetworkFailure(message: '检查购买状态需要网络连接'));
+        return Left(NoInternetError(message: '检查购买状态需要网络连接'));
       }
     } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message));
+      return Left(SystemError(message: e.message));
     } catch (e) {
-      return Left(GeneralFailure(message: '检查购买状态失败：${e.toString()}'));
+      return Left(StorageError(message: '检查购买状态失败：${e.toString()}'));
     }
   }
+
+  
 }
+

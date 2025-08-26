@@ -1,5 +1,5 @@
 // 评论数据模型
-import '../../../shared/models/user_model.dart';
+import '../../../../shared/models/user_model.dart';
 import '../../domain/entities/comment.dart';
 
 class CommentModel extends Comment {
@@ -19,8 +19,7 @@ class CommentModel extends Comment {
     super.replies,
   });
 
-  factory CommentModel.fromJson(Map<String, dynamic> json) {
-    return CommentModel(
+  factory CommentModel.fromJson(Map<String, dynamic> json) => CommentModel(
       id: json['id'] as String,
       targetId: json['target_id'] as String,
       type: CommentType.fromValue(json['type'] as int?),
@@ -38,10 +37,8 @@ class CommentModel extends Comment {
           .cast<Comment>()
           .toList() ?? [],
     );
-  }
 
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => {
       'id': id,
       'target_id': targetId,
       'type': type.value,
@@ -76,10 +73,8 @@ class CommentModel extends Comment {
         }
       }).toList(),
     };
-  }
 
-  Comment toEntity() {
-    return Comment(
+  Comment toEntity() => Comment(
       id: id,
       targetId: targetId,
       type: type,
@@ -94,5 +89,4 @@ class CommentModel extends Comment {
       updatedAt: updatedAt,
       replies: replies,
     );
-  }
 }

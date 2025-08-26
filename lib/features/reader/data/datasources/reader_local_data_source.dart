@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:novel_app/core/errors/exceptions.dart';
 
 import '../../../../core/cache/cache_manager.dart';
-import '../../../../shared/models/chapter_model.dart';
+import '../../../../shared/models/chapter_model.dart' hide ReadingProgress;
 import '../../../../shared/models/novel_model.dart';
 import '../../domain/entities/reader_config.dart';
-import '../../domain/repositories/reader_repository.dart' hide ReadingProgress;
+import '../../domain/repositories/reader_repository.dart' ;
 
 /// 阅读器本地数据源接口
 abstract class ReaderLocalDataSource {
@@ -76,6 +76,7 @@ abstract class ReaderLocalDataSource {
     required String novelId,
     required int minutes,
   });
+
 }
 
 /// 阅读器本地数据源实现
@@ -165,7 +166,7 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
   Future<void> cacheNovelInfo(NovelModel novel) async {
     try {
       final key = '$_novelPrefix${novel.id}';
-      final data = jsonEncode(novel.extra);
+      final data = jsonEncode(novel.toJson());
       await cacheManager.put(key, data);
     } catch (e) {
       throw CacheException(message: '缓存小说信息失败：${e.toString()}');
@@ -206,10 +207,10 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
       final key = '$_progressPrefix$novelId';
       final data = await cacheManager.get<String>(key);
 
-
       if (data != null) {
-        final Map<String, dynamic> json = jsonDecode(data.toString()) as Map<String, dynamic>;
-        return ReadingProgress.fromJson(json);
+        final Map<String, dynamic> json =
+            jsonDecode(data) as Map<String, dynamic>;
+        return ReadingProgress.fromMap(json);
       }
       return null;
     } catch (e) {
@@ -247,13 +248,14 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
   Future<void> deleteBookmark({required String bookmarkId}) async {
     try {
       // 需要遍历所有小说的书签来找到要删除的书签
-      final allKeys = await cacheManager.getKeys();
+      final allKeys = await cacheManager.getAllKeys();
 
       for (final key in allKeys) {
         if (key.startsWith(_bookmarkPrefix)) {
           final data = await cacheManager.get<String>(key);
           if (data != null) {
-            final List<dynamic> jsonList = jsonDecode(data.toString()) as List<dynamic>;
+            final List<dynamic> jsonList =
+                jsonDecode(data) as List<dynamic>;
             final bookmarks =
                 jsonList.map((json) => BookmarkModel.fromJson(json as Map<String, dynamic>)).toList();
 
@@ -264,6 +266,7 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
               // 找到并删除了书签，保存更新后的列表
               final updatedData =
                   jsonEncode(updatedBookmarks.map((b) => b.toJson()).toList());
+
               await cacheManager.put(key, updatedData);
               break;
             }
@@ -285,7 +288,7 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
       final data = await cacheManager.get<String>(key);
 
       if (data != null) {
-        final List<dynamic> jsonList = jsonDecode(data.toString()) as List<dynamic>;
+        final List<dynamic> jsonList = jsonDecode(data) as List<dynamic>;
         List<BookmarkModel> bookmarks =
             jsonList.map((json) => BookmarkModel.fromJson(json as Map<String, dynamic>)).toList();
 
@@ -317,9 +320,9 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
     try {
       final data = await cacheManager.get<String>(_configKey);
 
-
       if (data != null) {
         final Map<String, dynamic> json = jsonDecode(data.toString()) as Map<String, dynamic>;
+
         return ReaderConfig.fromMap(json);
       }
       return null;
@@ -344,7 +347,8 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
       final data = await cacheManager.get<String>(_statsKey);
 
       if (data != null) {
-        final Map<String, dynamic> json = jsonDecode(data.toString()) as Map<String, dynamic>;
+        final Map<String, dynamic> json = jsonDecode(data) as Map<String, dynamic>;
+
         return ReadingStats.fromMap(json);
       }
       return null;
@@ -356,7 +360,7 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
   @override
   Future<List<String>> getCachedChapterIds({required String novelId}) async {
     try {
-      final allKeys = await cacheManager.getKeys();
+      final allKeys = await cacheManager.getAllKeys();
       final chapterIds = <String>[];
 
       for (final key in allKeys) {
@@ -377,24 +381,23 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
     try {
       if (novelId != null) {
         // 清理指定小说的缓存
-        final allKeys = await cacheManager.getKeys();
+        final allKeys = await cacheManager.getAllKeys();
         final keysToDelete = allKeys
             .where((key) =>
-                key.contains(novelId) as bool &&
-                (key.startsWith(_chapterPrefix) as bool ||
-                    key.startsWith(_chapterListPrefix) as bool ||
-                    key.startsWith(_novelPrefix) as bool ||
-                    key.startsWith(_progressPrefix) as bool ||
-                    key.startsWith(_bookmarkPrefix) as bool))
+                key.contains(novelId) &&
+                (key.startsWith(_chapterPrefix) ||
+                    key.startsWith(_chapterListPrefix) ||
+                    key.startsWith(_novelPrefix) ||
+                    key.startsWith(_progressPrefix) ||
+                    key.startsWith(_bookmarkPrefix)))
             .toList();
 
         for (final key in keysToDelete) {
-          await cacheManager.remove(key.toString());
+          await cacheManager.remove(key);
         }
       } else {
         // 清理所有阅读器相关缓存
-        await cacheManager.remove(_configKey);
-        await cacheManager.remove(_statsKey);
+        await cacheManager.clearAll();
       }
     } catch (e) {
       throw CacheException(message: '清理缓存失败：${e.toString()}');
@@ -412,7 +415,6 @@ class ReaderLocalDataSourceImpl implements ReaderLocalDataSource {
 
       // 获取今日已有的阅读时长
       final existingTime = await cacheManager.get<int>(key) ?? 0;
-
 
       // 更新阅读时长
       await cacheManager.put(key, existingTime + minutes);

@@ -2,13 +2,14 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/errors/app_error.dart';
 import '../../../../core/network/network_info.dart';
-import '../../../shared/models/novel_model.dart';
-import '../../../shared/models/chapter_model.dart';
+import '../../../../shared/models/chapter_model.dart';
+import '../../../../shared/models/novel_model.dart';
 import '../../domain/entities/book_detail.dart';
 import '../../domain/entities/comment.dart';
 import '../../domain/repositories/book_repository.dart';
 import '../datasources/book_remote_datasource.dart';
 import '../datasources/book_local_datasource.dart';
+import '../models/book_detail_model.dart';
 
 class BookRepositoryImpl implements BookRepository {
   final BookRemoteDataSource remoteDataSource;
@@ -376,7 +377,6 @@ class BookRepositoryImpl implements BookRepository {
   Future<Either<AppError, bool>> downloadChapter(String chapterId) async {
     if (await networkInfo.isConnected) {
       try {
-        final taskId = await remoteDataSource.downloadChapter(chapterId);
         // TODO: 实现下载逻辑
         return const Right(true);
       } on AppError catch (e) {
@@ -393,7 +393,6 @@ class BookRepositoryImpl implements BookRepository {
   Future<Either<AppError, bool>> downloadBook(String bookId) async {
     if (await networkInfo.isConnected) {
       try {
-        final taskId = await remoteDataSource.downloadBook(bookId);
         // TODO: 实现下载逻辑
         await localDataSource.addDownloadedBook(bookId);
         return const Right(true);

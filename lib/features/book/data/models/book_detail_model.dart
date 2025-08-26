@@ -1,6 +1,6 @@
 // 小说详情数据模型
-import '../../../shared/models/novel_model.dart';
-import '../../../shared/models/chapter_model.dart';
+import '../../../../shared/models/chapter_model.dart';
+import '../../../../shared/models/novel_model.dart';
 import '../../domain/entities/book_detail.dart';
 
 class BookStatsModel extends BookStats {

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
 import 'dart:ui';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -251,13 +252,6 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
     emit(const ReaderLoading(message: '正在初始化阅读器...'));
 
     try {
-      // 获取阅读器配置
-      final configResult = await getReaderConfig(NoParams());
-      final config = configResult.fold(
-        (failure) => const ReaderConfig(),
-        (config) => config,
-      );
-
       // 获取阅读进度
       final progressResult = await getReadingProgress(event.novelId);
       final progress = progressResult.fold(
@@ -295,10 +289,10 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
 
     try {
       // 加载章节内容
-      final chapterResult = await loadChapter(LoadChapterParams(
+      final chapterResult = await loadChapter.call(LoadChapterParams(
         novelId: event.novelId,
         chapterId: event.chapterId,
-      ));
+      ) as int);
 
       final chapter = chapterResult.fold(
         (failure) => throw Exception(failure.message),

@@ -751,6 +751,11 @@ class CacheManager {
     Logger.info('缓存统计信息已重置');
   }
 
+  Future<List<String>> getAllKeys() async {
+    final allKeys = await _memoryCache.keys.toList();
+    return allKeys;
+  }
+
 }
 
 /// 缓存配置

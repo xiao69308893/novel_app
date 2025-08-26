@@ -1,4 +1,5 @@
 // 评论状态管理
+import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../domain/entities/comment.dart';
@@ -91,8 +92,12 @@ class CommentCubit extends Cubit<CommentState> {
     }
 
     result.fold(
-      (error) => emit(CommentError(error.message)),
+      (error) => emit(CommentError(error.toString())),
       (comments) {
+        if (comments is! List<Comment>) {
+          emit(CommentError('评论数据格式错误'));
+          return;
+        }
         if (loadMore && currentState is CommentLoaded) {
           // 加载更多
           final allComments = [...currentState.comments, ...comments];

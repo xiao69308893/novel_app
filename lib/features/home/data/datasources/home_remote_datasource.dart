@@ -64,7 +64,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   Future<HomeConfigModel> getHomeConfig() async {
     try {
       final response = await apiClient.get('/home/config');
-      return HomeConfigModel.fromJson(response.data['data']);
+      return HomeConfigModel.fromJson(response.data['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -76,8 +76,8 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   Future<List<BannerModel>> getBanners() async {
     try {
       final response = await apiClient.get('/home/banners');
-      final List<dynamic> data = response.data['data'];
-      return data.map((json) => BannerModel.fromJson(json)).toList();
+      final List<dynamic> data = response.data['data'] as List<dynamic>;
+      return data.map((json) => BannerModel.fromJson(json as Map<String, dynamic>)).toList();
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -100,8 +100,8 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
           'limit': limit,
         },
       );
-      final List<dynamic> data = response.data['data'];
-      return data.map((json) => RecommendationModel.fromJson(json)).toList();
+      final List<dynamic> data = response.data['data'] as List<dynamic>;
+      return data.map((json) => RecommendationModel.fromJson(json as Map<String, dynamic>)).toList();
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -124,7 +124,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
           'limit': limit,
         },
       );
-      return RankingModel.fromJson(response.data['data']);
+      return RankingModel.fromJson(response.data['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -145,8 +145,8 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
           'limit': limit,
         },
       );
-      final List<dynamic> data = response.data['data'];
-      return data.map((json) => NovelSimpleModel.fromJson(json)).toList();
+      final List<dynamic> data = response.data['data'] as List<dynamic>;
+      return data.map((json) => NovelSimpleModel.fromJson(json as Map<String, dynamic>)).toList();
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -167,8 +167,8 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
           'limit': limit,
         },
       );
-      final List<dynamic> data = response.data['data'];
-      return data.map((json) => NovelSimpleModel.fromJson(json)).toList();
+      final List<dynamic> data = response.data['data'] as List<dynamic>;
+      return data.map((json) => NovelSimpleModel.fromJson(json as Map<String, dynamic>)).toList();
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -189,8 +189,8 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
           'limit': limit,
         },
       );
-      final List<dynamic> data = response.data['data'];
-      return data.map((json) => NovelSimpleModel.fromJson(json)).toList();
+      final List<dynamic> data = response.data['data'] as List<dynamic>;
+      return data.map((json) => NovelSimpleModel.fromJson(json as Map<String, dynamic>)).toList();
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -211,8 +211,8 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
           'limit': limit,
         },
       );
-      final List<dynamic> data = response.data['data'];
-      return data.map((json) => NovelSimpleModel.fromJson(json)).toList();
+      final List<dynamic> data = response.data['data'] as List<dynamic>;
+      return data.map((json) => NovelSimpleModel.fromJson(json as Map<String, dynamic>)).toList();
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -234,8 +234,8 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
           'limit': limit,
         },
       );
-      final List<dynamic> data = response.data['data'];
-      return data.map((json) => NovelSimpleModel.fromJson(json)).toList();
+      final List<dynamic> data = response.data['data'] as List<dynamic>;
+      return data.map((json) => NovelSimpleModel.fromJson(json as Map<String, dynamic>)).toList();
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -264,8 +264,8 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
           'limit': limit,
         },
       );
-      final List<dynamic> data = response.data['data'];
-      return data.map((json) => NovelSimpleModel.fromJson(json)).toList();
+      final List<dynamic> data = response.data['data'] as List<dynamic>;
+      return data.map((json) => NovelSimpleModel.fromJson(json as Map<String, dynamic>)).toList();
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
     } catch (e) {
@@ -277,7 +277,8 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   Future<List<String>> getHotSearchKeywords() async {
     try {
       final response = await apiClient.get('/search/hot-keywords');
-      final List<dynamic> data = response.data['data'];
+      final List<dynamic> data = response.data['data'] as List<dynamic>;
+
       return data.cast<String>();
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
@@ -293,7 +294,8 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
         '/search/suggestions',
         queryParameters: {'keyword': keyword},
       );
-      final List<dynamic> data = response.data['data'];
+      final List<dynamic> data = response.data['data'] as List<dynamic>;
+
       return data.cast<String>();
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);

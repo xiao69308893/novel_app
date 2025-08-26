@@ -2,6 +2,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../../../core/usecases/usecase.dart';
+import '../domain/entities/auth_user.dart';
+import '../domain/usecases/auto_login_usecase.dart';
+import '../domain/usecases/login_usecase.dart';
+import '../domain/usecases/logout_usecase.dart';
+import '../domain/usecases/register_usecase.dart';
 
 // 认证状态
 abstract class AuthState extends Equatable {

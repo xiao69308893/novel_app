@@ -1,9 +1,7 @@
 // 推荐小说组件
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../app/themes/app_theme.dart';
 import '../../../../shared/models/novel_model.dart';
-import '../../../../shared/widgets/cached_image.dart';
 import '../../../../shared/widgets/novel_card.dart';
 
 class BookRecommendationSection extends StatelessWidget {

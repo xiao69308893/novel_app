@@ -1,5 +1,6 @@
 // 获取排行榜用例
 import 'package:dartz/dartz.dart';
+import 'package:equatable/equatable.dart';
 import '../../../../core/errors/app_error.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../entities/ranking.dart';

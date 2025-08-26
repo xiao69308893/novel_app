@@ -1,7 +1,7 @@
 // 小说本地数据源
 import 'dart:convert';
 import '../../../../core/utils/preferences_helper.dart';
-import '../../../shared/models/chapter_model.dart';
+import '../../../../shared/models/chapter_model.dart';
 import '../models/book_detail_model.dart';
 
 abstract class BookLocalDataSource {
@@ -57,9 +57,10 @@ class BookLocalDataSourceImpl implements BookLocalDataSource {
     try {
       final chaptersJson = await PreferencesHelper.getString('$_chapterListPrefix$bookId');
       if (chaptersJson != null) {
-        final List<dynamic> chaptersList = json.decode(chaptersJson);
+        final List<dynamic> chaptersList = json.decode(chaptersJson) as List<dynamic>;
+
         return chaptersList
-            .map((chapterJson) => ChapterSimpleModel.fromJson(chapterJson))
+            .map((chapterJson) => ChapterSimpleModel.fromJson(chapterJson as Map<String, dynamic>))
             .toList();
       }
       return null;
@@ -121,7 +122,8 @@ class BookLocalDataSourceImpl implements BookLocalDataSource {
     try {
       final favoritesJson = await PreferencesHelper.getString(_favoriteBooksKey);
       if (favoritesJson != null) {
-        final List<dynamic> favoritesList = json.decode(favoritesJson);
+        final List<dynamic> favoritesList = json.decode(favoritesJson) as List<dynamic>;
+
         return favoritesList.cast<String>();
       }
       return null;
@@ -157,7 +159,7 @@ class BookLocalDataSourceImpl implements BookLocalDataSource {
     try {
       final downloadedJson = await PreferencesHelper.getString(_downloadedBooksKey);
       if (downloadedJson != null) {
-        final List<dynamic> downloadedList = json.decode(downloadedJson);
+        final List<dynamic> downloadedList = json.decode(downloadedJson) as List<dynamic>;
         return downloadedList.cast<String>();
       }
       return null;

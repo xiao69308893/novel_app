@@ -52,9 +52,9 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
     try {
       final bannersJson = await PreferencesHelper.getString(_bannersKey);
       if (bannersJson != null) {
-        final List<dynamic> bannersList = json.decode(bannersJson);
+        final List<dynamic> bannersList = json.decode(bannersJson) as List<dynamic>;
         return bannersList
-            .map((bannerJson) => BannerModel.fromJson(bannerJson))
+            .map((bannerJson) => BannerModel.fromJson(bannerJson as Map<String, dynamic>))
             .toList();
       }
       return null;
@@ -78,10 +78,10 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
           await PreferencesHelper.getString(_recommendationsKey);
       if (recommendationsJson != null) {
         final List<dynamic> recommendationsList =
-            json.decode(recommendationsJson);
+            json.decode(recommendationsJson) as List<dynamic>;
         return recommendationsList
             .map((recommendationJson) =>
-                RecommendationModel.fromJson(recommendationJson))
+                RecommendationModel.fromJson(recommendationJson as Map<String, dynamic>))
             .toList();
       }
       return null;
@@ -104,7 +104,7 @@ class HomeLocalDataSourceImpl implements HomeLocalDataSource {
     try {
       final historyJson = await PreferencesHelper.getString(_searchHistoryKey);
       if (historyJson != null) {
-        final List<dynamic> historyList = json.decode(historyJson);
+        final List<dynamic> historyList = json.decode(historyJson) as List<dynamic>;
         return historyList.cast<String>();
       }
       return null;

@@ -6,10 +6,8 @@ import '../../../../shared/widgets/common_app_bar.dart';
 import '../../../../shared/widgets/loading_widget.dart';
 import '../../../../shared/widgets/custom_dialog.dart';
 import '../cubit/auth_cubit.dart';
-import '../cubit/verification_cubit.dart';
 import '../widgets/auth_input_field.dart';
 import '../widgets/auth_button.dart';
-import '../widgets/verification_input.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);

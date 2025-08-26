@@ -1,7 +1,9 @@
+import 'package:novel_app/core/errors/exceptions.dart';
+
 import '../../../../core/api/api_client.dart';
-import '../../../../shared/models/chapter_model.dart';
+import '../../../../shared/models/chapter_model.dart' hide ReadingProgress;
 import '../../../../shared/models/novel_model.dart';
-import '../../domain/repositories/reader_repository.dart' hide ReadingProgress;
+import '../../domain/repositories/reader_repository.dart';
 
 /// 阅读器远程数据源接口
 abstract class ReaderRemoteDataSource {
@@ -104,19 +106,21 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
         '/novels/$novelId/chapters/$chapterId',
       );
 
-      if (response.statusCode == 200) {
-        return ChapterModel.fromMap(response.data['data']);
+      if (response.code == 200) {
+        final Map<String, dynamic> data =
+            response.data['data'] as Map<String, dynamic>;
+        return ChapterModel.fromJson(data);
       } else {
         throw ServerException(
-          message: response.data['message'] ?? '章节加载失败',
-          statusCode: response.statusCode.toString(),
+          message: (response.data['message'] as String?) ?? '章节加载失败',
+          code: response.code.toString(),
         );
       }
     } catch (e) {
       if (e is ServerException) rethrow;
       throw ServerException(
         message: '网络请求失败：${e.toString()}',
-        statusCode: '500',
+        code: '500',
       );
     }
   }
@@ -133,20 +137,21 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
         },
       );
 
-      if (response.statusCode == 200) {
-        final List<dynamic> data = response.data['data'];
-        return data.map((json) => ChapterSimpleModel.fromMap(json)).toList();
+      if (response.code == 200) {
+        final List<dynamic> data = response.data['data'] as List<dynamic>;
+
+        return data.map((json) => ChapterSimpleModel.fromJson(json as Map<String, dynamic>)).toList();
       } else {
         throw ServerException(
-          message: response.data['message'] ?? '章节列表加载失败',
-          statusCode: response.statusCode.toString(),
+          message: (response.data['message'] as String?) ?? '章节列表加载失败',
+          code: response.code.toString(),
         );
       }
     } catch (e) {
       if (e is ServerException) rethrow;
       throw ServerException(
         message: '网络请求失败：${e.toString()}',
-        statusCode: '500',
+        code: '500',
       );
     }
   }
@@ -156,19 +161,19 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
     try {
       final response = await apiClient.get('/novels/$novelId');
 
-      if (response.statusCode == 200) {
-        return NovelModel.fromMap(response.data['data']);
+      if (response.code == 200) {
+        return NovelModel.fromJson(response.data['data'] as Map<String, dynamic>);
       } else {
         throw ServerException(
-          message: response.data['message'] ?? '小说信息加载失败',
-          statusCode: response.statusCode.toString(),
+          message: (response.data['message'] as String?) ?? '小说信息加载失败',
+          code: response.code.toString(),
         );
       }
     } catch (e) {
       if (e is ServerException) rethrow;
       throw ServerException(
         message: '网络请求失败：${e.toString()}',
-        statusCode: '500',
+        code: '500',
       );
     }
   }
@@ -192,17 +197,17 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
         },
       );
 
-      if (response.statusCode != 200) {
+      if (response.code != 200) {
         throw ServerException(
-          message: response.data['message'] ?? '保存阅读进度失败',
-          statusCode: response.statusCode.toString(),
+          message: (response.data['message'] as String?) ?? '保存阅读进度失败',
+          code: response.code.toString(),
         );
       }
     } catch (e) {
       if (e is ServerException) rethrow;
       throw ServerException(
         message: '网络请求失败：${e.toString()}',
-        statusCode: '500',
+        code: '500',
       );
     }
   }
@@ -216,22 +221,22 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
         '/reading/progress/$novelId',
       );
 
-      if (response.statusCode == 200) {
+      if (response.code == 200) {
         final data = response.data['data'];
-        return data != null ? ReadingProgress.fromMap(data) : null;
-      } else if (response.statusCode == 404) {
+        return data != null ? ReadingProgress.fromMap(data  as Map<String, dynamic>) : null;
+      } else if (response.code == 404) {
         return null; // 没有阅读进度
       } else {
         throw ServerException(
-          message: response.data['message'] ?? '获取阅读进度失败',
-          statusCode: response.statusCode.toString(),
+          message: (response.data['message'] as String?) ?? '获取阅读进度失败',
+          code: response.code.toString(),
         );
       }
     } catch (e) {
       if (e is ServerException) rethrow;
       throw ServerException(
         message: '网络请求失败：${e.toString()}',
-        statusCode: '500',
+        code: '500',
       );
     }
   }
@@ -257,19 +262,19 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
         },
       );
 
-      if (response.statusCode == 201) {
-        return BookmarkModel.fromMap(response.data['data']);
+      if (response.code == 201) {
+        return BookmarkModel.fromJson(response.data['data'] as Map<String, dynamic>);
       } else {
         throw ServerException(
-          message: response.data['message'] ?? '添加书签失败',
-          statusCode: response.statusCode.toString(),
+          message: (response.data['message'] as String?) ?? '添加书签失败',
+          code: response.code.toString(),
         );
       }
     } catch (e) {
       if (e is ServerException) rethrow;
       throw ServerException(
         message: '网络请求失败：${e.toString()}',
-        statusCode: '500',
+        code: '500',
       );
     }
   }
@@ -279,17 +284,17 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
     try {
       final response = await apiClient.delete('/bookmarks/$bookmarkId');
 
-      if (response.statusCode != 200) {
+      if (response.code != 200) {
         throw ServerException(
-          message: response.data['message'] ?? '删除书签失败',
-          statusCode: response.statusCode.toString(),
+          message: (response.data['message'] as String?) ?? '删除书签失败',
+          code: response.code.toString(),
         );
       }
     } catch (e) {
       if (e is ServerException) rethrow;
       throw ServerException(
         message: '网络请求失败：${e.toString()}',
-        statusCode: '500',
+        code: '500',
       );
     }
   }
@@ -310,20 +315,23 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
         queryParameters: queryParams,
       );
 
-      if (response.statusCode == 200) {
-        final List<dynamic> data = response.data['data'];
-        return data.map((json) => BookmarkModel.fromMap(json)).toList();
+      if (response.code == 200) {
+        final List<dynamic> data = response.data['data'] as List<dynamic>;
+
+        return data.map((json) => BookmarkModel.fromJson(json as Map<String, dynamic>)).toList();
+      } else if (response.code == 404) {
+        return []; // 没有书签，返回空列表
       } else {
         throw ServerException(
-          message: response.data['message'] ?? '获取书签列表失败',
-          statusCode: response.statusCode.toString(),
+          message: (response.data['message'] as String?) ?? '获取书签列表失败',
+          code: response.code.toString(),
         );
       }
     } catch (e) {
       if (e is ServerException) rethrow;
       throw ServerException(
         message: '网络请求失败：${e.toString()}',
-        statusCode: '500',
+        code: '500',
       );
     }
   }
@@ -343,17 +351,17 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
         },
       );
 
-      if (response.statusCode != 200) {
+      if (response.code != 200) {
         throw ServerException(
-          message: response.data['message'] ?? '更新阅读时长失败',
-          statusCode: response.statusCode.toString(),
+          message: (response.data['message'] as String)?? '更新阅读时长失败',
+          code: response.code.toString(),
         );
       }
     } catch (e) {
       if (e is ServerException) rethrow;
       throw ServerException(
         message: '网络请求失败：${e.toString()}',
-        statusCode: '500',
+        code: '500',
       );
     }
   }
@@ -363,19 +371,19 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
     try {
       final response = await apiClient.get('/reading/stats');
 
-      if (response.statusCode == 200) {
-        return ReadingStats.fromMap(response.data['data']);
+      if (response.code == 200) {
+        return ReadingStats.fromMap(response.data['data'] as Map<String, dynamic>);
       } else {
         throw ServerException(
-          message: response.data['message'] ?? '获取阅读统计失败',
-          statusCode: response.statusCode.toString(),
+          message: (response.data['message'] as String?) ?? '获取阅读统计失败',
+          code: response.code.toString(),
         );
       }
     } catch (e) {
       if (e is ServerException) rethrow;
       throw ServerException(
         message: '网络请求失败：${e.toString()}',
-        statusCode: '500',
+        code: '500',
       );
     }
   }
@@ -393,20 +401,20 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
         },
       );
 
-      if (response.statusCode == 200) {
-        final List<dynamic> data = response.data['data'];
-        return data.map((json) => ChapterSimpleModel.fromMap(json)).toList();
+      if (response.code == 200) {
+        final List<dynamic> data = response.data['data'] as List<dynamic>;
+        return data.map((json) => ChapterSimpleModel.fromJson(json as Map<String, dynamic>)).toList();
       } else {
         throw ServerException(
-          message: response.data['message'] ?? '搜索章节失败',
-          statusCode: response.statusCode.toString(),
+          message: (response.data['message'] as String?) ?? '搜索章节失败',
+          code: response.code.toString(),
         );
       }
     } catch (e) {
       if (e is ServerException) rethrow;
       throw ServerException(
         message: '网络请求失败：${e.toString()}',
-        statusCode: '500',
+        code: '500',
       );
     }
   }
@@ -421,27 +429,27 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
         '/novels/$novelId/chapters/$chapterId/adjacent',
       );
 
-      if (response.statusCode == 200) {
+      if (response.code == 200) {
         final data = response.data['data'];
         return {
-          'previous': data['previous'] != null 
-              ? ChapterSimpleModel.fromMap(data['previous']) 
+          'previous': data['previous'] != null
+              ? ChapterSimpleModel.fromJson(data['previous'] as Map<String, dynamic>)
               : null,
-          'next': data['next'] != null 
-              ? ChapterSimpleModel.fromMap(data['next']) 
+          'next': data['next'] != null
+              ? ChapterSimpleModel.fromJson(data['next'] as Map<String, dynamic>)
               : null,
         };
       } else {
         throw ServerException(
-          message: response.data['message'] ?? '获取相邻章节失败',
-          statusCode: response.statusCode.toString(),
+          message: (response.data['message'] as String?) ?? '获取相邻章节失败',
+          code: response.code.toString(),
         );
       }
     } catch (e) {
       if (e is ServerException) rethrow;
       throw ServerException(
         message: '网络请求失败：${e.toString()}',
-        statusCode: '500',
+        code: '500',
       );
     }
   }
@@ -460,17 +468,17 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
         },
       );
 
-      if (response.statusCode != 200) {
+      if (response.code != 200) {
         throw ServerException(
-          message: response.data['message'] ?? '购买章节失败',
-          statusCode: response.statusCode.toString(),
+          message: (response.data['message'] as String)?? '购买章节失败',
+          code: response.code.toString(),
         );
       }
     } catch (e) {
       if (e is ServerException) rethrow;
       throw ServerException(
         message: '网络请求失败：${e.toString()}',
-        statusCode: '500',
+        code: '500',
       );
     }
   }
@@ -489,19 +497,19 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
         },
       );
 
-      if (response.statusCode == 200) {
+      if (response.code == 200) {
         return response.data['data']['purchased'] == true;
       } else {
         throw ServerException(
-          message: response.data['message'] ?? '检查购买状态失败',
-          statusCode: response.statusCode.toString(),
+          message: (response.data['message'] as String?) ?? '检查购买状态失败',
+          code: response.code.toString(),
         );
       }
     } catch (e) {
       if (e is ServerException) rethrow;
       throw ServerException(
         message: '网络请求失败：${e.toString()}',
-        statusCode: '500',
+        code: '500',
       );
     }
   }

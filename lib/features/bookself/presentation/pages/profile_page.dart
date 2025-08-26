@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../shared/models/user_model.dart';
 import '../../../../shared/widgets/common_app_bar.dart';
 import '../../../../shared/widgets/loading_widget.dart';
 import '../../../../app/themes/app_theme.dart';
@@ -25,8 +26,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       appBar: CommonAppBar(
         title: '个人中心',
         actions: [
@@ -81,13 +81,15 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Column(
                   children: [
                     // 用户信息头部
-                    ProfileHeader(user: state.user!),
+                    ProfileHeader(user: state.user! as UserModel),
+
                     
                     const SizedBox(height: AppTheme.spacingRegular),
                     
                     // 用户统计
                     if (state.user!.stats != null)
-                      ProfileStats(stats: state.user!.stats!),
+                      ProfileStats(stats: state.user!.stats! as UserStats),
+
                     
                     const SizedBox(height: AppTheme.spacingRegular),
                     
@@ -106,5 +108,4 @@ class _ProfilePageState extends State<ProfilePage> {
         },
       ),
     );
-  }
 }

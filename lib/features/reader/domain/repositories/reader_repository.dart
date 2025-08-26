@@ -1,9 +1,8 @@
-import '../../../../core/errors/failures.dart';
 import '../../../../core/utils/typedef.dart';
 import '../../../../shared/models/chapter_model.dart';
 import '../../../../shared/models/novel_model.dart';
 import '../entities/reader_config.dart';
-import '../entities/reading_session.dart';
+
 
 /// 阅读器仓储接口
 abstract class ReaderRepository {
@@ -142,11 +141,11 @@ class ReadingProgress {
 
   factory ReadingProgress.fromMap(Map<String, dynamic> map) {
     return ReadingProgress(
-      novelId: map['novelId'] ?? '',
-      chapterId: map['chapterId'] ?? '',
-      position: map['position'] ?? 0,
-      progress: map['progress']?.toDouble() ?? 0.0,
-      updatedAt: DateTime.parse(map['updatedAt'] ?? DateTime.now().toIso8601String()),
+      novelId: (map['novelId'] as String?) ?? '',
+      chapterId: (map['chapterId'] as String?) ?? '',
+      position: (map['position'] as num?)?.toInt() ?? 0,
+      progress: (map['progress'] as num?)?.toDouble() ?? 0.0,
+      updatedAt: DateTime.parse((map['updatedAt'] as String?) ?? DateTime.now().toIso8601String()),
     );
   }
 }
@@ -186,16 +185,16 @@ class ReadingStats {
     };
   }
 
-  factory ReadingStats.fromMap(Map<String, dynamic> map) {
-    return ReadingStats(
-      totalReadingTime: map['totalReadingTime'] ?? 0,
-      booksRead: map['booksRead'] ?? 0,
-      chaptersRead: map['chaptersRead'] ?? 0,
-      todayReadingTime: map['todayReadingTime'] ?? 0,
-      weekReadingTime: map['weekReadingTime'] ?? 0,
-      monthReadingTime: map['monthReadingTime'] ?? 0,
-      averageReadingSpeed: map['averageReadingSpeed']?.toDouble() ?? 0.0,
-      readingTimeByDate: Map<String, int>.from(map['readingTimeByDate'] ?? {}),
+  factory ReadingStats.fromMap(Map<String, dynamic> map) => ReadingStats(
+      totalReadingTime: (map['totalReadingTime'] as num?)?.toInt() ?? 0,
+      booksRead: (map['booksRead'] as num?)?.toInt() ?? 0,
+      chaptersRead: (map['chaptersRead'] as num?)?.toInt() ?? 0,
+      todayReadingTime: (map['todayReadingTime'] as num?)?.toInt() ?? 0,
+      weekReadingTime: (map['weekReadingTime'] as num?)?.toInt() ?? 0,
+      monthReadingTime: (map['monthReadingTime'] as num?)?.toInt() ?? 0,
+      averageReadingSpeed: (map['averageReadingSpeed'] as num?)?.toDouble() ?? 0.0,
+      readingTimeByDate: Map<String, int>.from(
+        (map['readingTimeByDate'] as Map<dynamic, dynamic>?) ?? {},
+      ),
     );
-  }
 }

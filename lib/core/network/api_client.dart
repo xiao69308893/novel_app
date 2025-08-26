@@ -512,7 +512,7 @@ class RetryInterceptor extends Interceptor {
     final extra = err.requestOptions.extra;
     final retryCount = extra['retryCount'] ?? 0;
 
-    if (retryCount < maxRetries && _shouldRetry(err)) {
+    if ((retryCount < maxRetries) as bool && _shouldRetry(err)) {
       Logger.warning('网络请求重试 ${retryCount + 1}/$maxRetries: ${err.requestOptions.path}');
       
       // 等待后重试
