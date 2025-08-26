@@ -1,6 +1,8 @@
 // 首页状态管理
+import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:novel_app/core/errors/app_error.dart';
 import '../../domain/entities/banner.dart';
 import '../../domain/entities/recommendation.dart';
 import '../../domain/entities/home_config.dart';
@@ -12,7 +14,7 @@ abstract class HomeState extends Equatable {
   const HomeState();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class HomeInitial extends HomeState {}
@@ -20,46 +22,46 @@ class HomeInitial extends HomeState {}
 class HomeLoading extends HomeState {}
 
 class HomeLoaded extends HomeState {
+
+  const HomeLoaded({
+    required this.config,
+    this.banners = const <Banner>[],
+    this.recommendations = const <Recommendation>[],
+  });
   final HomeConfig config;
   final List<Banner> banners;
   final List<Recommendation> recommendations;
 
-  const HomeLoaded({
-    required this.config,
-    this.banners = const [],
-    this.recommendations = const [],
-  });
-
   @override
-  List<Object> get props => [config, banners, recommendations];
+  List<Object> get props => <Object>[config, banners, recommendations];
 }
 
 class HomeError extends HomeState {
-  final String message;
 
   const HomeError(this.message);
+  final String message;
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 // 首页Cubit
 class HomeCubit extends Cubit<HomeState> {
-  final GetHomeDataUseCase getHomeDataUseCase;
 
   HomeCubit({
     required this.getHomeDataUseCase,
   }) : super(HomeInitial());
+  final GetHomeDataUseCase getHomeDataUseCase;
 
   /// 加载首页数据
   Future<void> loadHomeData() async {
     emit(HomeLoading());
 
-    final result = await getHomeDataUseCase(const NoParams());
+    final Either<AppError, HomeData> result = await getHomeDataUseCase(const NoParams());
 
     result.fold(
-      (error) => emit(HomeError(error.message)),
-      (homeData) => emit(HomeLoaded(
+      (AppError error) => emit(HomeError(error.message)),
+      (HomeData homeData) => emit(HomeLoaded(
         config: homeData.config,
         banners: homeData.banners,
         recommendations: homeData.recommendations,
@@ -70,11 +72,11 @@ class HomeCubit extends Cubit<HomeState> {
   /// 刷新首页数据
   Future<void> refreshHomeData() async {
     // 保持当前状态，在后台刷新
-    final result = await getHomeDataUseCase(const NoParams());
+    final Either<AppError, HomeData> result = await getHomeDataUseCase(const NoParams());
 
     result.fold(
-      (error) => emit(HomeError(error.message)),
-      (homeData) => emit(HomeLoaded(
+      (AppError error) => emit(HomeError(error.message)),
+      (HomeData homeData) => emit(HomeLoaded(
         config: homeData.config,
         banners: homeData.banners,
         recommendations: homeData.recommendations,

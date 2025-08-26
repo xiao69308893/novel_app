@@ -10,7 +10,7 @@ import 'presentation/blocs/bookshelf/bookshelf_bloc.dart';
 /// 书架模块依赖注入
 class BookshelfModule {
   static void init() {
-    final getIt = GetIt.instance;
+    final GetIt getIt = GetIt.instance;
 
     // 数据源
     getIt.registerLazySingleton<BookshelfRemoteDataSource>(
@@ -38,7 +38,7 @@ class BookshelfModule {
 
     // BLoC
     getIt.registerFactory(
-      () => BookshelfBloc(),
+      BookshelfBloc.new,
     );
   }
 }

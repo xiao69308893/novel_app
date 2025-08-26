@@ -1,6 +1,7 @@
 // 认证状态管理
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:novel_app/features/auth/domain/usecases/auto_login_usecase.dart';
 import 'package:novel_app/features/auth/domain/usecases/login_usecase.dart';
 import 'package:novel_app/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:novel_app/features/auth/domain/usecases/register_usecase.dart';
@@ -11,7 +12,7 @@ abstract class AuthState extends Equatable {
   const AuthState();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class AuthInitial extends AuthState {}
@@ -19,23 +20,23 @@ class AuthInitial extends AuthState {}
 class AuthLoading extends AuthState {}
 
 class AuthAuthenticated extends AuthState {
-  final UserModel user;
 
   const AuthAuthenticated(this.user);
+  final UserModel user;
 
   @override
-  List<Object> get props => [user];
+  List<Object> get props => <Object>[user];
 }
 
 class AuthUnauthenticated extends AuthState {}
 
 class AuthError extends AuthState {
-  final String message;
 
   const AuthError(this.message);
+  final String message;
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 // 认证事件
@@ -43,35 +44,35 @@ abstract class AuthEvent extends Equatable {
   const AuthEvent();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class AuthLoginRequested extends AuthEvent {
-  final String email;
-  final String password;
 
   const AuthLoginRequested({
     required this.email,
     required this.password,
   });
+  final String email;
+  final String password;
 
   @override
-  List<Object> get props => [email, password];
+  List<Object> get props => <Object>[email, password];
 }
 
 class AuthRegisterRequested extends AuthEvent {
-  final String email;
-  final String password;
-  final String username;
 
   const AuthRegisterRequested({
     required this.email,
     required this.password,
     required this.username,
   });
+  final String email;
+  final String password;
+  final String username;
 
   @override
-  List<Object> get props => [email, password, username];
+  List<Object> get props => <Object>[email, password, username];
 }
 
 class AuthLogoutRequested extends AuthEvent {}
@@ -80,7 +81,7 @@ class AuthCheckRequested extends AuthEvent {}
 
 // 认证Cubit
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit({required LoginUseCase loginUseCase, required RegisterUseCase registerUseCase, required LogoutUseCase logoutUseCase, required autoLoginUseCase}) : super(AuthInitial());
+  AuthCubit({required RegisterUseCase registerUseCase, required LoginUseCase loginUseCase, required LogoutUseCase logoutUseCase, required AutoLoginUseCase autoLoginUseCase}) : super(AuthInitial());
 
   /// 登录
   Future<void> login(String email, String password) async {
@@ -91,7 +92,7 @@ class AuthCubit extends Cubit<AuthState> {
       await Future.delayed(const Duration(seconds: 1));
       
       // 创建模拟用户
-      final user = UserModel(
+      final UserModel user = UserModel(
         id: '1',
         username: 'test_user',
         email: email,
@@ -114,7 +115,7 @@ class AuthCubit extends Cubit<AuthState> {
       await Future.delayed(const Duration(seconds: 1));
       
       // 创建新用户
-      final user = UserModel(
+      final UserModel user = UserModel(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         username: username,
         email: email,

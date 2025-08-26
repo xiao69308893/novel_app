@@ -32,7 +32,7 @@ class PreferencesHelper {
   // 存储字符串
   static Future<bool> setString(String key, String value) async {
     try {
-      final result = await prefs.setString(key, value);
+      final bool result = await prefs.setString(key, value);
       Logger.debug('STORAGE', '存储字符串: $key = $value');
       return result;
     } catch (e) {
@@ -44,7 +44,7 @@ class PreferencesHelper {
   // 获取字符串
   static String? getString(String key, [String? defaultValue]) {
     try {
-      final value = prefs.getString(key) ?? defaultValue;
+      final String? value = prefs.getString(key) ?? defaultValue;
       Logger.debug('STORAGE', '获取字符串: $key = $value');
       return value;
     } catch (e) {
@@ -56,7 +56,7 @@ class PreferencesHelper {
   // 存储整数
   static Future<bool> setInt(String key, int value) async {
     try {
-      final result = await prefs.setInt(key, value);
+      final bool result = await prefs.setInt(key, value);
       Logger.debug('STORAGE', '存储整数: $key = $value');
       return result;
     } catch (e) {
@@ -68,7 +68,7 @@ class PreferencesHelper {
   // 获取整数
   static int getInt(String key, [int defaultValue = 0]) {
     try {
-      final value = prefs.getInt(key) ?? defaultValue;
+      final int value = prefs.getInt(key) ?? defaultValue;
       Logger.debug('STORAGE', '获取整数: $key = $value');
       return value;
     } catch (e) {
@@ -80,7 +80,7 @@ class PreferencesHelper {
   // 存储布尔值
   static Future<bool> setBool(String key, bool value) async {
     try {
-      final result = await prefs.setBool(key, value);
+      final bool result = await prefs.setBool(key, value);
       Logger.debug('STORAGE', '存储布尔值: $key = $value');
       return result;
     } catch (e) {
@@ -92,7 +92,7 @@ class PreferencesHelper {
   // 获取布尔值
   static bool getBool(String key, [bool defaultValue = false]) {
     try {
-      final value = prefs.getBool(key) ?? defaultValue;
+      final bool value = prefs.getBool(key) ?? defaultValue;
       Logger.debug('STORAGE', '获取布尔值: $key = $value');
       return value;
     } catch (e) {
@@ -104,7 +104,7 @@ class PreferencesHelper {
   // 存储双精度浮点数
   static Future<bool> setDouble(String key, double value) async {
     try {
-      final result = await prefs.setDouble(key, value);
+      final bool result = await prefs.setDouble(key, value);
       Logger.debug('STORAGE', '存储浮点数: $key = $value');
       return result;
     } catch (e) {
@@ -116,7 +116,7 @@ class PreferencesHelper {
   // 获取双精度浮点数
   static double getDouble(String key, [double defaultValue = 0.0]) {
     try {
-      final value = prefs.getDouble(key) ?? defaultValue;
+      final double value = prefs.getDouble(key) ?? defaultValue;
       Logger.debug('STORAGE', '获取浮点数: $key = $value');
       return value;
     } catch (e) {
@@ -128,7 +128,7 @@ class PreferencesHelper {
   // 存储字符串列表
   static Future<bool> setStringList(String key, List<String> value) async {
     try {
-      final result = await prefs.setStringList(key, value);
+      final bool result = await prefs.setStringList(key, value);
       Logger.debug('STORAGE', '存储字符串列表: $key = $value');
       return result;
     } catch (e) {
@@ -140,12 +140,12 @@ class PreferencesHelper {
   // 获取字符串列表
   static List<String> getStringList(String key, [List<String>? defaultValue]) {
     try {
-      final value = prefs.getStringList(key) ?? defaultValue ?? [];
+      final List<String> value = prefs.getStringList(key) ?? defaultValue ?? <String>[];
       Logger.debug('STORAGE', '获取字符串列表: $key = $value');
       return value;
     } catch (e) {
       Logger.error('获取字符串列表失败: $key', e);
-      return defaultValue ?? [];
+      return defaultValue ?? <String>[];
     }
   }
   
@@ -154,8 +154,8 @@ class PreferencesHelper {
   // 存储JSON对象
   static Future<bool> setObject(String key, Map<String, dynamic> value) async {
     try {
-      final jsonString = json.encode(value);
-      final result = await setString(key, jsonString);
+      final String jsonString = json.encode(value);
+      final bool result = await setString(key, jsonString);
       Logger.debug('STORAGE', '存储JSON对象: $key');
       return result;
     } catch (e) {
@@ -167,9 +167,9 @@ class PreferencesHelper {
   // 获取JSON对象
   static Map<String, dynamic>? getObject(String key) {
     try {
-      final jsonString = getString(key);
+      final String? jsonString = getString(key);
       if (jsonString != null) {
-        final value = json.decode(jsonString) as Map<String, dynamic>;
+        final Map<String, dynamic> value = json.decode(jsonString) as Map<String, dynamic>;
         Logger.debug('STORAGE', '获取JSON对象: $key');
         return value;
       }
@@ -183,8 +183,8 @@ class PreferencesHelper {
   // 存储JSON数组
   static Future<bool> setArray(String key, List<Map<String, dynamic>> value) async {
     try {
-      final jsonString = json.encode(value);
-      final result = await setString(key, jsonString);
+      final String jsonString = json.encode(value);
+      final bool result = await setString(key, jsonString);
       Logger.debug('STORAGE', '存储JSON数组: $key');
       return result;
     } catch (e) {
@@ -196,17 +196,17 @@ class PreferencesHelper {
   // 获取JSON数组
   static List<Map<String, dynamic>> getArray(String key) {
     try {
-      final jsonString = getString(key);
+      final String? jsonString = getString(key);
       if (jsonString != null) {
-        final value = (json.decode(jsonString) as List)
+        final List<Map<String, dynamic>> value = (json.decode(jsonString) as List)
             .cast<Map<String, dynamic>>();
         Logger.debug('STORAGE', '获取JSON数组: $key');
         return value;
       }
-      return [];
+      return <Map<String, dynamic>>[];
     } catch (e) {
       Logger.error('获取JSON数组失败: $key', e);
-      return [];
+      return <Map<String, dynamic>>[];
     }
   }
   
@@ -215,7 +215,7 @@ class PreferencesHelper {
   // 删除键值
   static Future<bool> remove(String key) async {
     try {
-      final result = await prefs.remove(key);
+      final bool result = await prefs.remove(key);
       Logger.debug('STORAGE', '删除键值: $key');
       return result;
     } catch (e) {
@@ -227,7 +227,7 @@ class PreferencesHelper {
   // 清空所有数据
   static Future<bool> clear() async {
     try {
-      final result = await prefs.clear();
+      final bool result = await prefs.clear();
       Logger.warning('清空所有本地存储数据');
       return result;
     } catch (e) {
@@ -239,7 +239,7 @@ class PreferencesHelper {
   // 检查键是否存在
   static bool containsKey(String key) {
     try {
-      final exists = prefs.containsKey(key);
+      final bool exists = prefs.containsKey(key);
       Logger.debug('STORAGE', '检查键存在性: $key = $exists');
       return exists;
     } catch (e) {
@@ -251,7 +251,7 @@ class PreferencesHelper {
   // 获取所有键
   static Set<String> getKeys() {
     try {
-      final keys = prefs.getKeys();
+      final Set<String> keys = prefs.getKeys();
       Logger.debug('STORAGE', '获取所有键: ${keys.length}个');
       return keys;
     } catch (e) {
@@ -264,17 +264,17 @@ class PreferencesHelper {
   static int getStorageSize() {
     try {
       int totalSize = 0;
-      final keys = getKeys();
+      final Set<String> keys = getKeys();
       
-      for (final key in keys) {
-        final value = prefs.get(key);
+      for (final String key in keys) {
+        final Object? value = prefs.get(key);
         if (value != null) {
           totalSize += key.length;
           totalSize += value.toString().length;
         }
       }
       
-      Logger.debug('STORAGE', '存储大小: ${totalSize}字节');
+      Logger.debug('STORAGE', '存储大小: $totalSize字节');
       return totalSize;
     } catch (e) {
       Logger.error('计算存储大小失败', e);
@@ -287,8 +287,8 @@ class PreferencesHelper {
     try {
       bool allSuccess = true;
       
-      for (final entry in data.entries) {
-        final key = entry.key;
+      for (final MapEntry<String, dynamic> entry in data.entries) {
+        final String key = entry.key;
         final value = entry.value;
         
         bool success = false;
@@ -326,8 +326,8 @@ class PreferencesHelper {
     try {
       bool allSuccess = true;
       
-      for (final key in keys) {
-        final success = await remove(key);
+      for (final String key in keys) {
+        final bool success = await remove(key);
         if (!success) {
           allSuccess = false;
         }
@@ -344,11 +344,11 @@ class PreferencesHelper {
   // 导出数据
   static Map<String, dynamic> exportData() {
     try {
-      final data = <String, dynamic>{};
-      final keys = getKeys();
+      final Map<String, dynamic> data = <String, dynamic>{};
+      final Set<String> keys = getKeys();
       
-      for (final key in keys) {
-        final value = prefs.get(key);
+      for (final String key in keys) {
+        final Object? value = prefs.get(key);
         if (value != null) {
           data[key] = value;
         }
@@ -358,7 +358,7 @@ class PreferencesHelper {
       return data;
     } catch (e) {
       Logger.error('导出数据失败', e);
-      return {};
+      return <String, dynamic>{};
     }
   }
 }
@@ -436,17 +436,11 @@ class PreferenceKeys {
   static const String totalBooksRead = 'total_books_read';
   
   // 构建带前缀的键
-  static String withPrefix(String prefix, String key) {
-    return '${prefix}_$key';
-  }
+  static String withPrefix(String prefix, String key) => '${prefix}_$key';
   
   // 构建用户相关的键
-  static String userKey(String userId, String key) {
-    return 'user_${userId}_$key';
-  }
+  static String userKey(String userId, String key) => 'user_${userId}_$key';
   
   // 构建书籍相关的键
-  static String bookKey(String bookId, String key) {
-    return 'book_${bookId}_$key';
-  }
+  static String bookKey(String bookId, String key) => 'book_${bookId}_$key';
 }

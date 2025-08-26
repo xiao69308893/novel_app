@@ -3,18 +3,18 @@ import '../../../../app/themes/app_theme.dart';
 
 /// 个人中心菜单组件
 class ProfileMenu extends StatelessWidget {
-  const ProfileMenu({Key? key}) : super(key: key);
+  const ProfileMenu({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: AppTheme.spacingRegular),
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(AppTheme.radiusRegular),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
@@ -23,7 +23,7 @@ class ProfileMenu extends StatelessWidget {
         ],
       ),
       child: Column(
-        children: [
+        children: <Widget>[
           _buildMenuItem(
             context,
             icon: Icons.person_outline,
@@ -92,7 +92,7 @@ class ProfileMenu extends StatelessWidget {
     required VoidCallback onTap,
     Color? iconColor,
   }) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     
     return ListTile(
       leading: Container(
@@ -127,11 +127,9 @@ class ProfileMenu extends StatelessWidget {
     );
   }
 
-  Widget _buildDivider() {
-    return const Divider(
+  Widget _buildDivider() => const Divider(
       height: 1,
       indent: 16,
       endIndent: 16,
     );
-  }
 }

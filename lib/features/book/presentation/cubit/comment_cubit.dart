@@ -2,6 +2,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:novel_app/core/errors/app_error.dart';
 import '../../domain/entities/comment.dart';
 import '../../domain/usecases/post_comment_usecase.dart';
 import '../../domain/repositories/book_repository.dart';
@@ -11,7 +12,7 @@ abstract class CommentState extends Equatable {
   const CommentState();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class CommentInitial extends CommentState {}
@@ -19,49 +20,49 @@ class CommentInitial extends CommentState {}
 class CommentLoading extends CommentState {}
 
 class CommentLoaded extends CommentState {
-  final List<Comment> comments;
-  final bool hasMore;
-  final int currentPage;
 
   const CommentLoaded({
     required this.comments,
     this.hasMore = true,
     this.currentPage = 1,
   });
+  final List<Comment> comments;
+  final bool hasMore;
+  final int currentPage;
 
   @override
-  List<Object> get props => [comments, hasMore, currentPage];
+  List<Object> get props => <Object>[comments, hasMore, currentPage];
 }
 
 class CommentError extends CommentState {
-  final String message;
 
   const CommentError(this.message);
+  final String message;
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 class CommentPosting extends CommentState {}
 
 class CommentPosted extends CommentState {
-  final Comment comment;
 
   const CommentPosted(this.comment);
+  final Comment comment;
 
   @override
-  List<Object> get props => [comment];
+  List<Object> get props => <Object>[comment];
 }
 
 // 评论Cubit
 class CommentCubit extends Cubit<CommentState> {
-  final PostCommentUseCase postCommentUseCase;
-  final BookRepository bookRepository;
 
   CommentCubit({
     required this.postCommentUseCase,
     required this.bookRepository,
   }) : super(CommentInitial());
+  final PostCommentUseCase postCommentUseCase;
+  final BookRepository bookRepository;
 
   /// 加载评论
   Future<void> loadComments({
@@ -73,8 +74,8 @@ class CommentCubit extends Cubit<CommentState> {
       emit(CommentLoading());
     }
 
-    final currentState = state;
-    final page = loadMore && currentState is CommentLoaded 
+    final CommentState currentState = state;
+    final int page = loadMore && currentState is CommentLoaded 
         ? currentState.currentPage + 1 
         : 1;
 
@@ -95,12 +96,12 @@ class CommentCubit extends Cubit<CommentState> {
       (error) => emit(CommentError(error.toString())),
       (comments) {
         if (comments is! List<Comment>) {
-          emit(CommentError('评论数据格式错误'));
+          emit(const CommentError('评论数据格式错误'));
           return;
         }
         if (loadMore && currentState is CommentLoaded) {
           // 加载更多
-          final allComments = [...currentState.comments, ...comments];
+          final List<Comment> allComments = <Comment>[...currentState.comments, ...comments];
           emit(CommentLoaded(
             comments: allComments,
             hasMore: comments.length >= 20,
@@ -127,7 +128,7 @@ class CommentCubit extends Cubit<CommentState> {
   }) async {
     emit(CommentPosting());
 
-    final result = await postCommentUseCase(
+    final Either<AppError, Comment> result = await postCommentUseCase(
       PostCommentParams(
         targetId: targetId,
         type: type,
@@ -137,8 +138,8 @@ class CommentCubit extends Cubit<CommentState> {
     );
 
     result.fold(
-      (error) => emit(CommentError(error.message)),
-      (comment) {
+      (AppError error) => emit(CommentError(error.message)),
+      (Comment comment) {
         emit(CommentPosted(comment));
         
         // 重新加载评论列表
@@ -149,15 +150,15 @@ class CommentCubit extends Cubit<CommentState> {
 
   /// 点赞评论
   Future<void> likeComment(String commentId) async {
-    final currentState = state;
+    final CommentState currentState = state;
     if (currentState is CommentLoaded) {
-      final result = await bookRepository.likeComment(commentId);
+      final Either<AppError, bool> result = await bookRepository.likeComment(commentId);
       
       result.fold(
-        (error) => emit(CommentError(error.message)),
-        (success) {
+        (AppError error) => emit(CommentError(error.message)),
+        (bool success) {
           // 更新评论点赞状态
-          final updatedComments = currentState.comments.map((comment) {
+          final List<Comment> updatedComments = currentState.comments.map((Comment comment) {
             if (comment.id == commentId) {
               return Comment(
                 id: comment.id,
@@ -190,15 +191,15 @@ class CommentCubit extends Cubit<CommentState> {
 
   /// 取消点赞评论
   Future<void> unlikeComment(String commentId) async {
-    final currentState = state;
+    final CommentState currentState = state;
     if (currentState is CommentLoaded) {
-      final result = await bookRepository.unlikeComment(commentId);
+      final Either<AppError, bool> result = await bookRepository.unlikeComment(commentId);
       
       result.fold(
-        (error) => emit(CommentError(error.message)),
-        (success) {
+        (AppError error) => emit(CommentError(error.message)),
+        (bool success) {
           // 更新评论点赞状态
-          final updatedComments = currentState.comments.map((comment) {
+          final List<Comment> updatedComments = currentState.comments.map((Comment comment) {
             if (comment.id == commentId) {
               return Comment(
                 id: comment.id,
@@ -208,7 +209,6 @@ class CommentCubit extends Cubit<CommentState> {
                 content: comment.content,
                 likeCount: comment.likeCount - 1,
                 replyCount: comment.replyCount,
-                isLiked: false,
                 isPinned: comment.isPinned,
                 parentId: comment.parentId,
                 createdAt: comment.createdAt,
@@ -231,16 +231,16 @@ class CommentCubit extends Cubit<CommentState> {
 
   /// 删除评论
   Future<void> deleteComment(String commentId) async {
-    final result = await bookRepository.deleteComment(commentId);
+    final Either<AppError, bool> result = await bookRepository.deleteComment(commentId);
     
     result.fold(
-      (error) => emit(CommentError(error.message)),
-      (success) {
-        final currentState = state;
+      (AppError error) => emit(CommentError(error.message)),
+      (bool success) {
+        final CommentState currentState = state;
         if (currentState is CommentLoaded) {
           // 从列表中移除评论
-          final updatedComments = currentState.comments
-              .where((comment) => comment.id != commentId)
+          final List<Comment> updatedComments = currentState.comments
+              .where((Comment comment) => comment.id != commentId)
               .toList();
 
           emit(CommentLoaded(

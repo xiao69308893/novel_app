@@ -6,26 +6,23 @@ import '../pages/reader_page.dart';
 
 /// 阅读器页面包装器，用于提供BLoC
 class ReaderPageWrapper extends StatelessWidget {
+
+  const ReaderPageWrapper({
+    required this.novelId, super.key,
+    this.chapterId,
+    this.chapterNumber,
+  });
   final String novelId;
   final String? chapterId;
   final int? chapterNumber;
 
-  const ReaderPageWrapper({
-    Key? key,
-    required this.novelId,
-    this.chapterId,
-    this.chapterNumber,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => GetIt.instance<ReaderBloc>(),
+  Widget build(BuildContext context) => BlocProvider(
+      create: (BuildContext context) => GetIt.instance<ReaderBloc>(),
       child: ReaderPage(
         novelId: novelId,
         chapterId: chapterId,
         chapterNumber: chapterNumber,
       ),
     );
-  }
 }

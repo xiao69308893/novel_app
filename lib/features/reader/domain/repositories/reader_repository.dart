@@ -115,11 +115,6 @@ abstract class ReaderRepository {
 
 /// 阅读进度模型
 class ReadingProgress {
-  final String novelId;
-  final String chapterId;
-  final int position;
-  final double progress;
-  final DateTime updatedAt;
 
   const ReadingProgress({
     required this.novelId,
@@ -129,37 +124,30 @@ class ReadingProgress {
     required this.updatedAt,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'novelId': novelId,
-      'chapterId': chapterId,
-      'position': position,
-      'progress': progress,
-      'updatedAt': updatedAt.toIso8601String(),
-    };
-  }
-
-  factory ReadingProgress.fromMap(Map<String, dynamic> map) {
-    return ReadingProgress(
+  factory ReadingProgress.fromMap(Map<String, dynamic> map) => ReadingProgress(
       novelId: (map['novelId'] as String?) ?? '',
       chapterId: (map['chapterId'] as String?) ?? '',
       position: (map['position'] as num?)?.toInt() ?? 0,
       progress: (map['progress'] as num?)?.toDouble() ?? 0.0,
       updatedAt: DateTime.parse((map['updatedAt'] as String?) ?? DateTime.now().toIso8601String()),
     );
-  }
+  final String novelId;
+  final String chapterId;
+  final int position;
+  final double progress;
+  final DateTime updatedAt;
+
+  Map<String, dynamic> toMap() => <String, dynamic>{
+      'novelId': novelId,
+      'chapterId': chapterId,
+      'position': position,
+      'progress': progress,
+      'updatedAt': updatedAt.toIso8601String(),
+    };
 }
 
 /// 阅读统计模型
-class ReadingStats {
-  final int totalReadingTime; // 总阅读时长（分钟）
-  final int booksRead; // 已读小说数
-  final int chaptersRead; // 已读章节数
-  final int todayReadingTime; // 今日阅读时长（分钟）
-  final int weekReadingTime; // 本周阅读时长（分钟）
-  final int monthReadingTime; // 本月阅读时长（分钟）
-  final double averageReadingSpeed; // 平均阅读速度（字/分钟）
-  final Map<String, int> readingTimeByDate; // 按日期统计的阅读时长
+class ReadingStats { // 按日期统计的阅读时长
 
   const ReadingStats({
     this.totalReadingTime = 0,
@@ -169,21 +157,8 @@ class ReadingStats {
     this.weekReadingTime = 0,
     this.monthReadingTime = 0,
     this.averageReadingSpeed = 0.0,
-    this.readingTimeByDate = const {},
+    this.readingTimeByDate = const <String, int>{},
   });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'totalReadingTime': totalReadingTime,
-      'booksRead': booksRead,
-      'chaptersRead': chaptersRead,
-      'todayReadingTime': todayReadingTime,
-      'weekReadingTime': weekReadingTime,
-      'monthReadingTime': monthReadingTime,
-      'averageReadingSpeed': averageReadingSpeed,
-      'readingTimeByDate': readingTimeByDate,
-    };
-  }
 
   factory ReadingStats.fromMap(Map<String, dynamic> map) => ReadingStats(
       totalReadingTime: (map['totalReadingTime'] as num?)?.toInt() ?? 0,
@@ -194,7 +169,26 @@ class ReadingStats {
       monthReadingTime: (map['monthReadingTime'] as num?)?.toInt() ?? 0,
       averageReadingSpeed: (map['averageReadingSpeed'] as num?)?.toDouble() ?? 0.0,
       readingTimeByDate: Map<String, int>.from(
-        (map['readingTimeByDate'] as Map<dynamic, dynamic>?) ?? {},
+        (map['readingTimeByDate'] as Map<dynamic, dynamic>?) ?? <dynamic, dynamic>{},
       ),
     );
+  final int totalReadingTime; // 总阅读时长（分钟）
+  final int booksRead; // 已读小说数
+  final int chaptersRead; // 已读章节数
+  final int todayReadingTime; // 今日阅读时长（分钟）
+  final int weekReadingTime; // 本周阅读时长（分钟）
+  final int monthReadingTime; // 本月阅读时长（分钟）
+  final double averageReadingSpeed; // 平均阅读速度（字/分钟）
+  final Map<String, int> readingTimeByDate;
+
+  Map<String, dynamic> toMap() => <String, dynamic>{
+      'totalReadingTime': totalReadingTime,
+      'booksRead': booksRead,
+      'chaptersRead': chaptersRead,
+      'todayReadingTime': todayReadingTime,
+      'weekReadingTime': weekReadingTime,
+      'monthReadingTime': monthReadingTime,
+      'averageReadingSpeed': averageReadingSpeed,
+      'readingTimeByDate': readingTimeByDate,
+    };
 }

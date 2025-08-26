@@ -6,9 +6,9 @@ import '../entities/auth_user.dart';
 import '../repositories/auth_repository.dart';
 
 class RegisterUseCase implements UseCase<AuthUser, RegisterParams> {
-  final AuthRepository repository;
 
   RegisterUseCase(this.repository);
+  final AuthRepository repository;
 
   @override
   Future<Either<AppError, AuthUser>> call(RegisterParams params) async {
@@ -24,7 +24,7 @@ class RegisterUseCase implements UseCase<AuthUser, RegisterParams> {
     }
 
     // 执行注册
-    final result = await repository.register(
+    final Either<AppError, AuthUser> result = await repository.register(
       username: params.username,
       password: params.password,
       email: params.email,
@@ -33,8 +33,8 @@ class RegisterUseCase implements UseCase<AuthUser, RegisterParams> {
     );
 
     return result.fold(
-      (error) => Left(error),
-      (user) async {
+      Left.new,
+      (AuthUser user) async {
         // 保存用户信息到本地
         await repository.saveLocalUser(user);
         return Right(user);
@@ -44,11 +44,6 @@ class RegisterUseCase implements UseCase<AuthUser, RegisterParams> {
 }
 
 class RegisterParams extends Equatable {
-  final String username;
-  final String password;
-  final String? email;
-  final String? phone;
-  final String? inviteCode;
 
   const RegisterParams({
     required this.username,
@@ -57,7 +52,12 @@ class RegisterParams extends Equatable {
     this.phone,
     this.inviteCode,
   });
+  final String username;
+  final String password;
+  final String? email;
+  final String? phone;
+  final String? inviteCode;
 
   @override
-  List<Object?> get props => [username, password, email, phone, inviteCode];
+  List<Object?> get props => <Object?>[username, password, email, phone, inviteCode];
 }

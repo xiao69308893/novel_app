@@ -1,5 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
+import 'package:novel_app/core/errors/app_error.dart';
+import 'package:novel_app/features/bookself/domain/entities/user_profile.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../../../core/utils/typedef.dart';
 import '../../../../shared/models/user_model.dart';
@@ -7,32 +9,32 @@ import '../repositories/bookshelf_repository.dart';
 
 /// 获取用户信息用例
 class GetUserProfile extends UseCase<UserModel, NoParams> {
-  final BookshelfRepository repository;
 
   GetUserProfile(this.repository);
+  final BookshelfRepository repository;
 
   @override
   ResultFuture<UserModel> call(NoParams params) async => (await repository.getUserProfile()).fold(
-        (error) => Left(error),
-        (userProfile) => Right(userProfile.user),
+        Left.new,
+        (UserProfile userProfile) => Right(userProfile.user),
       );
 }
 
 /// 更新用户信息用例
 class UpdateUserProfile extends UseCase<UserModel, UpdateUserProfileParams> {
-  final BookshelfRepository repository;
 
   UpdateUserProfile(this.repository);
+  final BookshelfRepository repository;
 
   @override
   ResultFuture<UserModel> call(UpdateUserProfileParams params) async {
     // 需要先获取当前用户信息，然后更新
-    final currentUserResult = await repository.getUserProfile();
+    final Either<AppError, UserProfile> currentUserResult = await repository.getUserProfile();
     return currentUserResult.fold(
-      (error) => Left(error),
-      (userProfile) {
+      Left.new,
+      (UserProfile userProfile) {
         // 创建更新后的UserModel
-        final updatedUser = UserModel(
+        final UserModel updatedUser = UserModel(
           id: userProfile.user.id,
           username: userProfile.user.username,
           email: params.email ?? userProfile.user.email,
@@ -71,14 +73,14 @@ class UpdateUserProfileParams extends Equatable {
   final String? phone;
 
   @override
-  List<Object?> get props => [nickname, avatar, bio, email, phone];
+  List<Object?> get props => <Object?>[nickname, avatar, bio, email, phone];
 }
 
 /// 获取用户统计用例
 class GetUserStats extends UseCase<UserStats, NoParams> {
-  final BookshelfRepository repository;
 
   GetUserStats(this.repository);
+  final BookshelfRepository repository;
 
   @override
   ResultFuture<UserStats> call(NoParams params) async => repository.getUserStats();
@@ -86,9 +88,9 @@ class GetUserStats extends UseCase<UserStats, NoParams> {
 
 /// 获取用户设置用例
 class GetUserSettings extends UseCase<UserSettings, NoParams> {
-  final BookshelfRepository repository;
 
   GetUserSettings(this.repository);
+  final BookshelfRepository repository;
 
   @override
   ResultFuture<UserSettings> call(NoParams params) async => repository.getUserSettings();
@@ -96,18 +98,18 @@ class GetUserSettings extends UseCase<UserSettings, NoParams> {
 
 /// 更新用户设置用例
 class UpdateUserSettings extends UseCase<void, UpdateUserSettingsParams> {
-  final BookshelfRepository repository;
 
   UpdateUserSettings(this.repository);
+  final BookshelfRepository repository;
   @override
   ResultFuture<void> call(UpdateUserSettingsParams params) async {
     // 需要先获取当前设置，然后更新
-    final currentSettingsResult = await repository.getUserSettings();
+    final Either<AppError, UserSettings> currentSettingsResult = await repository.getUserSettings();
     return currentSettingsResult.fold(
-      (error) => Left(error),
-      (currentSettings) {
+      Left.new,
+      (UserSettings currentSettings) {
         // 创建更新后的UserSettings
-        final updatedSettings = UserSettings(
+        final UserSettings updatedSettings = UserSettings(
           notifications: params.notifications ?? currentSettings.notifications,
           reader: params.reader ?? currentSettings.reader,
           privacy: params.privacy ?? currentSettings.privacy,
@@ -132,14 +134,14 @@ class UpdateUserSettingsParams extends Equatable {
   final PrivacySettings? privacy;
 
   @override
-  List<Object?> get props => [reader, notifications, privacy];
+  List<Object?> get props => <Object?>[reader, notifications, privacy];
 }
 
 /// 签到用例
 class Checkin extends UseCase<Map<String, dynamic>, NoParams> {
-  final BookshelfRepository repository;
 
   Checkin(this.repository);
+  final BookshelfRepository repository;
 
   @override
   ResultFuture<Map<String, dynamic>> call(NoParams params) async => repository.checkIn();
@@ -219,5 +221,5 @@ class ChangePasswordParams extends Equatable {
   final String newPassword;
 
   @override
-  List<Object> get props => [oldPassword, newPassword];
+  List<Object> get props => <Object>[oldPassword, newPassword];
 }

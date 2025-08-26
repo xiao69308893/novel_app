@@ -42,6 +42,28 @@ enum ErrorSeverity {
 
 /// 应用基础错误类
 abstract class AppError implements Exception {
+
+  const AppError({
+    required this.type,
+    required this.message,
+    required this.timestamp, this.code,
+    this.originalError,
+    this.stackTrace,
+    this.severity = ErrorSeverity.medium,
+    this.data,
+  });
+
+  /// 创建未知错误
+  factory AppError.unknown(String message, {
+    dynamic originalError,
+    StackTrace? stackTrace,
+    Map<String, dynamic>? data,
+  }) => _UnknownError(
+      message: message,
+      originalError: originalError,
+      stackTrace: stackTrace,
+      data: data,
+    );
   /// 错误类型
   final AppErrorType type;
   
@@ -65,17 +87,6 @@ abstract class AppError implements Exception {
   
   /// 额外数据
   final Map<String, dynamic>? data;
-
-  const AppError({
-    required this.type,
-    required this.message,
-    this.code,
-    this.originalError,
-    this.stackTrace,
-    this.severity = ErrorSeverity.medium,
-    required this.timestamp,
-    this.data,
-  });
 
   /// 是否为网络相关错误
   bool get isNetworkError => type == AppErrorType.network || 
@@ -104,8 +115,7 @@ abstract class AppError implements Exception {
                                 type == AppErrorType.noInternet;
 
   /// 转换为Map
-  Map<String, dynamic> toMap() {
-    return {
+  Map<String, dynamic> toMap() => <String, dynamic>{
       'type': type.name,
       'message': message,
       'code': code,
@@ -114,77 +124,42 @@ abstract class AppError implements Exception {
       'data': data,
       'original_error': originalError?.toString(),
     };
-  }
 
   @override
-  String toString() {
-    return 'AppError{type: $type, message: $message, code: $code}';
-  }
-
-  /// 创建未知错误
-  factory AppError.unknown(String message, {
-    dynamic originalError,
-    StackTrace? stackTrace,
-    Map<String, dynamic>? data,
-  }) {
-    return _UnknownError(
-      message: message,
-      originalError: originalError,
-      stackTrace: stackTrace,
-      data: data,
-    );
-  }
+  String toString() => 'AppError{type: $type, message: $message, code: $code}';
 }
 
 /// 未知错误实现类
 class _UnknownError extends AppError {
   _UnknownError({
-    required String message,
-    dynamic originalError,
-    StackTrace? stackTrace,
-    Map<String, dynamic>? data,
+    required super.message,
+    super.originalError,
+    super.stackTrace,
+    super.data,
   }) : super(
          type: AppErrorType.unknown,
-         message: message,
          code: 'UNKNOWN_ERROR',
-         originalError: originalError,
-         stackTrace: stackTrace,
          severity: ErrorSeverity.medium,
          timestamp: DateTime.now(),
-         data: data,
        );
 }
 
 /// 网络错误
 class NetworkError extends AppError {
-  /// HTTP状态码
-  final int? statusCode;
-  
-  /// 请求URL
-  final String? url;
-  
-  /// 请求方法
-  final String? method;
 
   NetworkError({
-    required String message,
-    String? code,
+    required super.message,
+    super.code,
     this.statusCode,
     this.url,
     this.method,
-    dynamic originalError,
-    StackTrace? stackTrace,
-    ErrorSeverity severity = ErrorSeverity.medium,
-    Map<String, dynamic>? data,
+    super.originalError,
+    super.stackTrace,
+    super.severity,
+    super.data,
   }) : super(
          type: AppErrorType.network,
-         message: message,
-         code: code,
-         originalError: originalError,
-         stackTrace: stackTrace,
-         severity: severity,
          timestamp: DateTime.now(),
-         data: data,
        );
 
   /// 从HTTP状态码创建网络错误
@@ -254,11 +229,19 @@ class NetworkError extends AppError {
       severity: severity,
     );
   }
+  /// HTTP状态码
+  final int? statusCode;
+  
+  /// 请求URL
+  final String? url;
+  
+  /// 请求方法
+  final String? method;
 
   @override
   Map<String, dynamic> toMap() {
-    final map = super.toMap();
-    map.addAll({
+    final Map<String, dynamic> map = super.toMap();
+    map.addAll(<String, dynamic>{
       'status_code': statusCode,
       'url': url,
       'method': method,
@@ -269,30 +252,25 @@ class NetworkError extends AppError {
 
 /// 超时错误
 class TimeoutError extends AppError {
+
+  TimeoutError({
+    required super.message,
+    required this.timeoutDuration,
+    super.code,
+    super.originalError,
+    super.stackTrace,
+    super.data,
+  }) : super(
+         type: AppErrorType.timeout,
+         severity: ErrorSeverity.medium,
+         timestamp: DateTime.now(),
+       );
   /// 超时时长（毫秒）
   final int timeoutDuration;
 
-  TimeoutError({
-    required String message,
-    required this.timeoutDuration,
-    String? code,
-    dynamic originalError,
-    StackTrace? stackTrace,
-    Map<String, dynamic>? data,
-  }) : super(
-         type: AppErrorType.timeout,
-         message: message,
-         code: code,
-         originalError: originalError,
-         stackTrace: stackTrace,
-         severity: ErrorSeverity.medium,
-         timestamp: DateTime.now(),
-         data: data,
-       );
-
   @override
   Map<String, dynamic> toMap() {
-    final map = super.toMap();
+    final Map<String, dynamic> map = super.toMap();
     map['timeout_duration'] = timeoutDuration;
     return map;
   }
@@ -301,22 +279,15 @@ class TimeoutError extends AppError {
 /// 认证错误
 class AuthError extends AppError {
   AuthError({
-    required String message,
-    String? code,
-    AppErrorType type = AppErrorType.unauthorized,
-    dynamic originalError,
-    StackTrace? stackTrace,
-    ErrorSeverity severity = ErrorSeverity.high,
-    Map<String, dynamic>? data,
+    required super.message,
+    super.code,
+    super.type = AppErrorType.unauthorized,
+    super.originalError,
+    super.stackTrace,
+    super.severity = ErrorSeverity.high,
+    super.data,
   }) : super(
-         type: type,
-         message: message,
-         code: code,
-         originalError: originalError,
-         stackTrace: stackTrace,
-         severity: severity,
          timestamp: DateTime.now(),
-         data: data,
        );
 
   /// Token过期错误
@@ -324,51 +295,40 @@ class AuthError extends AppError {
     String? message,
     dynamic originalError,
     StackTrace? stackTrace,
-  }) {
-    return AuthError(
+  }) => AuthError(
       type: AppErrorType.tokenExpired,
       message: message ?? '登录已过期，请重新登录',
       code: ApiConstants.errorCodeTokenExpired,
       originalError: originalError,
       stackTrace: stackTrace,
     );
-  }
 
   /// 无权限错误
   factory AuthError.forbidden({
     String? message,
     dynamic originalError,
     StackTrace? stackTrace,
-  }) {
-    return AuthError(
+  }) => AuthError(
       type: AppErrorType.forbidden,
       message: message ?? '没有访问权限',
       code: ApiConstants.errorCodeNoPermission,
       originalError: originalError,
       stackTrace: stackTrace,
     );
-  }
 }
 
 /// 数据错误
 class DataError extends AppError {
   DataError({
-    required String message,
-    AppErrorType type = AppErrorType.parsing,
-    String? code,
-    dynamic originalError,
-    StackTrace? stackTrace,
-    ErrorSeverity severity = ErrorSeverity.medium,
-    Map<String, dynamic>? data,
+    required super.message,
+    super.type = AppErrorType.parsing,
+    super.code,
+    super.originalError,
+    super.stackTrace,
+    super.severity,
+    super.data,
   }) : super(
-         type: type,
-         message: message,
-         code: code,
-         originalError: originalError,
-         stackTrace: stackTrace,
-         severity: severity,
          timestamp: DateTime.now(),
-         data: data,
        );
 
   /// 数据解析错误
@@ -376,68 +336,55 @@ class DataError extends AppError {
     String? message,
     dynamic originalError,
     StackTrace? stackTrace,
-  }) {
-    return DataError(
+  }) => DataError(
       message: message ?? '数据解析失败',
       code: 'PARSING_ERROR',
       originalError: originalError,
       stackTrace: stackTrace,
     );
-  }
 
   /// 数据验证错误
   factory DataError.validation({
     required String message,
     String? code,
     Map<String, dynamic>? data,
-  }) {
-    return DataError(
+  }) => DataError(
       type: AppErrorType.validation,
       message: message,
       code: code ?? 'VALIDATION_ERROR',
       data: data,
       severity: ErrorSeverity.low,
     );
-  }
 
   /// 资源未找到错误
   factory DataError.notFound({
     String? message,
     String? resourceType,
     String? resourceId,
-  }) {
-    return DataError(
+  }) => DataError(
       type: AppErrorType.notFound,
       message: message ?? '请求的资源不存在',
       code: ApiConstants.errorCodeResourceNotFound,
-      data: {
+      data: <String, dynamic>{
         'resource_type': resourceType,
         'resource_id': resourceId,
       },
       severity: ErrorSeverity.low,
     );
-  }
 }
 
 /// 系统错误
 class SystemError extends AppError {
   SystemError({
-    required String message,
-    AppErrorType type = AppErrorType.platform,
-    String? code,
-    dynamic originalError,
-    StackTrace? stackTrace,
-    ErrorSeverity severity = ErrorSeverity.high,
-    Map<String, dynamic>? data,
+    required super.message,
+    super.type = AppErrorType.platform,
+    super.code,
+    super.originalError,
+    super.stackTrace,
+    super.severity = ErrorSeverity.high,
+    super.data,
   }) : super(
-         type: type,
-         message: message,
-         code: code,
-         originalError: originalError,
-         stackTrace: stackTrace,
-         severity: severity,
          timestamp: DateTime.now(),
-         data: data,
        );
 
   /// 权限错误
@@ -446,16 +393,14 @@ class SystemError extends AppError {
     String? permission,
     dynamic originalError,
     StackTrace? stackTrace,
-  }) {
-    return SystemError(
+  }) => SystemError(
       type: AppErrorType.permission,
       message: message,
       code: 'PERMISSION_DENIED',
       originalError: originalError,
       stackTrace: stackTrace,
-      data: {'permission': permission},
+      data: <String, dynamic>{'permission': permission},
     );
-  }
 
   /// 平台错误
   factory SystemError.platform({
@@ -463,83 +408,63 @@ class SystemError extends AppError {
     String? platform,
     dynamic originalError,
     StackTrace? stackTrace,
-  }) {
-    return SystemError(
+  }) => SystemError(
       message: message,
       code: 'PLATFORM_ERROR',
       originalError: originalError,
       stackTrace: stackTrace,
-      data: {'platform': platform},
+      data: <String, dynamic>{'platform': platform},
     );
-  }
 }
 
 /// 业务错误
 class BusinessError extends AppError {
   BusinessError({
-    required String message,
-    String? code,
-    dynamic originalError,
-    StackTrace? stackTrace,
-    ErrorSeverity severity = ErrorSeverity.medium,
-    Map<String, dynamic>? data,
+    required super.message,
+    super.code,
+    super.originalError,
+    super.stackTrace,
+    super.severity,
+    super.data,
   }) : super(
          type: AppErrorType.business,
-         message: message,
-         code: code,
-         originalError: originalError,
-         stackTrace: stackTrace,
-         severity: severity,
          timestamp: DateTime.now(),
-         data: data,
        );
 
   /// VIP权限错误
   factory BusinessError.vipRequired({
     String? message,
     String? resourceType,
-  }) {
-    return BusinessError(
+  }) => BusinessError(
       message: message ?? '该功能需要VIP权限',
       code: ApiConstants.errorCodeVipRequired,
-      data: {'resource_type': resourceType},
-      severity: ErrorSeverity.medium,
+      data: <String, dynamic>{'resource_type': resourceType},
     );
-  }
 
   /// 章节锁定错误
   factory BusinessError.chapterLocked({
     String? message,
     String? chapterId,
-  }) {
-    return BusinessError(
+  }) => BusinessError(
       message: message ?? '该章节已锁定',
       code: ApiConstants.errorCodeChapterLocked,
-      data: {'chapter_id': chapterId},
+      data: <String, dynamic>{'chapter_id': chapterId},
       severity: ErrorSeverity.low,
     );
-  }
 }
 
 /// 存储错误
 class StorageError extends AppError {
   StorageError({
-    required String message,
-    AppErrorType type = AppErrorType.storage,
-    String? code,
-    dynamic originalError,
-    StackTrace? stackTrace,
-    ErrorSeverity severity = ErrorSeverity.medium,
-    Map<String, dynamic>? data,
+    required super.message,
+    super.type = AppErrorType.storage,
+    super.code,
+    super.originalError,
+    super.stackTrace,
+    super.severity,
+    super.data,
   }) : super(
-         type: type,
-         message: message,
-         code: code,
-         originalError: originalError,
-         stackTrace: stackTrace,
-         severity: severity,
          timestamp: DateTime.now(),
-         data: data,
        );
 
   /// 数据库错误
@@ -549,19 +474,17 @@ class StorageError extends AppError {
     String? table,
     dynamic originalError,
     StackTrace? stackTrace,
-  }) {
-    return StorageError(
+  }) => StorageError(
       type: AppErrorType.database,
       message: message,
       code: ApiConstants.errorCodeDatabaseError,
       originalError: originalError,
       stackTrace: stackTrace,
-      data: {
+      data: <String, dynamic>{
         'operation': operation,
         'table': table,
       },
     );
-  }
 
   /// 缓存错误
   factory StorageError.cache({
@@ -569,17 +492,15 @@ class StorageError extends AppError {
     String? cacheKey,
     dynamic originalError,
     StackTrace? stackTrace,
-  }) {
-    return StorageError(
+  }) => StorageError(
       type: AppErrorType.cache,
       message: message,
       code: 'CACHE_ERROR',
       originalError: originalError,
       stackTrace: stackTrace,
-      data: {'cache_key': cacheKey},
+      data: <String, dynamic>{'cache_key': cacheKey},
       severity: ErrorSeverity.low,
     );
-  }
 }
 
 /// 用户取消错误
@@ -593,7 +514,7 @@ class UserCancelledError extends AppError {
          code: 'USER_CANCELLED',
          severity: ErrorSeverity.low,
          timestamp: DateTime.now(),
-         data: operation != null ? {'operation': operation} : null,
+         data: operation != null ? <String, dynamic>{'operation': operation} : null,
        );
 }
 

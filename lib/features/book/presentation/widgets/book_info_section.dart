@@ -1,27 +1,27 @@
 // 小说信息区域组件
 import 'package:flutter/material.dart';
+import 'package:novel_app/shared/models/novel_model.dart';
 import '../../../../app/themes/app_theme.dart';
 import '../../domain/entities/book_detail.dart';
 
 class BookInfoSection extends StatelessWidget {
-  final BookDetail bookDetail;
 
   const BookInfoSection({
-    Key? key,
-    required this.bookDetail,
-  }) : super(key: key);
+    required this.bookDetail, super.key,
+  });
+  final BookDetail bookDetail;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final novel = bookDetail.novel;
+    final ThemeData theme = Theme.of(context);
+    final NovelModel novel = bookDetail.novel;
 
-    return Container(
+    return DecoratedBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
+          colors: <Color>[
             theme.primaryColor.withValues(alpha: 0.8),
             theme.primaryColor.withValues(alpha: 0.6),
           ],
@@ -32,12 +32,12 @@ class BookInfoSection extends StatelessWidget {
           padding: const EdgeInsets.all(AppTheme.spacingRegular),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               const SizedBox(height: 56), // AppBar height
               
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   // 封面
                   ClipRRect(
                     borderRadius: BorderRadius.circular(AppTheme.radiusRegular),
@@ -48,9 +48,7 @@ class BookInfoSection extends StatelessWidget {
                           ? Image.network(
                               novel.coverUrl!,
                               fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return _buildPlaceholder();
-                              },
+                              errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) => _buildPlaceholder(),
                             )
                           : _buildPlaceholder(),
                     ),
@@ -62,7 +60,7 @@ class BookInfoSection extends StatelessWidget {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
                         // 标题
                         Text(
                           novel.title,
@@ -91,7 +89,7 @@ class BookInfoSection extends StatelessWidget {
                         // 分类和状态
                         Wrap(
                           spacing: AppTheme.spacingSmall,
-                          children: [
+                          children: <Widget>[
                             if (novel.category != null)
                               Container(
                                 padding: const EdgeInsets.symmetric(
@@ -136,7 +134,7 @@ class BookInfoSection extends StatelessWidget {
 
                         // 统计信息
                         Row(
-                          children: [
+                          children: <Widget>[
                             Text(
                               novel.formattedWordCount,
                               style: const TextStyle(
@@ -147,7 +145,7 @@ class BookInfoSection extends StatelessWidget {
                             const SizedBox(width: AppTheme.spacingRegular),
                             if (novel.rating != null)
                               Row(
-                                children: [
+                                children: <Widget>[
                                   const Icon(
                                     Icons.star,
                                     color: Colors.amber,
@@ -192,8 +190,7 @@ class BookInfoSection extends StatelessWidget {
     );
   }
 
-  Widget _buildPlaceholder() {
-    return Container(
+  Widget _buildPlaceholder() => ColoredBox(
       color: Colors.white.withValues(alpha: 0.2),
       child: const Icon(
         Icons.book,
@@ -201,5 +198,4 @@ class BookInfoSection extends StatelessWidget {
         size: 40,
       ),
     );
-  }
 }

@@ -10,33 +10,12 @@ enum ApiStatus {
 
 /// 通用API响应模型
 class ApiResponse<T> {
-  /// 响应状态
-  final ApiStatus status;
-  
-  /// 响应数据
-  final T? data;
-  
-  /// 错误信息
-  final String? message;
-  
-  /// 错误代码
-  final int? code;
-  
-  /// 是否成功
-  final bool success;
-  
-  /// 额外信息
-  final Map<String, dynamic>? extra;
-  
-  /// 时间戳
-  final DateTime timestamp;
 
   ApiResponse._({
     required this.status,
-    this.data,
+    required this.success, this.data,
     this.message,
     this.code,
-    required this.success,
     this.extra,
     DateTime? timestamp,
   }) : timestamp = timestamp ?? DateTime.now();
@@ -46,15 +25,13 @@ class ApiResponse<T> {
     T data, [
     String? message,
     Map<String, dynamic>? extra,
-  ]) {
-    return ApiResponse._(
+  ]) => ApiResponse._(
       status: ApiStatus.success,
       data: data,
       message: message ?? '操作成功',
       success: true,
       extra: extra,
     );
-  }
 
   /// 错误响应
   factory ApiResponse.error(
@@ -62,8 +39,7 @@ class ApiResponse<T> {
     int? code,
     T? data,
     Map<String, dynamic>? extra,
-  }) {
-    return ApiResponse._(
+  }) => ApiResponse._(
       status: ApiStatus.error,
       data: data,
       message: message,
@@ -71,25 +47,20 @@ class ApiResponse<T> {
       success: false,
       extra: extra,
     );
-  }
 
   /// 加载中响应
-  factory ApiResponse.loading([String? message]) {
-    return ApiResponse._(
+  factory ApiResponse.loading([String? message]) => ApiResponse._(
       status: ApiStatus.loading,
       message: message ?? '加载中...',
       success: false,
     );
-  }
 
   /// 空数据响应
-  factory ApiResponse.empty([String? message]) {
-    return ApiResponse._(
+  factory ApiResponse.empty([String? message]) => ApiResponse._(
       status: ApiStatus.empty,
       message: message ?? '暂无数据',
       success: false,
     );
-  }
 
   /// 从JSON创建响应
   factory ApiResponse.fromJson(
@@ -97,10 +68,10 @@ class ApiResponse<T> {
     T Function(dynamic)? fromJsonT,
   ) {
     try {
-      final success = json['success'] as bool? ?? 
+      final bool success = json['success'] as bool? ?? 
                      (json['code'] == 200 || json['code'] == '200' || json['status'] == 'success');
-      final code = _parseCode(json['code'] ?? json['status_code']);
-      final message = json['message'] as String? ?? 
+      final int? code = _parseCode(json['code'] ?? json['status_code']);
+      final String message = json['message'] as String? ?? 
                      json['msg'] as String? ?? 
                      (success ? '操作成功' : '操作失败');
 
@@ -134,6 +105,26 @@ class ApiResponse<T> {
       return ApiResponse.error('响应解析失败: $e');
     }
   }
+  /// 响应状态
+  final ApiStatus status;
+  
+  /// 响应数据
+  final T? data;
+  
+  /// 错误信息
+  final String? message;
+  
+  /// 错误代码
+  final int? code;
+  
+  /// 是否成功
+  final bool success;
+  
+  /// 额外信息
+  final Map<String, dynamic>? extra;
+  
+  /// 时间戳
+  final DateTime timestamp;
 
   /// 解析状态码
   static int? _parseCode(dynamic code) {
@@ -145,7 +136,7 @@ class ApiResponse<T> {
 
   /// 提取额外信息
   static Map<String, dynamic>? _extractExtra(Map<String, dynamic> json) {
-    final extra = <String, dynamic>{};
+    final Map<String, dynamic> extra = <String, dynamic>{};
     
     // 提取分页信息
     if (json.containsKey('pagination')) {
@@ -180,7 +171,6 @@ class ApiResponse<T> {
     if (data == null) {
       return ApiResponse._(
         status: status,
-        data: null,
         message: message,
         code: code,
         success: success,
@@ -190,7 +180,7 @@ class ApiResponse<T> {
     }
     
     try {
-      final newData = mapper(data!);
+      final newData = mapper(data as T);
       return ApiResponse._(
         status: status,
         data: newData,
@@ -214,8 +204,7 @@ class ApiResponse<T> {
     int? code,
     bool? success,
     Map<String, dynamic>? extra,
-  }) {
-    return ApiResponse._(
+  }) => ApiResponse._(
       status: status ?? this.status,
       data: data ?? this.data,
       message: message ?? this.message,
@@ -224,7 +213,6 @@ class ApiResponse<T> {
       extra: extra ?? this.extra,
       timestamp: timestamp,
     );
-  }
 
   /// 是否为成功状态
   bool get isSuccess => status == ApiStatus.success && success;
@@ -248,10 +236,10 @@ class ApiResponse<T> {
     }
     
     // 从extra中直接提取分页信息
-    final page = extra?['page'] as int?;
-    final pageSize = extra?['page_size'] as int?;
-    final total = extra?['total'] as int?;
-    final hasMore = extra?['has_more'] as bool?;
+    final int? page = extra?['page'] as int?;
+    final int? pageSize = extra?['page_size'] as int?;
+    final int? total = extra?['total'] as int?;
+    final bool? hasMore = extra?['has_more'] as bool?;
     
     if (page != null || pageSize != null || total != null) {
       return PaginationInfo(
@@ -266,8 +254,7 @@ class ApiResponse<T> {
   }
 
   /// 转换为Map
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'status': status.name,
       'data': data,
       'message': message,
@@ -276,12 +263,9 @@ class ApiResponse<T> {
       'extra': extra,
       'timestamp': timestamp.toIso8601String(),
     };
-  }
 
   @override
-  String toString() {
-    return 'ApiResponse{status: $status, success: $success, message: $message, code: $code, hasData: $hasData}';
-  }
+  String toString() => 'ApiResponse{status: $status, success: $success, message: $message, code: $code, hasData: $hasData}';
 
   @override
   bool operator ==(Object other) {
@@ -295,17 +279,29 @@ class ApiResponse<T> {
   }
 
   @override
-  int get hashCode {
-    return status.hashCode ^
+  int get hashCode => status.hashCode ^
         data.hashCode ^
         message.hashCode ^
         code.hashCode ^
         success.hashCode;
-  }
 }
 
 /// 分页信息模型
 class PaginationInfo {
+
+  const PaginationInfo({
+    required this.page,
+    required this.pageSize,
+    required this.total,
+    this.hasMore,
+  });
+
+  factory PaginationInfo.fromJson(Map<String, dynamic> json) => PaginationInfo(
+      page: json['page'] as int? ?? json['current_page'] as int? ?? 1,
+      pageSize: json['page_size'] as int? ?? json['per_page'] as int? ?? 20,
+      total: json['total'] as int? ?? 0,
+      hasMore: json['has_more'] as bool?,
+    );
   /// 当前页码
   final int page;
   
@@ -333,24 +329,7 @@ class PaginationInfo {
   /// 是否有上一页
   bool get hasPreviousPage => !isFirstPage;
 
-  const PaginationInfo({
-    required this.page,
-    required this.pageSize,
-    required this.total,
-    this.hasMore,
-  });
-
-  factory PaginationInfo.fromJson(Map<String, dynamic> json) {
-    return PaginationInfo(
-      page: json['page'] as int? ?? json['current_page'] as int? ?? 1,
-      pageSize: json['page_size'] as int? ?? json['per_page'] as int? ?? 20,
-      total: json['total'] as int? ?? 0,
-      hasMore: json['has_more'] as bool?,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'page': page,
       'page_size': pageSize,
       'total': total,
@@ -361,19 +340,13 @@ class PaginationInfo {
       'has_next_page': hasNextPage,
       'has_previous_page': hasPreviousPage,
     };
-  }
 
   @override
-  String toString() {
-    return 'PaginationInfo{page: $page, pageSize: $pageSize, total: $total, hasMore: $hasMore}';
-  }
+  String toString() => 'PaginationInfo{page: $page, pageSize: $pageSize, total: $total, hasMore: $hasMore}';
 }
 
 /// 列表响应模型
 class ListResponse<T> {
-  final List<T> items;
-  final PaginationInfo? pagination;
-  final Map<String, dynamic>? extra;
 
   const ListResponse({
     required this.items,
@@ -385,12 +358,12 @@ class ListResponse<T> {
     Map<String, dynamic> json,
     T Function(Map<String, dynamic>) fromJsonT,
   ) {
-    final itemsJson = json['items'] as List? ?? 
+    final List itemsJson = json['items'] as List? ?? 
                      json['data'] as List? ?? 
                      json['list'] as List? ?? 
-                     [];
+                     <dynamic>[];
 
-    final items = itemsJson
+    final List<T> items = itemsJson
         .map((item) => fromJsonT(item as Map<String, dynamic>))
         .toList();
 
@@ -399,10 +372,10 @@ class ListResponse<T> {
       pagination = PaginationInfo.fromJson(json['pagination'] as Map<String, dynamic>);
     } else {
       // 尝试从根级别提取分页信息
-      final page = json['page'] as int?;
-      final pageSize = json['page_size'] as int? ?? json['per_page'] as int?;
-      final total = json['total'] as int?;
-      final hasMore = json['has_more'] as bool?;
+      final int? page = json['page'] as int?;
+      final int? pageSize = json['page_size'] as int? ?? json['per_page'] as int?;
+      final int? total = json['total'] as int?;
+      final bool? hasMore = json['has_more'] as bool?;
       
       if (page != null || pageSize != null || total != null) {
         pagination = PaginationInfo(
@@ -420,14 +393,15 @@ class ListResponse<T> {
       extra: ApiResponse._extractExtra(json),
     );
   }
+  final List<T> items;
+  final PaginationInfo? pagination;
+  final Map<String, dynamic>? extra;
 
-  Map<String, dynamic> toJson(Map<String, dynamic> Function(T) toJsonT) {
-    return {
+  Map<String, dynamic> toJson(Map<String, dynamic> Function(T) toJsonT) => <String, dynamic>{
       'items': items.map(toJsonT).toList(),
       'pagination': pagination?.toJson(),
       'extra': extra,
     };
-  }
 
   /// 是否为空列表
   bool get isEmpty => items.isEmpty;
@@ -439,16 +413,12 @@ class ListResponse<T> {
   int get length => items.length;
 
   /// 添加更多数据（用于分页加载）
-  ListResponse<T> addMore(List<T> moreItems, [PaginationInfo? newPagination]) {
-    return ListResponse(
-      items: [...items, ...moreItems],
+  ListResponse<T> addMore(List<T> moreItems, [PaginationInfo? newPagination]) => ListResponse(
+      items: <T>[...items, ...moreItems],
       pagination: newPagination ?? pagination,
       extra: extra,
     );
-  }
 
   @override
-  String toString() {
-    return 'ListResponse{itemCount: ${items.length}, pagination: $pagination}';
-  }
+  String toString() => 'ListResponse{itemCount: ${items.length}, pagination: $pagination}';
 }

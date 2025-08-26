@@ -7,42 +7,36 @@ import '../repositories/bookshelf_repository.dart';
 
 /// 获取书签列表参数
 class GetBookmarksParams extends Equatable {
-  final String? novelId;
-  final int page;
-  final int limit;
 
   const GetBookmarksParams({
     this.novelId,
     this.page = 1,
     this.limit = 20,
   });
+  final String? novelId;
+  final int page;
+  final int limit;
 
   @override
-  List<Object?> get props => [novelId, page, limit];
+  List<Object?> get props => <Object?>[novelId, page, limit];
 }
 
 /// 获取书签列表用例
 class GetBookmarks implements UseCase<List<BookmarkModel>, GetBookmarksParams> {
-  final BookshelfRepository repository;
 
   GetBookmarks(this.repository);
+  final BookshelfRepository repository;
 
   @override
-  Future<Either<AppError, List<BookmarkModel>>> call(GetBookmarksParams params) async {
-    return await repository.getBookmarks(
+  Future<Either<AppError, List<BookmarkModel>>> call(GetBookmarksParams params) async => repository.getBookmarks(
       novelId: params.novelId,
       page: params.page,
       limit: params.limit,
     );
-  }
 }
 
 /// 添加书签参数
 class AddBookmarkParams extends Equatable {
-  final String novelId;
-  final String chapterId;
-  final int position;
-  final String? note;
 
   const AddBookmarkParams({
     required this.novelId,
@@ -50,36 +44,36 @@ class AddBookmarkParams extends Equatable {
     required this.position,
     this.note,
   });
+  final String novelId;
+  final String chapterId;
+  final int position;
+  final String? note;
 
   @override
-  List<Object?> get props => [novelId, chapterId, position, note];
+  List<Object?> get props => <Object?>[novelId, chapterId, position, note];
 }
 
 /// 添加书签用例
 class AddBookmark implements UseCase<BookmarkModel, AddBookmarkParams> {
-  final BookshelfRepository repository;
 
   AddBookmark(this.repository);
+  final BookshelfRepository repository;
 
   @override
-  Future<Either<AppError, BookmarkModel>> call(AddBookmarkParams params) async {
-    return await repository.addBookmark(
+  Future<Either<AppError, BookmarkModel>> call(AddBookmarkParams params) async => repository.addBookmark(
       novelId: params.novelId,
       chapterId: params.chapterId,
       position: params.position,
       note: params.note,
     );
-  }
 }
 
 /// 删除书签用例
 class DeleteBookmark implements UseCase<void, String> {
-  final BookshelfRepository repository;
 
   DeleteBookmark(this.repository);
+  final BookshelfRepository repository;
 
   @override
-  Future<Either<AppError, void>> call(String bookmarkId) async {
-    return await repository.deleteBookmark(bookmarkId);
-  }
+  Future<Either<AppError, void>> call(String bookmarkId) async => repository.deleteBookmark(bookmarkId);
 }

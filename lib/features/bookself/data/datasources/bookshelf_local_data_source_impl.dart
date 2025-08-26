@@ -81,6 +81,10 @@ abstract class BookshelfLocalDataSource {
 
 /// 书架本地数据源实现
 class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
+
+  const BookshelfLocalDataSourceImpl({
+    required this.cacheManager,
+  });
   final CacheManager cacheManager;
   
   static const String _favoritesKey = 'favorite_novels';
@@ -93,14 +97,10 @@ class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
   static const String _userStatsKey = 'user_stats';
   static const String _userSettingsKey = 'user_settings';
 
-  const BookshelfLocalDataSourceImpl({
-    required this.cacheManager,
-  });
-
   @override
   Future<void> cacheFavoriteNovels(List<NovelModel> novels) async {
     try {
-      final data = json.encode(novels.map((novel) => novel.toJson()).toList());
+      final String data = json.encode(novels.map((NovelModel novel) => novel.toJson()).toList());
       await cacheManager.put(_favoritesKey, data, type: CacheType.disk);
     } catch (e) {
       throw CacheException(message: '缓存收藏列表失败: ${e.toString()}');
@@ -110,7 +110,7 @@ class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
   @override
   Future<List<NovelModel>?> getCachedFavoriteNovels() async {
     try {
-      final data = await cacheManager.get<String>(_favoritesKey, type: CacheType.disk);
+      final String? data = await cacheManager.get<String>(_favoritesKey, type: CacheType.disk);
       if (data != null) {
         final List<dynamic> jsonList = json.decode(data) as List<dynamic>;
         return jsonList.map((json) => NovelModel.fromJson(json as Map<String, dynamic>)).toList();
@@ -124,8 +124,8 @@ class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
   @override
   Future<void> cacheFavoriteStatus(String novelId, bool isFavorite) async {
     try {
-      final key = '$_favoriteStatusPrefix$novelId';
-      await cacheManager.put(key, isFavorite, type: CacheType.memory);
+      final String key = '$_favoriteStatusPrefix$novelId';
+      await cacheManager.put(key, isFavorite);
     } catch (e) {
       throw CacheException(message: '缓存收藏状态失败: ${e.toString()}');
     }
@@ -134,8 +134,8 @@ class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
   @override
   Future<bool?> getCachedFavoriteStatus(String novelId) async {
     try {
-      final key = '$_favoriteStatusPrefix$novelId';
-      return await cacheManager.get<bool>(key, type: CacheType.memory);
+      final String key = '$_favoriteStatusPrefix$novelId';
+      return await cacheManager.get<bool>(key);
     } catch (e) {
       return null;
     }
@@ -144,7 +144,7 @@ class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
   @override
   Future<void> batchUpdateFavoriteStatus(Map<String, bool> statusMap) async {
     try {
-      for (final entry in statusMap.entries) {
+      for (final MapEntry<String, bool> entry in statusMap.entries) {
         await cacheFavoriteStatus(entry.key, entry.value);
       }
     } catch (e) {
@@ -155,7 +155,7 @@ class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
   @override
   Future<void> cacheRecentlyReadNovels(List<NovelModel> novels) async {
     try {
-      final data = json.encode(novels.map((novel) => novel.toJson()).toList());
+      final String data = json.encode(novels.map((NovelModel novel) => novel.toJson()).toList());
       await cacheManager.put(_recentlyReadKey, data, type: CacheType.disk);
     } catch (e) {
       throw CacheException(message: '缓存最近阅读列表失败: ${e.toString()}');
@@ -165,7 +165,7 @@ class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
   @override
   Future<List<NovelModel>?> getCachedRecentlyReadNovels() async {
     try {
-      final data = await cacheManager.get<String>(_recentlyReadKey, type: CacheType.disk);
+      final String? data = await cacheManager.get<String>(_recentlyReadKey, type: CacheType.disk);
       if (data != null) {
         final List<dynamic> jsonList = json.decode(data) as List<dynamic>;
         return jsonList.map((json) => NovelModel.fromJson(json as Map<String, dynamic>)).toList();
@@ -179,7 +179,7 @@ class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
   @override
   Future<void> cacheRecommendedNovels(List<NovelModel> novels) async {
     try {
-      final data = json.encode(novels.map((novel) => novel.toJson()).toList());
+      final String data = json.encode(novels.map((NovelModel novel) => novel.toJson()).toList());
       await cacheManager.put(_recommendedKey, data, type: CacheType.disk);
     } catch (e) {
       throw CacheException(message: '缓存推荐列表失败: ${e.toString()}');
@@ -189,7 +189,7 @@ class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
   @override
   Future<List<NovelModel>?> getCachedRecommendedNovels() async {
     try {
-      final data = await cacheManager.get<String>(_recommendedKey, type: CacheType.disk);
+      final String? data = await cacheManager.get<String>(_recommendedKey, type: CacheType.disk);
       if (data != null) {
         final List<dynamic> jsonList = json.decode(data) as List<dynamic>;
         return jsonList.map((json) => NovelModel.fromJson(json as Map<String, dynamic>)).toList();
@@ -203,7 +203,7 @@ class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
   @override
   Future<void> cacheUserProfile(UserModel user) async {
     try {
-      final data = json.encode(user.toJson());
+      final String data = json.encode(user.toJson());
       await cacheManager.put(_userProfileKey, data, type: CacheType.disk);
     } catch (e) {
       throw CacheException(message: '缓存用户资料失败: ${e.toString()}');
@@ -213,9 +213,9 @@ class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
   @override
   Future<UserModel?> getCachedUserProfile() async {
     try {
-      final data = await cacheManager.get<String>(_userProfileKey, type: CacheType.disk);
+      final String? data = await cacheManager.get<String>(_userProfileKey, type: CacheType.disk);
       if (data != null) {
-        final jsonData = json.decode(data) as Map<String, dynamic>;
+        final Map<String, dynamic> jsonData = json.decode(data) as Map<String, dynamic>;
         return UserModel.fromJson(jsonData);
       }
       return null;
@@ -280,7 +280,7 @@ class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
   @override
   Future<void> cacheCheckinStatus(Map<String, dynamic> status) async {
     try {
-      final data = json.encode(status);
+      final String data = json.encode(status);
       await cacheManager.put(_checkinStatusKey, data, type: CacheType.disk);
     } catch (e) {
       throw CacheException(message: '缓存签到状态失败: ${e.toString()}');
@@ -290,9 +290,9 @@ class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
   @override
   Future<bool?> getCachedCheckinStatus() async {
     try {
-      final data = await cacheManager.get<String>(_checkinStatusKey, type: CacheType.disk);
+      final String? data = await cacheManager.get<String>(_checkinStatusKey, type: CacheType.disk);
       if (data != null) {
-        final jsonData = json.decode(data) as Map<String, dynamic>;
+        final Map<String, dynamic> jsonData = json.decode(data) as Map<String, dynamic>;
         return jsonData['checked_in'] as bool?;
       }
       return null;
@@ -304,7 +304,7 @@ class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
   @override
   Future<void> cacheReadingHistory(List<ReadingHistory> history) async {
     try {
-      final data = json.encode(history.map((h) => h.toJson()).toList());
+      final String data = json.encode(history.map((ReadingHistory h) => h.toJson()).toList());
       await cacheManager.put(_readingHistoryKey, data, type: CacheType.disk);
     } catch (e) {
       throw CacheException(message: '缓存阅读历史失败: ${e.toString()}');
@@ -314,7 +314,7 @@ class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
   @override
   Future<List<ReadingHistory>?> getCachedReadingHistory() async {
     try {
-      final data = await cacheManager.get<String>(_readingHistoryKey, type: CacheType.disk);
+      final String? data = await cacheManager.get<String>(_readingHistoryKey, type: CacheType.disk);
       if (data != null) {
         final List<dynamic> jsonList = json.decode(data) as List<dynamic>;
         return jsonList.map((json) => ReadingHistory.fromJson(json as Map<String, dynamic>)).toList();
@@ -334,26 +334,20 @@ class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
   }) async {
     try {
       // 获取现有历史记录
-      final existingHistory = await getCachedReadingHistory() ?? [];
+      final List<ReadingHistory> existingHistory = await getCachedReadingHistory() ?? <ReadingHistory>[];
       
       // 创建简单的小说模型（只包含基本信息）
-      final novel = NovelSimpleModel(
+      final NovelSimpleModel novel = NovelSimpleModel(
         id: novelId,
         title: '', // 这里需要从其他地方获取小说标题
         authorName: '',
         coverUrl: '',
         categoryName: '',
-        status: NovelStatus.serializing,
-        wordCount: 0,
-        chapterCount: 0,
         lastUpdateTime: DateTime.now(),
-        isFinished: false,
-        isVip: false,
-        isHot: false,
       );
       
       // 创建新的历史记录
-      final newRecord = ReadingHistory(
+      final ReadingHistory newRecord = ReadingHistory(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         userId: '', // 这里需要从用户会话中获取用户ID
         novel: novel,
@@ -362,7 +356,7 @@ class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
       );
       
       // 检查是否已存在相同小说的记录，如果存在则更新
-      final existingIndex = existingHistory.indexWhere((h) => h.novel.id == novelId);
+      final int existingIndex = existingHistory.indexWhere((ReadingHistory h) => h.novel.id == novelId);
       if (existingIndex != -1) {
         existingHistory[existingIndex] = newRecord;
       } else {
@@ -384,7 +378,7 @@ class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
   @override
   Future<void> cacheUserStats(UserStats stats) async {
     try {
-      final data = json.encode(stats.toJson());
+      final String data = json.encode(stats.toJson());
       await cacheManager.put(_userStatsKey, data, type: CacheType.disk);
     } catch (e) {
       throw CacheException(message: '缓存用户统计失败: ${e.toString()}');
@@ -394,9 +388,9 @@ class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
   @override
   Future<UserStats?> getCachedUserStats() async {
     try {
-      final data = await cacheManager.get<String>(_userStatsKey, type: CacheType.disk);
+      final String? data = await cacheManager.get<String>(_userStatsKey, type: CacheType.disk);
       if (data != null) {
-        final jsonData = json.decode(data) as Map<String, dynamic>;
+        final Map<String, dynamic> jsonData = json.decode(data) as Map<String, dynamic>;
         return UserStats.fromJson(jsonData);
       }
       return null;
@@ -408,7 +402,7 @@ class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
   @override
   Future<void> cacheUserSettings(UserSettings settings) async {
     try {
-      final data = json.encode(settings.toJson());
+      final String data = json.encode(settings.toJson());
       await cacheManager.put(_userSettingsKey, data, type: CacheType.disk);
     } catch (e) {
       throw CacheException(message: '缓存用户设置失败: ${e.toString()}');
@@ -418,9 +412,9 @@ class BookshelfLocalDataSourceImpl implements BookshelfLocalDataSource {
   @override
   Future<UserSettings?> getCachedUserSettings() async {
     try {
-      final data = await cacheManager.get<String>(_userSettingsKey, type: CacheType.disk);
+      final String? data = await cacheManager.get<String>(_userSettingsKey, type: CacheType.disk);
       if (data != null) {
-        final jsonData = json.decode(data) as Map<String, dynamic>;
+        final Map<String, dynamic> jsonData = json.decode(data) as Map<String, dynamic>;
         return UserSettings.fromJson(jsonData);
       }
       return null;

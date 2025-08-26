@@ -10,7 +10,7 @@ import '../widgets/auth_button.dart';
 import '../widgets/verification_input.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
-  const ForgotPasswordPage({Key? key}) : super(key: key);
+  const ForgotPasswordPage({super.key});
 
   @override
   State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
@@ -21,16 +21,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
   late TabController _tabController;
   
   // 手机找回
-  final _phoneFormKey = GlobalKey<FormState>();
-  final _phoneController = TextEditingController();
-  final _phoneCodeController = TextEditingController();
-  final _phonePasswordController = TextEditingController();
+  final GlobalKey<FormState> _phoneFormKey = GlobalKey<FormState>();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _phoneCodeController = TextEditingController();
+  final TextEditingController _phonePasswordController = TextEditingController();
   
   // 邮箱找回
-  final _emailFormKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _emailCodeController = TextEditingController();
-  final _emailPasswordController = TextEditingController();
+  final GlobalKey<FormState> _emailFormKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _emailCodeController = TextEditingController();
+  final TextEditingController _emailPasswordController = TextEditingController();
   
   bool _obscurePassword = true;
 
@@ -54,17 +54,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     
     return Scaffold(
       appBar: const CommonAppBar(
         title: '忘记密码',
-        showBackButton: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppTheme.spacingLarge),
         child: Column(
-          children: [
+          children: <Widget>[
             // 说明文本
             Text(
               '请选择找回密码的方式',
@@ -92,8 +91,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
     );
   }
 
-  Widget _buildTabBar(ThemeData theme) {
-    return Container(
+  Widget _buildTabBar(ThemeData theme) => DecoratedBox(
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppTheme.radiusRegular),
@@ -108,39 +106,35 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
         ),
         labelColor: Colors.white,
         unselectedLabelColor: theme.textTheme.bodyMedium?.color,
-        tabs: const [
+        tabs: const <Widget>[
           Tab(text: '手机找回'),
           Tab(text: '邮箱找回'),
         ],
       ),
     );
-  }
 
-  Widget _buildResetForm() {
-    return SizedBox(
+  Widget _buildResetForm() => SizedBox(
       height: 300,
       child: TabBarView(
         controller: _tabController,
-        children: [
+        children: <Widget>[
           _buildPhoneResetForm(),
           _buildEmailResetForm(),
         ],
       ),
     );
-  }
 
-  Widget _buildPhoneResetForm() {
-    return Form(
+  Widget _buildPhoneResetForm() => Form(
       key: _phoneFormKey,
       child: Column(
-        children: [
+        children: <Widget>[
           AuthInputField(
             controller: _phoneController,
             labelText: '手机号',
             hintText: '请输入手机号',
             prefixIcon: Icons.phone,
             keyboardType: TextInputType.phone,
-            validator: (value) {
+            validator: (String? value) {
               if (value == null || value.isEmpty) {
                 return '请输入手机号';
               }
@@ -177,7 +171,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                 });
               },
             ),
-            validator: (value) {
+            validator: (String? value) {
               if (value == null || value.isEmpty) {
                 return '请输入新密码';
               }
@@ -190,20 +184,18 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
         ],
       ),
     );
-  }
 
-  Widget _buildEmailResetForm() {
-    return Form(
+  Widget _buildEmailResetForm() => Form(
       key: _emailFormKey,
       child: Column(
-        children: [
+        children: <Widget>[
           AuthInputField(
             controller: _emailController,
             labelText: '邮箱',
             hintText: '请输入邮箱',
             prefixIcon: Icons.email,
             keyboardType: TextInputType.emailAddress,
-            validator: (value) {
+            validator: (String? value) {
               if (value == null || value.isEmpty) {
                 return '请输入邮箱';
               }
@@ -224,16 +216,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
             keyboardType: TextInputType.number,
             maxLength: 6,
             suffixIcon: BlocBuilder<VerificationCubit, VerificationState>(
-              builder: (context, state) {
-                return TextButton(
-                  onPressed: state is! VerificationSent ? () => _sendEmailCode() : null,
+              builder: (BuildContext context, VerificationState state) => TextButton(
+                  onPressed: state is! VerificationSent ? _sendEmailCode : null,
                   child: Text(
                     state is VerificationSent ? '${state.countdown}s' : '获取验证码',
                   ),
-                );
-              },
+                ),
             ),
-            validator: (value) {
+            validator: (String? value) {
               if (value == null || value.isEmpty) {
                 return '请输入验证码';
               }
@@ -262,7 +252,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                 });
               },
             ),
-            validator: (value) {
+            validator: (String? value) {
               if (value == null || value.isEmpty) {
                 return '请输入新密码';
               }
@@ -275,14 +265,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
         ],
       ),
     );
-  }
 
-  Widget _buildResetButton() {
-    return AuthButton(
+  Widget _buildResetButton() => AuthButton(
       text: '重置密码',
       onPressed: _handleResetPassword,
     );
-  }
 
   void _sendEmailCode() {
     if (_emailController.text.isEmpty) {
@@ -302,8 +289,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
   }
 
   void _handleResetPassword() {
-    final isPhoneReset = _tabController.index == 0;
-    final formKey = isPhoneReset ? _phoneFormKey : _emailFormKey;
+    final bool isPhoneReset = _tabController.index == 0;
+    final GlobalKey<FormState> formKey = isPhoneReset ? _phoneFormKey : _emailFormKey;
     
     if (formKey.currentState!.validate()) {
       // TODO: 实现忘记密码逻辑

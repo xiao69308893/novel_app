@@ -7,6 +7,11 @@ import 'network_interceptor.dart';
 import 'api_response.dart';
 
 class ApiClient {
+
+  // 私有构造函数
+  ApiClient._internal() {
+    _initializeDio();
+  }
   // 单例模式
   static ApiClient? _instance;
   static ApiClient get instance {
@@ -17,11 +22,6 @@ class ApiClient {
   late Dio _dio;
   late String _baseUrl;
 
-  // 私有构造函数
-  ApiClient._internal() {
-    _initializeDio();
-  }
-
   // 初始化Dio配置
   void _initializeDio() {
     _baseUrl = ApiConstants.apiPath;
@@ -31,14 +31,13 @@ class ApiClient {
       connectTimeout: const Duration(seconds: ApiConstants.connectTimeout),
       receiveTimeout: const Duration(seconds: ApiConstants.receiveTimeout),
       sendTimeout: const Duration(seconds: ApiConstants.connectTimeout),
-      headers: {
+      headers: <String, dynamic>{
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'User-Agent': ApiConstants.getUserAgent(),
         'X-App-Version': ApiConstants.appVersion,
         'X-Platform': ApiConstants.platform,
       },
-      responseType: ResponseType.json,
       followRedirects: true,
       maxRedirects: 3,
     ));
@@ -59,10 +58,8 @@ class ApiClient {
       _dio.interceptors.add(LogInterceptor(
         requestBody: true,
         responseBody: true,
-        requestHeader: true,
         responseHeader: false,
-        error: true,
-        logPrint: (obj) => Logger.debug('DIO', obj.toString()),
+        logPrint: (Object obj) => Logger.debug('DIO', obj.toString()),
       ));
     }
 
@@ -73,7 +70,7 @@ class ApiClient {
     if (kReleaseMode) {
       _dio.interceptors.add(
         CertificatePinningInterceptor(
-          allowedSHAFingerprints: ['YOUR_CERT_FINGERPRINT'],
+          allowedSHAFingerprints: <String>['YOUR_CERT_FINGERPRINT'],
         ),
       );
     }
@@ -257,7 +254,7 @@ class ApiClient {
         data: formData,
         queryParameters: queryParameters,
         options: options ?? Options(
-          headers: {'Content-Type': 'multipart/form-data'},
+          headers: <String, dynamic>{'Content-Type': 'multipart/form-data'},
         ),
         cancelToken: cancelToken,
         onSendProgress: onSendProgress,
@@ -323,12 +320,12 @@ class ApiClient {
   // ==================== 响应处理 ====================
 
   ApiResponse<T> _handleResponse<T>(Response response) {
-    final statusCode = response.statusCode ?? 0;
+    final int statusCode = response.statusCode ?? 0;
     
     if (ApiConstants.isSuccessStatusCode(statusCode)) {
       // 检查响应数据格式
       if (response.data is Map<String, dynamic>) {
-        final data = response.data as Map<String, dynamic>;
+        final Map<String, dynamic> data = response.data as Map<String, dynamic>;
         
         // 标准API响应格式
         if (data.containsKey('success') || data.containsKey('code')) {
@@ -361,13 +358,13 @@ class ApiClient {
         code = -1003;
         break;
       case DioExceptionType.badResponse:
-        final statusCode = error.response?.statusCode ?? 0;
+        final int statusCode = error.response?.statusCode ?? 0;
         message = _getErrorMessage(statusCode);
         code = statusCode;
         
         // 尝试解析错误响应
         if (error.response?.data is Map<String, dynamic>) {
-          final data = error.response!.data as Map<String, dynamic>;
+          final Map<String, dynamic> data = error.response!.data as Map<String, dynamic>;
           message = (data['message'] ?? data['error'] ?? message).toString();
         }
         break;
@@ -482,7 +479,7 @@ class ApiClient {
   }
 
   // 获取当前配置
-  Map<String, dynamic> getConfig() => {
+  Map<String, dynamic> getConfig() => <String, dynamic>{
       'baseUrl': _dio.options.baseUrl,
       'connectTimeout': _dio.options.connectTimeout?.inMilliseconds,
       'receiveTimeout': _dio.options.receiveTimeout?.inMilliseconds,
@@ -508,8 +505,8 @@ class RetryInterceptor extends Interceptor {
   final Duration retryDelay;
 
   @override
-  void onError(DioException err, ErrorInterceptorHandler handler) async {
-    final extra = err.requestOptions.extra;
+  Future<void> onError(DioException err, ErrorInterceptorHandler handler) async {
+    final Map<String, dynamic> extra = err.requestOptions.extra;
     final retryCount = extra['retryCount'] ?? 0;
 
     if ((retryCount < maxRetries) as bool && _shouldRetry(err)) {
@@ -522,7 +519,7 @@ class RetryInterceptor extends Interceptor {
       err.requestOptions.extra['retryCount'] = retryCount + 1;
       
       try {
-        final response = await Dio().fetch(err.requestOptions);
+        final Response response = await Dio().fetch(err.requestOptions);
         handler.resolve(response);
       } catch (e) {
         handler.next(err);

@@ -2,6 +2,33 @@ import 'package:equatable/equatable.dart';
 
 /// 阅读会话
 class ReadingSession extends Equatable {
+
+  const ReadingSession({
+    required this.id,
+    required this.novelId,
+    required this.chapterId,
+    required this.startTime,
+    required this.deviceId, this.endTime,
+    this.progress = 0.0,
+    this.position = 0,
+    this.duration = 0,
+    this.isSynced = false,
+  });
+
+  factory ReadingSession.fromJson(Map<String, dynamic> json) => ReadingSession(
+      id: json['id'] as String,
+      novelId: json['novelId'] as String,
+      chapterId: json['chapterId'] as String,
+      startTime: DateTime.parse(json['startTime'] as String),
+      endTime: json['endTime'] != null 
+          ? DateTime.parse(json['endTime'] as String) 
+          : null,
+      progress: (json['progress'] as num?)?.toDouble() ?? 0.0,
+      position: json['position'] as int? ?? 0,
+      duration: json['duration'] as int? ?? 0,
+      deviceId: json['deviceId'] as String,
+      isSynced: json['isSynced'] as bool? ?? false,
+    );
   /// 会话ID
   final String id;
   
@@ -32,21 +59,8 @@ class ReadingSession extends Equatable {
   /// 是否同步到云端
   final bool isSynced;
 
-  const ReadingSession({
-    required this.id,
-    required this.novelId,
-    required this.chapterId,
-    required this.startTime,
-    this.endTime,
-    this.progress = 0.0,
-    this.position = 0,
-    this.duration = 0,
-    required this.deviceId,
-    this.isSynced = false,
-  });
-
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         id,
         novelId,
         chapterId,
@@ -81,8 +95,7 @@ class ReadingSession extends Equatable {
     int? duration,
     String? deviceId,
     bool? isSynced,
-  }) {
-    return ReadingSession(
+  }) => ReadingSession(
       id: id ?? this.id,
       novelId: novelId ?? this.novelId,
       chapterId: chapterId ?? this.chapterId,
@@ -94,10 +107,8 @@ class ReadingSession extends Equatable {
       deviceId: deviceId ?? this.deviceId,
       isSynced: isSynced ?? this.isSynced,
     );
-  }
 
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'id': id,
       'novelId': novelId,
       'chapterId': chapterId,
@@ -109,22 +120,4 @@ class ReadingSession extends Equatable {
       'deviceId': deviceId,
       'isSynced': isSynced,
     };
-  }
-
-  factory ReadingSession.fromJson(Map<String, dynamic> json) {
-    return ReadingSession(
-      id: json['id'] as String,
-      novelId: json['novelId'] as String,
-      chapterId: json['chapterId'] as String,
-      startTime: DateTime.parse(json['startTime'] as String),
-      endTime: json['endTime'] != null 
-          ? DateTime.parse(json['endTime'] as String) 
-          : null,
-      progress: (json['progress'] as num?)?.toDouble() ?? 0.0,
-      position: json['position'] as int? ?? 0,
-      duration: json['duration'] as int? ?? 0,
-      deviceId: json['deviceId'] as String,
-      isSynced: json['isSynced'] as bool? ?? false,
-    );
-  }
 }

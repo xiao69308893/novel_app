@@ -4,13 +4,12 @@ import 'package:equatable/equatable.dart';
 import '../../../../core/errors/app_error.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../../../shared/models/chapter_model.dart';
-import '../../../../shared/models/chapter_model.dart';
 import '../repositories/book_repository.dart';
 
 class UpdateReadingProgressUseCase implements UseCase<bool, UpdateReadingProgressParams> {
-  final BookRepository repository;
 
   UpdateReadingProgressUseCase(this.repository);
+  final BookRepository repository;
 
   @override
   Future<Either<AppError, bool>> call(UpdateReadingProgressParams params) async {
@@ -28,7 +27,7 @@ class UpdateReadingProgressUseCase implements UseCase<bool, UpdateReadingProgres
       return Left(DataError.validation(message: '阅读进度必须在0-1之间'));
     }
 
-    return await repository.updateReadingProgress(
+    return repository.updateReadingProgress(
       bookId: params.bookId,
       chapterId: params.chapterId,
       position: params.position,
@@ -38,10 +37,6 @@ class UpdateReadingProgressUseCase implements UseCase<bool, UpdateReadingProgres
 }
 
 class UpdateReadingProgressParams extends Equatable {
-  final String bookId;
-  final String chapterId;
-  final int position;
-  final double progress;
 
   const UpdateReadingProgressParams({
     required this.bookId,
@@ -49,15 +44,19 @@ class UpdateReadingProgressParams extends Equatable {
     required this.position,
     required this.progress,
   });
+  final String bookId;
+  final String chapterId;
+  final int position;
+  final double progress;
 
   @override
-  List<Object> get props => [bookId, chapterId, position, progress];
+  List<Object> get props => <Object>[bookId, chapterId, position, progress];
 }
 
 class GetReadingProgressUseCase implements UseCase<ReadingProgress?, GetReadingProgressParams> {
-  final BookRepository repository;
 
   GetReadingProgressUseCase(this.repository);
+  final BookRepository repository;
 
   @override
   Future<Either<AppError, ReadingProgress?>> call(GetReadingProgressParams params) async {
@@ -65,15 +64,15 @@ class GetReadingProgressUseCase implements UseCase<ReadingProgress?, GetReadingP
       return Left(DataError.validation(message: '小说ID不能为空'));
     }
 
-    return await repository.getReadingProgress(params.bookId);
+    return repository.getReadingProgress(params.bookId);
   }
 }
 
 class GetReadingProgressParams extends Equatable {
-  final String bookId;
 
   const GetReadingProgressParams({required this.bookId});
+  final String bookId;
 
   @override
-  List<Object> get props => [bookId];
+  List<Object> get props => <Object>[bookId];
 }

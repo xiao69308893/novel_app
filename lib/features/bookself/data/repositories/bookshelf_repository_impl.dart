@@ -15,21 +15,21 @@ import '../datasources/bookshelf_remote_data_source_impl.dart';
 
 /// 书架仓储实现
 class BookshelfRepositoryImpl implements BookshelfRepository {
-  final BookshelfRemoteDataSource remoteDataSource;
-  final BookshelfLocalDataSource localDataSource;
-  final NetworkInfo networkInfo;
 
   const BookshelfRepositoryImpl({
     required this.remoteDataSource,
     required this.localDataSource,
     required this.networkInfo,
   });
+  final BookshelfRemoteDataSource remoteDataSource;
+  final BookshelfLocalDataSource localDataSource;
+  final NetworkInfo networkInfo;
 
   @override
   ResultFuture<UserProfile> getUserProfile() async {
     try {
       // 优先从缓存获�?
-      final cachedUser = await localDataSource.getCachedUserProfile();
+      final UserModel? cachedUser = await localDataSource.getCachedUserProfile();
       
       if (cachedUser != null) {
         // 有缓存数据，异步更新缓存
@@ -37,19 +37,19 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
           _updateUserProfileCache();
         }
         // �?UserModel 转换�?UserProfile
-        final userProfile = UserProfile(user: cachedUser);
+        final UserProfile userProfile = UserProfile(user: cachedUser);
         return Right(userProfile);
       }
 
       // 检查网络连�?
       if (await networkInfo.isConnected) {
-        final user = await remoteDataSource.getUserProfile();
+        final UserModel user = await remoteDataSource.getUserProfile();
         
         // 缓存用户信息
         await localDataSource.cacheUserProfile(user);
         
         // �?UserModel 转换�?UserProfile
-        final userProfile = UserProfile(user: user);
+        final UserProfile userProfile = UserProfile(user: user);
         return Right(userProfile);
       } else {
         return Left(NoInternetError(message: '网络连接不可用且无缓存数据'));
@@ -67,7 +67,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
   ResultFuture<UserModel> updateUserProfile(UserModel user) async {
     try {
       if (await networkInfo.isConnected) {
-        final updatedUser = await remoteDataSource.updateUserProfile(UserModel(
+        final UserModel updatedUser = await remoteDataSource.updateUserProfile(UserModel(
           id: user.id,
           username: user.username,
           nickname: user.nickname,
@@ -104,14 +104,14 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
     try {
       // 如果是第一页，优先从缓存获�?
       if (page == 1) {
-        final cachedNovels = await localDataSource.getCachedFavoriteNovels();
+        final List<NovelModel>? cachedNovels = await localDataSource.getCachedFavoriteNovels();
         if (cachedNovels != null && cachedNovels.isNotEmpty) {
           // 有缓存数据，异步更新缓存
           if (await networkInfo.isConnected) {
             _updateFavoritesCache(sortBy: sortBy);
           }
           // �?NovelModel 转换�?FavoriteNovel
-          final favoriteNovels = cachedNovels.map((novel) => FavoriteNovel(
+          final List<FavoriteNovel> favoriteNovels = cachedNovels.map((NovelModel novel) => FavoriteNovel(
             id: novel.id,
             userId: 'current_user', // 这里应该从用户会话中获取
             novel: NovelSimpleModel.fromNovel(novel),
@@ -123,7 +123,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
 
       // 检查网络连�?
       if (await networkInfo.isConnected) {
-        final novels = await remoteDataSource.getFavoriteNovels(
+        final List<NovelModel> novels = await remoteDataSource.getFavoriteNovels(
           page: page,
           limit: limit,
           sortBy: sortBy,
@@ -135,7 +135,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
         }
 
         // �?NovelModel 转换�?FavoriteNovel
-        final favoriteNovels = novels.map((novel) => FavoriteNovel(
+        final List<FavoriteNovel> favoriteNovels = novels.map((NovelModel novel) => FavoriteNovel(
           id: novel.id,
           userId: 'current_user',
           novel: NovelSimpleModel.fromNovel(novel),
@@ -145,9 +145,9 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
         return Right(favoriteNovels);
       } else {
         // 没有网络，返回缓存数据或错误
-        final cachedNovels = await localDataSource.getCachedFavoriteNovels();
+        final List<NovelModel>? cachedNovels = await localDataSource.getCachedFavoriteNovels();
         if (cachedNovels != null) {
-          final favoriteNovels = cachedNovels.map((novel) => FavoriteNovel(
+          final List<FavoriteNovel> favoriteNovels = cachedNovels.map((NovelModel novel) => FavoriteNovel(
             id: novel.id,
             userId: 'current_user',
             novel: NovelSimpleModel.fromNovel(novel),
@@ -223,12 +223,12 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
   ResultFuture<bool> isFavorite(String novelId) async {
     try {
       // 优先从缓存获�?
-      final cachedStatus = await localDataSource.getCachedFavoriteStatus(novelId);
+      final bool? cachedStatus = await localDataSource.getCachedFavoriteStatus(novelId);
       
       // 如果有网络，异步更新缓存
       if (await networkInfo.isConnected) {
         try {
-          final remoteStatus = await remoteDataSource.checkFavoriteStatus(novelId: novelId);
+          final bool remoteStatus = await remoteDataSource.checkFavoriteStatus(novelId: novelId);
           
           // 更新缓存
           await localDataSource.cacheFavoriteStatus(novelId, remoteStatus);
@@ -265,16 +265,16 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
     try {
       // 先批量更新本地缓存状�?
       if (addIds != null) {
-        final statusMap = <String, bool>{};
-        for (final novelId in addIds) {
+        final Map<String, bool> statusMap = <String, bool>{};
+        for (final String novelId in addIds) {
           statusMap[novelId] = true;
         }
         await (localDataSource as BookshelfLocalDataSourceImpl).batchUpdateFavoriteStatus(statusMap);
       }
 
       if (removeIds != null) {
-        final statusMap = <String, bool>{};
-        for (final novelId in removeIds) {
+        final Map<String, bool> statusMap = <String, bool>{};
+        for (final String novelId in removeIds) {
           statusMap[novelId] = false;
         }
         await (localDataSource as BookshelfLocalDataSourceImpl).batchUpdateFavoriteStatus(statusMap);
@@ -297,15 +297,15 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
     } on ServerException catch (e) {
       // 服务器操作失败，回滚本地状�?
       if (addIds != null) {
-        final statusMap = <String, bool>{};
-        for (final novelId in addIds) {
+        final Map<String, bool> statusMap = <String, bool>{};
+        for (final String novelId in addIds) {
           statusMap[novelId] = false;
         }
         await (localDataSource as BookshelfLocalDataSourceImpl).batchUpdateFavoriteStatus(statusMap);
       }
       if (removeIds != null) {
-        final statusMap = <String, bool>{};
-        for (final novelId in removeIds) {
+        final Map<String, bool> statusMap = <String, bool>{};
+        for (final String novelId in removeIds) {
           statusMap[novelId] = true;
         }
         await (localDataSource as BookshelfLocalDataSourceImpl).batchUpdateFavoriteStatus(statusMap);
@@ -326,7 +326,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
     try {
       // 如果是第一页，优先从缓存获�?
       if (page == 1) {
-        final cachedHistory = await localDataSource.getCachedReadingHistory();
+        final List<ReadingHistory>? cachedHistory = await localDataSource.getCachedReadingHistory();
         if (cachedHistory != null && cachedHistory.isNotEmpty) {
           // 有缓存数据，异步更新缓存
           if (await networkInfo.isConnected) {
@@ -338,7 +338,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
 
       // 检查网络连�?
       if (await networkInfo.isConnected) {
-        final history = await remoteDataSource.getReadingHistory(
+        final List<ReadingHistory> history = await remoteDataSource.getReadingHistory(
           page: page,
           limit: limit,
         );
@@ -351,7 +351,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
         return Right(history);
       } else {
         // 没有网络，返回缓存数据或错误
-        final cachedHistory = await localDataSource.getCachedReadingHistory();
+        final List<ReadingHistory>? cachedHistory = await localDataSource.getCachedReadingHistory();
         if (cachedHistory != null) {
           return Right(cachedHistory);
         } else {
@@ -392,7 +392,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
   ResultFuture<void> deleteHistoryItem(String historyId) async {
     try {
       if (await networkInfo.isConnected) {
-        await remoteDataSource.clearReadingHistory(novelIds: [historyId]);
+        await remoteDataSource.clearReadingHistory(novelIds: <String>[historyId]);
         
         // 清理本地缓存
         await localDataSource.clearCache('history');
@@ -418,7 +418,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
       if (await networkInfo.isConnected) {
         // 这里需要调用远程数据源的书签方�?
         // 由于当前远程数据源没有书签相关方法，我们返回空列�?
-        return const Right([]);
+        return const Right(<BookmarkModel>[]);
       } else {
         return Left(NoInternetError(message: '获取书签需要网络连接'));
       }
@@ -440,7 +440,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
       if (await networkInfo.isConnected) {
         // 这里需要调用远程数据源的添加书签方�?
         // 由于当前远程数据源没有书签相关方法，我们创建一个模拟的书签
-        final bookmark = BookmarkModel(
+        final BookmarkModel bookmark = BookmarkModel(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           userId: 'current_user',
           novelId: novelId,
@@ -482,7 +482,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
   ResultFuture<UserStats> getUserStats() async {
     try {
       // 优先从缓存获�?
-      final cachedStats = await localDataSource.getCachedUserStats();
+      final UserStats? cachedStats = await localDataSource.getCachedUserStats();
       
       if (cachedStats != null) {
         // 有缓存数据，异步更新缓存
@@ -494,7 +494,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
 
       // 检查网络连�?
       if (await networkInfo.isConnected) {
-        final stats = await remoteDataSource.getUserStats();
+        final UserStats stats = await remoteDataSource.getUserStats();
         
         // 缓存统计数据
         await localDataSource.cacheUserStats(stats);
@@ -536,7 +536,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
   ResultFuture<Map<String, dynamic>> checkIn() async {
     try {
       if (await networkInfo.isConnected) {
-        final result = await remoteDataSource.checkIn();
+        final Map<String, dynamic> result = await remoteDataSource.checkIn();
         
         // 清理签到状态缓�?
         await localDataSource.clearCache('checkin');
@@ -556,7 +556,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
   ResultFuture<bool> getCheckInStatus() async {
     try {
       // 优先从缓存获�?
-      final cachedStatus = await localDataSource.getCachedCheckinStatus();
+      final bool? cachedStatus = await localDataSource.getCachedCheckinStatus();
       
       if (cachedStatus != null) {
         // 有缓存数据，异步更新缓存
@@ -568,10 +568,10 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
 
       // 检查网络连�?
       if (await networkInfo.isConnected) {
-        final status = await remoteDataSource.getCheckInStatus();
+        final bool status = await remoteDataSource.getCheckInStatus();
         
         // 缓存签到状�?
-        await localDataSource.cacheCheckinStatus({'checked_in': status});
+        await localDataSource.cacheCheckinStatus(<String, dynamic>{'checked_in': status});
         
         return Right(status);
       } else {
@@ -587,19 +587,13 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
   }
 
   @override
-  ResultFuture<bool> checkFavoriteStatus({required String novelId}) async {
-    return await isFavorite(novelId);
-  }
+  ResultFuture<bool> checkFavoriteStatus({required String novelId}) async => isFavorite(novelId);
 
   @override
-  ResultFuture<void> batchAddToFavorites({required List<String> novelIds}) async {
-    return await batchFavoriteOperation(addIds: novelIds);
-  }
+  ResultFuture<void> batchAddToFavorites({required List<String> novelIds}) async => batchFavoriteOperation(addIds: novelIds);
 
   @override
-  ResultFuture<void> batchRemoveFromFavorites({required List<String> novelIds}) async {
-    return await batchFavoriteOperation(removeIds: novelIds);
-  }
+  ResultFuture<void> batchRemoveFromFavorites({required List<String> novelIds}) async => batchFavoriteOperation(removeIds: novelIds);
 
   @override
   ResultFuture<void> addReadingHistory({
@@ -643,7 +637,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
   ResultFuture<UserSettings> getUserSettings() async {
     try {
       // 优先从缓存获�?
-      final cachedSettings = await localDataSource.getCachedUserSettings();
+      final UserSettings? cachedSettings = await localDataSource.getCachedUserSettings();
       
       if (cachedSettings != null) {
         // 有缓存数据，异步更新缓存
@@ -655,7 +649,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
 
       // 检查网络连�?
       if (await networkInfo.isConnected) {
-        final settings = await remoteDataSource.getUserSettings();
+        final UserSettings settings = await remoteDataSource.getUserSettings();
         
         // 缓存设置数据
         await localDataSource.cacheUserSettings(settings);
@@ -681,7 +675,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
   }) async {
     try {
       if (await networkInfo.isConnected) {
-        final novels = await remoteDataSource.searchFavoriteNovels(
+        final List<NovelModel> novels = await remoteDataSource.searchFavoriteNovels(
           keyword: keyword,
           page: page,
           limit: limit,
@@ -689,9 +683,9 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
         return Right(novels);
       } else {
         // 离线搜索，从缓存的收藏列表中搜索
-        final cachedNovels = await localDataSource.getCachedFavoriteNovels();
+        final List<NovelModel>? cachedNovels = await localDataSource.getCachedFavoriteNovels();
         if (cachedNovels != null) {
-          final filteredNovels = cachedNovels.where((novel) =>
+          final List<NovelModel> filteredNovels = cachedNovels.where((NovelModel novel) =>
             novel.title.toLowerCase().contains(keyword.toLowerCase()) ||
             novel.author.name.toLowerCase().contains(keyword.toLowerCase())
           ).toList();
@@ -713,7 +707,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
   ResultFuture<List<NovelModel>> getRecentlyReadNovels({int limit = 10}) async {
     try {
       // 优先从缓存获�?
-      final cachedNovels = await localDataSource.getCachedRecentlyReadNovels();
+      final List<NovelModel>? cachedNovels = await localDataSource.getCachedRecentlyReadNovels();
       
       if (cachedNovels != null && cachedNovels.isNotEmpty) {
         // 有缓存数据，异步更新缓存
@@ -725,7 +719,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
 
       // 检查网络连�?
       if (await networkInfo.isConnected) {
-        final novels = await remoteDataSource.getRecentlyReadNovels(limit: limit);
+        final List<NovelModel> novels = await remoteDataSource.getRecentlyReadNovels(limit: limit);
         
         // 缓存数据
         await localDataSource.cacheRecentlyReadNovels(novels);
@@ -752,7 +746,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
     try {
       // 如果是第一页，优先从缓存获�?
       if (page == 1) {
-        final cachedNovels = await localDataSource.getCachedRecommendedNovels();
+        final List<NovelModel>? cachedNovels = await localDataSource.getCachedRecommendedNovels();
         if (cachedNovels != null && cachedNovels.isNotEmpty) {
           // 有缓存数据，异步更新缓存
           if (await networkInfo.isConnected) {
@@ -764,7 +758,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
 
       // 检查网络连�?
       if (await networkInfo.isConnected) {
-        final novels = await remoteDataSource.getRecommendedNovels(
+        final List<NovelModel> novels = await remoteDataSource.getRecommendedNovels(
           page: page,
           limit: limit,
         );
@@ -777,7 +771,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
         return Right(novels);
       } else {
         // 没有网络，返回缓存数据或错误
-        final cachedNovels = await localDataSource.getCachedRecommendedNovels();
+        final List<NovelModel>? cachedNovels = await localDataSource.getCachedRecommendedNovels();
         if (cachedNovels != null) {
           return Right(cachedNovels);
         } else {
@@ -817,7 +811,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
   ResultFuture<String> exportUserData() async {
     try {
       if (await networkInfo.isConnected) {
-        final downloadUrl = await remoteDataSource.exportUserData();
+        final String downloadUrl = await remoteDataSource.exportUserData();
         return Right(downloadUrl);
       } else {
         return Left(NoInternetError(message: '导出数据需要网络连接'));
@@ -960,7 +954,7 @@ class BookshelfRepositoryImpl implements BookshelfRepository {
   Future<void> _updateCheckinStatusCache() async {
     try {
       final bool status = await remoteDataSource.getCheckInStatus();
-      await localDataSource.cacheCheckinStatus({'checked_in': status});
+      await localDataSource.cacheCheckinStatus(<String, dynamic>{'checked_in': status});
     } catch (e) {
       // 静默失败
     }

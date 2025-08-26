@@ -14,8 +14,7 @@ class AuthUserModel extends AuthUser {
     super.extra,
   });
 
-  factory AuthUserModel.fromJson(Map<String, dynamic> json) {
-    return AuthUserModel(
+  factory AuthUserModel.fromJson(Map<String, dynamic> json) => AuthUserModel(
       id: json['id'] as String,
       username: json['username'] as String,
       email: json['email'] as String?,
@@ -28,10 +27,8 @@ class AuthUserModel extends AuthUser {
       isVerified: json['is_verified'] as bool? ?? false,
       extra: json['extra'] as Map<String, dynamic>?,
     );
-  }
 
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'id': id,
       'username': username,
       'email': email,
@@ -42,10 +39,8 @@ class AuthUserModel extends AuthUser {
       'is_verified': isVerified,
       'extra': extra,
     };
-  }
 
-  AuthUser toEntity() {
-    return AuthUser(
+  AuthUser toEntity() => AuthUser(
       id: id,
       username: username,
       email: email,
@@ -56,5 +51,4 @@ class AuthUserModel extends AuthUser {
       isVerified: isVerified,
       extra: extra,
     );
-  }
 }

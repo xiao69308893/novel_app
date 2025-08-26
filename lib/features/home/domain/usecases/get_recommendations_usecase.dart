@@ -8,33 +8,33 @@ import '../entities/recommendation.dart';
 import '../repositories/home_repository.dart';
 
 class GetRecommendationsUseCase implements UseCase<List<NovelSimpleModel>, GetRecommendationsParams> {
-  final HomeRepository repository;
 
   GetRecommendationsUseCase(this.repository);
+  final HomeRepository repository;
 
   @override
   Future<Either<AppError, List<NovelSimpleModel>>> call(GetRecommendationsParams params) async {
     switch (params.type) {
       case RecommendationType.hot:
-        return await repository.getHotNovels(
+        return repository.getHotNovels(
           page: params.page,
           limit: params.limit,
         );
       
       case RecommendationType.new_:
-        return await repository.getNewNovels(
+        return repository.getNewNovels(
           page: params.page,
           limit: params.limit,
         );
       
       case RecommendationType.editor:
-        return await repository.getEditorRecommendations(
+        return repository.getEditorRecommendations(
           page: params.page,
           limit: params.limit,
         );
       
       case RecommendationType.personalized:
-        return await repository.getPersonalizedRecommendations(
+        return repository.getPersonalizedRecommendations(
           page: params.page,
           limit: params.limit,
         );
@@ -43,14 +43,14 @@ class GetRecommendationsUseCase implements UseCase<List<NovelSimpleModel>, GetRe
         if (params.categoryId == null) {
           return Left(DataError.validation(message: '分类推荐需要指定分类ID'));
         }
-        return await repository.getCategoryHotNovels(
+        return repository.getCategoryHotNovels(
           categoryId: params.categoryId!,
           page: params.page,
           limit: params.limit,
         );
       
       default:
-        return await repository.getHotNovels(
+        return repository.getHotNovels(
           page: params.page,
           limit: params.limit,
         );
@@ -59,10 +59,6 @@ class GetRecommendationsUseCase implements UseCase<List<NovelSimpleModel>, GetRe
 }
 
 class GetRecommendationsParams extends Equatable {
-  final RecommendationType type;
-  final String? categoryId;
-  final int page;
-  final int limit;
 
   const GetRecommendationsParams({
     required this.type,
@@ -70,7 +66,11 @@ class GetRecommendationsParams extends Equatable {
     this.page = 1,
     this.limit = 20,
   });
+  final RecommendationType type;
+  final String? categoryId;
+  final int page;
+  final int limit;
 
   @override
-  List<Object?> get props => [type, categoryId, page, limit];
+  List<Object?> get props => <Object?>[type, categoryId, page, limit];
 }

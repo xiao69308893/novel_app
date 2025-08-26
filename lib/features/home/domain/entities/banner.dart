@@ -12,15 +12,26 @@ enum BannerType {
   final int value;
   final String displayName;
 
-  static BannerType fromValue(int? value) {
-    return BannerType.values.firstWhere(
-      (t) => t.value == value,
+  static BannerType fromValue(int? value) => BannerType.values.firstWhere(
+      (BannerType t) => t.value == value,
       orElse: () => BannerType.novel,
     );
-  }
 }
 
 class Banner extends Equatable {
+
+  const Banner({
+    required this.id,
+    required this.title,
+    required this.imageUrl, required this.createdAt, this.subtitle,
+    this.type = BannerType.novel,
+    this.targetId,
+    this.targetUrl,
+    this.sort = 0,
+    this.isActive = true,
+    this.startTime,
+    this.endTime,
+  });
   final String id;
   final String title;
   final String? subtitle;
@@ -34,26 +45,11 @@ class Banner extends Equatable {
   final DateTime? endTime;
   final DateTime createdAt;
 
-  const Banner({
-    required this.id,
-    required this.title,
-    this.subtitle,
-    required this.imageUrl,
-    this.type = BannerType.novel,
-    this.targetId,
-    this.targetUrl,
-    this.sort = 0,
-    this.isActive = true,
-    this.startTime,
-    this.endTime,
-    required this.createdAt,
-  });
-
   /// 是否在有效期内
   bool get isValid {
     if (!isActive) return false;
     
-    final now = DateTime.now();
+    final DateTime now = DateTime.now();
     if (startTime != null && now.isBefore(startTime!)) return false;
     if (endTime != null && now.isAfter(endTime!)) return false;
     
@@ -61,7 +57,7 @@ class Banner extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
     id, title, subtitle, imageUrl, type, targetId, 
     targetUrl, sort, isActive, startTime, endTime, createdAt
   ];

@@ -1,6 +1,15 @@
 import 'package:equatable/equatable.dart';
 
 class HomeSection extends Equatable {
+
+  const HomeSection({
+    required this.id,
+    required this.title,
+    required this.type,
+    this.config = const <String, dynamic>{},
+    this.sort = 0,
+    this.isVisible = true,
+  });
   final String id;
   final String title;
   final String type; // banner, recommendation, ranking, category
@@ -8,38 +17,26 @@ class HomeSection extends Equatable {
   final int sort;
   final bool isVisible;
 
-  const HomeSection({
-    required this.id,
-    required this.title,
-    required this.type,
-    this.config = const {},
-    this.sort = 0,
-    this.isVisible = true,
-  });
-
   @override
-  List<Object> get props => [id, title, type, config, sort, isVisible];
+  List<Object> get props => <Object>[id, title, type, config, sort, isVisible];
 }
 
 class HomeConfig extends Equatable {
+
+  const HomeConfig({
+    required this.version,
+    required this.updatedAt, this.sections = const <HomeSection>[],
+    this.globalConfig = const <String, dynamic>{},
+  });
   final String version;
   final List<HomeSection> sections;
   final Map<String, dynamic> globalConfig;
   final DateTime updatedAt;
 
-  const HomeConfig({
-    required this.version,
-    this.sections = const [],
-    this.globalConfig = const {},
-    required this.updatedAt,
-  });
-
   /// 获取可见的区块
-  List<HomeSection> get visibleSections {
-    return sections.where((section) => section.isVisible).toList()
-      ..sort((a, b) => a.sort.compareTo(b.sort));
-  }
+  List<HomeSection> get visibleSections => sections.where((HomeSection section) => section.isVisible).toList()
+      ..sort((HomeSection a, HomeSection b) => a.sort.compareTo(b.sort));
 
   @override
-  List<Object> get props => [version, sections, globalConfig, updatedAt];
+  List<Object> get props => <Object>[version, sections, globalConfig, updatedAt];
 }

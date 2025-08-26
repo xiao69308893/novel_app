@@ -7,6 +7,17 @@ import '../../../../app/themes/app_theme.dart';
 
 /// 阅读器底部控制栏
 class ReaderBottomBar extends StatelessWidget {
+
+  const ReaderBottomBar({
+    required this.currentPage, required this.totalPages, super.key,
+    this.isVisible = true,
+    this.isAutoPage = false,
+    this.onBrightnessPressed,
+    this.onAutoPagePressed,
+    this.onSettingsPressed,
+    this.onSharePressed,
+    this.onProgressChanged,
+  });
   final bool isVisible;
   final int currentPage;
   final int totalPages;
@@ -17,22 +28,8 @@ class ReaderBottomBar extends StatelessWidget {
   final VoidCallback? onSharePressed;
   final ValueChanged<int>? onProgressChanged;
 
-  const ReaderBottomBar({
-    Key? key,
-    this.isVisible = true,
-    required this.currentPage,
-    required this.totalPages,
-    this.isAutoPage = false,
-    this.onBrightnessPressed,
-    this.onAutoPagePressed,
-    this.onSettingsPressed,
-    this.onSharePressed,
-    this.onProgressChanged,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
+  Widget build(BuildContext context) => AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       transform: Matrix4.translationValues(0, isVisible ? 0 : 100, 0),
       child: Container(
@@ -46,10 +43,10 @@ class ReaderBottomBar extends StatelessWidget {
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: <Widget>[
             // 进度条
             Row(
-              children: [
+              children: <Widget>[
                 Text(
                   '${currentPage + 1}',
                   style: const TextStyle(color: Colors.white, fontSize: 12),
@@ -57,10 +54,9 @@ class ReaderBottomBar extends StatelessWidget {
                 Expanded(
                   child: Slider(
                     value: currentPage.toDouble(),
-                    min: 0,
                     max: (totalPages - 1).toDouble(),
                     divisions: totalPages > 1 ? totalPages - 1 : 1,
-                    onChanged: (value) {
+                    onChanged: (double value) {
                       onProgressChanged?.call(value.round());
                     },
                     activeColor: Colors.white,
@@ -77,7 +73,7 @@ class ReaderBottomBar extends StatelessWidget {
             // 控制按钮
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
+              children: <Widget>[
                 IconButton(
                   icon: const Icon(Icons.brightness_6, color: Colors.white),
                   onPressed: onBrightnessPressed,
@@ -103,5 +99,4 @@ class ReaderBottomBar extends StatelessWidget {
         ),
       ),
     );
-  }
 }

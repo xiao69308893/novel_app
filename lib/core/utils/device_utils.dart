@@ -71,31 +71,31 @@ class DeviceUtils {
 
   // 获取Android设备ID
   static Future<String?> getAndroidId() async {
-    final info = await getAndroidInfo();
+    final AndroidDeviceInfo? info = await getAndroidInfo();
     return info?.id;
   }
 
   // 获取Android设备型号
   static Future<String?> getAndroidModel() async {
-    final info = await getAndroidInfo();
+    final AndroidDeviceInfo? info = await getAndroidInfo();
     return info?.model;
   }
 
   // 获取Android设备品牌
   static Future<String?> getAndroidBrand() async {
-    final info = await getAndroidInfo();
+    final AndroidDeviceInfo? info = await getAndroidInfo();
     return info?.brand;
   }
 
   // 获取Android系统版本
   static Future<String?> getAndroidVersion() async {
-    final info = await getAndroidInfo();
+    final AndroidDeviceInfo? info = await getAndroidInfo();
     return info?.version.release;
   }
 
   // 获取Android SDK版本
   static Future<int?> getAndroidSdkInt() async {
-    final info = await getAndroidInfo();
+    final AndroidDeviceInfo? info = await getAndroidInfo();
     return info?.version.sdkInt;
   }
 
@@ -115,54 +115,44 @@ class DeviceUtils {
 
   // 获取iOS设备ID
   static Future<String?> getIosId() async {
-    final info = await getIosInfo();
+    final IosDeviceInfo? info = await getIosInfo();
     return info?.identifierForVendor;
   }
 
   // 获取iOS设备型号
   static Future<String?> getIosModel() async {
-    final info = await getIosInfo();
+    final IosDeviceInfo? info = await getIosInfo();
     return info?.model;
   }
 
   // 获取iOS设备名称
   static Future<String?> getIosName() async {
-    final info = await getIosInfo();
+    final IosDeviceInfo? info = await getIosInfo();
     return info?.name;
   }
 
   // 获取iOS系统版本
   static Future<String?> getIosVersion() async {
-    final info = await getIosInfo();
+    final IosDeviceInfo? info = await getIosInfo();
     return info?.systemVersion;
   }
 
   // ==================== 应用信息 ====================
 
   // 获取应用名称
-  static String get appName {
-    return _packageInfo?.appName ?? 'Unknown';
-  }
+  static String get appName => _packageInfo?.appName ?? 'Unknown';
 
   // 获取应用包名
-  static String get packageName {
-    return _packageInfo?.packageName ?? 'Unknown';
-  }
+  static String get packageName => _packageInfo?.packageName ?? 'Unknown';
 
   // 获取应用版本号
-  static String get version {
-    return _packageInfo?.version ?? '1.0.0';
-  }
+  static String get version => _packageInfo?.version ?? '1.0.0';
 
   // 获取应用构建号
-  static String get buildNumber {
-    return _packageInfo?.buildNumber ?? '1';
-  }
+  static String get buildNumber => _packageInfo?.buildNumber ?? '1';
 
   // 获取应用完整版本信息
-  static String get fullVersion {
-    return '${version}+${buildNumber}';
-  }
+  static String get fullVersion => '$version+$buildNumber';
 
   // ==================== 设备能力检测 ====================
 
@@ -170,7 +160,7 @@ class DeviceUtils {
   static Future<bool> supportsBiometric() async {
     try {
       if (Platform.isAndroid) {
-        final info = await getAndroidInfo();
+        final AndroidDeviceInfo? info = await getAndroidInfo();
         return info?.version.sdkInt != null && info!.version.sdkInt >= 23;
       } else if (Platform.isIOS) {
         // iOS 8.0+ 支持 Touch ID，iOS 11.0+ 支持 Face ID
@@ -187,7 +177,7 @@ class DeviceUtils {
   static Future<bool> supportsCamera() async {
     try {
       if (Platform.isAndroid) {
-        final info = await getAndroidInfo();
+        final AndroidDeviceInfo? info = await getAndroidInfo();
         return info?.systemFeatures.contains('android.hardware.camera') ?? false;
       } else if (Platform.isIOS) {
         return true; // iOS设备通常都有相机
@@ -203,13 +193,13 @@ class DeviceUtils {
   static Future<bool> supportsNFC() async {
     try {
       if (Platform.isAndroid) {
-        final info = await getAndroidInfo();
+        final AndroidDeviceInfo? info = await getAndroidInfo();
         return info?.systemFeatures.contains('android.hardware.nfc') ?? false;
       } else if (Platform.isIOS) {
         // iOS 11+ 支持 Core NFC
-        final info = await getIosInfo();
+        final IosDeviceInfo? info = await getIosInfo();
         if (info?.systemVersion != null) {
-          final version = double.tryParse(info!.systemVersion.split('.').first);
+          final double? version = double.tryParse(info!.systemVersion.split('.').first);
           return version != null && version >= 11;
         }
       }
@@ -243,7 +233,7 @@ class DeviceUtils {
 
   // 隐藏状态栏
   static void hideStatusBar() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: <SystemUiOverlay>[]);
   }
 
   // 显示状态栏
@@ -259,7 +249,7 @@ class DeviceUtils {
 
   // 锁定竖屏
   static void lockPortrait() {
-    setOrientation([
+    setOrientation(<DeviceOrientation>[
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
@@ -267,7 +257,7 @@ class DeviceUtils {
 
   // 锁定横屏
   static void lockLandscape() {
-    setOrientation([
+    setOrientation(<DeviceOrientation>[
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
@@ -322,10 +312,10 @@ class DeviceUtils {
   static Future<String> getDeviceId() async {
     try {
       if (Platform.isAndroid) {
-        final id = await getAndroidId();
+        final String? id = await getAndroidId();
         return id ?? 'unknown_android_device';
       } else if (Platform.isIOS) {
-        final id = await getIosId();
+        final String? id = await getIosId();
         return id ?? 'unknown_ios_device';
       }
       return 'unknown_device';
@@ -337,7 +327,7 @@ class DeviceUtils {
 
   // 获取设备信息摘要
   static Future<Map<String, dynamic>> getDeviceSummary() async {
-    final summary = <String, dynamic>{
+    final Map<String, dynamic> summary = <String, dynamic>{
       'platform': platform,
       'appName': appName,
       'appVersion': version,
@@ -350,9 +340,9 @@ class DeviceUtils {
 
     try {
       if (Platform.isAndroid) {
-        final info = await getAndroidInfo();
+        final AndroidDeviceInfo? info = await getAndroidInfo();
         if (info != null) {
-          summary.addAll({
+          summary.addAll(<String, dynamic>{
             'deviceId': info.id,
             'model': info.model,
             'brand': info.brand,
@@ -362,9 +352,9 @@ class DeviceUtils {
           });
         }
       } else if (Platform.isIOS) {
-        final info = await getIosInfo();
+        final IosDeviceInfo? info = await getIosInfo();
         if (info != null) {
-          summary.addAll({
+          summary.addAll(<String, dynamic>{
             'deviceId': info.identifierForVendor,
             'model': info.model,
             'name': info.name,
@@ -384,11 +374,11 @@ class DeviceUtils {
   static Future<bool> isTablet() async {
     try {
       if (Platform.isAndroid) {
-        final info = await getAndroidInfo();
+        final AndroidDeviceInfo? info = await getAndroidInfo();
         // 通过屏幕配置判断是否为平板
         return info?.systemFeatures.contains('android.hardware.type.tablet') ?? false;
       } else if (Platform.isIOS) {
-        final info = await getIosInfo();
+        final IosDeviceInfo? info = await getIosInfo();
         return info?.model.toLowerCase().contains('ipad') ?? false;
       }
       return false;
@@ -402,17 +392,17 @@ class DeviceUtils {
   static Future<DevicePerformanceLevel> getPerformanceLevel() async {
     try {
       if (Platform.isAndroid) {
-        final info = await getAndroidInfo();
+        final AndroidDeviceInfo? info = await getAndroidInfo();
         if (info != null) {
-          final sdkInt = info.version.sdkInt;
+          final int sdkInt = info.version.sdkInt;
           if (sdkInt >= 30) return DevicePerformanceLevel.high;
           if (sdkInt >= 26) return DevicePerformanceLevel.medium;
           return DevicePerformanceLevel.low;
         }
       } else if (Platform.isIOS) {
-        final info = await getIosInfo();
+        final IosDeviceInfo? info = await getIosInfo();
         if (info != null) {
-          final version = double.tryParse(info.systemVersion.split('.').first);
+          final double? version = double.tryParse(info.systemVersion.split('.').first);
           if (version != null) {
             if (version >= 14) return DevicePerformanceLevel.high;
             if (version >= 12) return DevicePerformanceLevel.medium;

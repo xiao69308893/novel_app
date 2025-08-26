@@ -1,8 +1,10 @@
 // 验证码状态管理
 import 'dart:async';
+import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 // 需要先运行 flutter pub add equatable 添加依赖
 import 'package:equatable/equatable.dart';
+import 'package:novel_app/core/errors/app_error.dart';
 import '../../domain/repositories/auth_repository.dart';
 
 // 验证码状态
@@ -10,7 +12,7 @@ abstract class VerificationState extends Equatable {
   const VerificationState();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class VerificationInitial extends VerificationState {}
@@ -18,30 +20,30 @@ class VerificationInitial extends VerificationState {}
 class VerificationSending extends VerificationState {}
 
 class VerificationSent extends VerificationState {
-  final int countdown;
 
   const VerificationSent(this.countdown);
+  final int countdown;
 
   @override
-  List<Object> get props => [countdown];
+  List<Object> get props => <Object>[countdown];
 }
 
 class VerificationError extends VerificationState {
-  final String message;
 
   const VerificationError(this.message);
+  final String message;
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 // 验证码Cubit
 class VerificationCubit extends Cubit<VerificationState> {
+
+  VerificationCubit({required this.authRepository}) : super(VerificationInitial());
   final AuthRepository authRepository;
   Timer? _timer;
   int _countdown = 0;
-
-  VerificationCubit({required this.authRepository}) : super(VerificationInitial());
 
   /// 发送手机验证码
   Future<void> sendSmsCode({
@@ -52,14 +54,14 @@ class VerificationCubit extends Cubit<VerificationState> {
 
     emit(VerificationSending());
 
-    final result = await authRepository.sendSmsCode(
+    final Either<AppError, bool> result = await authRepository.sendSmsCode(
       phone: phone,
       type: type,
     );
 
     result.fold(
-      (error) => emit(VerificationError(error.message)),
-      (success) => _startCountdown(),
+      (AppError error) => emit(VerificationError(error.message)),
+      (bool success) => _startCountdown(),
     );
   }
 
@@ -72,14 +74,14 @@ class VerificationCubit extends Cubit<VerificationState> {
 
     emit(VerificationSending());
 
-    final result = await authRepository.sendEmailCode(
+    final Either<AppError, bool> result = await authRepository.sendEmailCode(
       email: email,
       type: type,
     );
 
     result.fold(
-      (error) => emit(VerificationError(error.message)),
-      (success) => _startCountdown(),
+      (AppError error) => emit(VerificationError(error.message)),
+      (bool success) => _startCountdown(),
     );
   }
 
@@ -89,7 +91,7 @@ class VerificationCubit extends Cubit<VerificationState> {
     emit(VerificationSent(_countdown));
 
     _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
       _countdown--;
       if (_countdown <= 0) {
         timer.cancel();

@@ -1,5 +1,6 @@
 // 首页远程数据源
 import 'package:dio/dio.dart';
+import 'package:novel_app/core/network/api_response.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/errors/app_error.dart';
 import '../../../../core/errors/error_handler.dart';
@@ -56,14 +57,14 @@ abstract class HomeRemoteDataSource {
 }
 
 class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
-  final ApiClient apiClient;
 
   HomeRemoteDataSourceImpl({required this.apiClient});
+  final ApiClient apiClient;
 
   @override
   Future<HomeConfigModel> getHomeConfig() async {
     try {
-      final response = await apiClient.get('/home/config');
+      final ApiResponse response = await apiClient.get('/home/config');
       return HomeConfigModel.fromJson(response.data['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
@@ -75,7 +76,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   @override
   Future<List<BannerModel>> getBanners() async {
     try {
-      final response = await apiClient.get('/home/banners');
+      final ApiResponse response = await apiClient.get('/home/banners');
       final List<dynamic> data = response.data['data'] as List<dynamic>;
       return data.map((json) => BannerModel.fromJson(json as Map<String, dynamic>)).toList();
     } on DioException catch (e) {
@@ -92,9 +93,9 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
     int limit = 10,
   }) async {
     try {
-      final response = await apiClient.get(
+      final ApiResponse response = await apiClient.get(
         '/home/recommendations',
-        queryParameters: {
+        queryParameters: <String, dynamic>{
           if (type != null) 'type': type,
           'page': page,
           'limit': limit,
@@ -116,9 +117,9 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
     int limit = 50,
   }) async {
     try {
-      final response = await apiClient.get(
+      final ApiResponse response = await apiClient.get(
         '/home/ranking',
-        queryParameters: {
+        queryParameters: <String, dynamic>{
           'type': type,
           'period': period,
           'limit': limit,
@@ -138,9 +139,9 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
     int limit = 20,
   }) async {
     try {
-      final response = await apiClient.get(
+      final ApiResponse response = await apiClient.get(
         '/novels/hot',
-        queryParameters: {
+        queryParameters: <String, dynamic>{
           'page': page,
           'limit': limit,
         },
@@ -160,9 +161,9 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
     int limit = 20,
   }) async {
     try {
-      final response = await apiClient.get(
+      final ApiResponse response = await apiClient.get(
         '/novels/new',
-        queryParameters: {
+        queryParameters: <String, dynamic>{
           'page': page,
           'limit': limit,
         },
@@ -182,9 +183,9 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
     int limit = 20,
   }) async {
     try {
-      final response = await apiClient.get(
+      final ApiResponse response = await apiClient.get(
         '/novels/editor-recommendations',
-        queryParameters: {
+        queryParameters: <String, dynamic>{
           'page': page,
           'limit': limit,
         },
@@ -204,9 +205,9 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
     int limit = 20,
   }) async {
     try {
-      final response = await apiClient.get(
+      final ApiResponse response = await apiClient.get(
         '/novels/personalized',
-        queryParameters: {
+        queryParameters: <String, dynamic>{
           'page': page,
           'limit': limit,
         },
@@ -227,9 +228,9 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
     int limit = 20,
   }) async {
     try {
-      final response = await apiClient.get(
+      final ApiResponse response = await apiClient.get(
         '/novels/category/$categoryId/hot',
-        queryParameters: {
+        queryParameters: <String, dynamic>{
           'page': page,
           'limit': limit,
         },
@@ -253,9 +254,9 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
     int limit = 20,
   }) async {
     try {
-      final response = await apiClient.get(
+      final ApiResponse response = await apiClient.get(
         '/novels/search',
-        queryParameters: {
+        queryParameters: <String, dynamic>{
           'keyword': keyword,
           if (categoryId != null) 'category_id': categoryId,
           if (status != null) 'status': status,
@@ -276,7 +277,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   @override
   Future<List<String>> getHotSearchKeywords() async {
     try {
-      final response = await apiClient.get('/search/hot-keywords');
+      final ApiResponse response = await apiClient.get('/search/hot-keywords');
       final List<dynamic> data = response.data['data'] as List<dynamic>;
 
       return data.cast<String>();
@@ -290,9 +291,9 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   @override
   Future<List<String>> getSearchSuggestions(String keyword) async {
     try {
-      final response = await apiClient.get(
+      final ApiResponse response = await apiClient.get(
         '/search/suggestions',
-        queryParameters: {'keyword': keyword},
+        queryParameters: <String, dynamic>{'keyword': keyword},
       );
       final List<dynamic> data = response.data['data'] as List<dynamic>;
 

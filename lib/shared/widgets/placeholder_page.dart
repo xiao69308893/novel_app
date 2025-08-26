@@ -4,30 +4,28 @@ import 'common_app_bar.dart';
 
 /// 占位页面 - 用于未实现的功能
 class PlaceholderPage extends StatelessWidget {
+
+  const PlaceholderPage({
+    required this.title, super.key,
+    this.message = '该功能正在开发中，敬请期待',
+    this.icon = Icons.construction,
+  });
   final String title;
   final String message;
   final IconData icon;
 
-  const PlaceholderPage({
-    Key? key,
-    required this.title,
-    this.message = '该功能正在开发中，敬请期待',
-    this.icon = Icons.construction,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     
     return Scaffold(
       appBar: CommonAppBar(
         title: title,
-        showBackButton: true,
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             Icon(
               icon,
               size: 80,

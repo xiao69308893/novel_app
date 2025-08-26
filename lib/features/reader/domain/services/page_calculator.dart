@@ -9,37 +9,37 @@ class PageCalculator {
     required ReaderConfig config,
     required Size screenSize,
   }) {
-    if (content.isEmpty) return [];
+    if (content.isEmpty) return <String>[];
 
     // 如果是滚动模式，不需要分页
     if (config.pageMode == PageMode.scroll) {
-      return [content];
+      return <String>[content];
     }
 
     // 计算可用区域大小
-    final availableWidth = screenSize.width - 
+    final double availableWidth = screenSize.width - 
         config.pageMargin.left - config.pageMargin.right;
-    final availableHeight = screenSize.height - 
+    final double availableHeight = screenSize.height - 
         config.pageMargin.top - config.pageMargin.bottom;
 
     // 估算每行字符数和每页行数
-    final charWidth = config.fontSize * 0.6; // 中文字符大约是字体大小的0.6倍宽
-    final lineHeight = config.fontSize * config.lineHeight;
+    final double charWidth = config.fontSize * 0.6; // 中文字符大约是字体大小的0.6倍宽
+    final double lineHeight = config.fontSize * config.lineHeight;
     
-    final charsPerLine = (availableWidth / charWidth).floor();
-    final linesPerPage = (availableHeight / lineHeight).floor();
-    final charsPerPage = charsPerLine * linesPerPage;
+    final int charsPerLine = (availableWidth / charWidth).floor();
+    final int linesPerPage = (availableHeight / lineHeight).floor();
+    final int charsPerPage = charsPerLine * linesPerPage;
 
     // 分割内容
-    final pages = <String>[];
-    final paragraphs = content.split('\n');
+    final List<String> pages = <String>[];
+    final List<String> paragraphs = content.split('\n');
     String currentPage = '';
     int currentPageLength = 0;
 
-    for (final paragraph in paragraphs) {
-      final paragraphLines = _splitParagraphIntoLines(paragraph, charsPerLine);
+    for (final String paragraph in paragraphs) {
+      final List<String> paragraphLines = _splitParagraphIntoLines(paragraph, charsPerLine);
       
-      for (final line in paragraphLines) {
+      for (final String line in paragraphLines) {
         // 检查是否需要换页
         if (currentPageLength + line.length > charsPerPage && currentPage.isNotEmpty) {
           pages.add(currentPage.trim());
@@ -47,7 +47,7 @@ class PageCalculator {
           currentPageLength = 0;
         }
         
-        currentPage += line + '\n';
+        currentPage += '$line\n';
         currentPageLength += line.length + 1; // +1 for newline
       }
     }
@@ -57,18 +57,18 @@ class PageCalculator {
       pages.add(currentPage.trim());
     }
 
-    return pages.isEmpty ? [content] : pages;
+    return pages.isEmpty ? <String>[content] : pages;
   }
 
   /// 将段落分割成行
   static List<String> _splitParagraphIntoLines(String paragraph, int charsPerLine) {
-    if (paragraph.isEmpty) return [''];
+    if (paragraph.isEmpty) return <String>[''];
     
-    final lines = <String>[];
+    final List<String> lines = <String>[];
     String currentLine = '';
     
     for (int i = 0; i < paragraph.length; i++) {
-      final char = paragraph[i];
+      final String char = paragraph[i];
       
       // 检查是否需要换行
       if (currentLine.length >= charsPerLine) {
@@ -84,7 +84,7 @@ class PageCalculator {
       lines.add(currentLine);
     }
     
-    return lines.isEmpty ? [''] : lines;
+    return lines.isEmpty ? <String>[''] : lines;
   }
 
   /// 根据页码计算在原文中的位置
@@ -138,16 +138,16 @@ class PageCalculator {
     required ReaderConfig config,
     required Size screenSize,
   }) {
-    final availableWidth = screenSize.width - 
+    final double availableWidth = screenSize.width - 
         config.pageMargin.left - config.pageMargin.right;
-    final availableHeight = screenSize.height - 
+    final double availableHeight = screenSize.height - 
         config.pageMargin.top - config.pageMargin.bottom;
 
-    final charWidth = config.fontSize * 0.6;
-    final lineHeight = config.fontSize * config.lineHeight;
+    final double charWidth = config.fontSize * 0.6;
+    final double lineHeight = config.fontSize * config.lineHeight;
     
-    final charsPerLine = (availableWidth / charWidth).floor();
-    final linesPerPage = (availableHeight / lineHeight).floor();
+    final int charsPerLine = (availableWidth / charWidth).floor();
+    final int linesPerPage = (availableHeight / lineHeight).floor();
     
     return charsPerLine * linesPerPage;
   }
@@ -160,7 +160,7 @@ class PageCalculator {
     if (content.isEmpty) return 0;
     
     // 中文字符数大致等于单词数
-    final wordCount = content.length;
+    final int wordCount = content.length;
     return (wordCount / wordsPerMinute).ceil();
   }
 
@@ -186,7 +186,7 @@ class PageCalculator {
     required Size screenSize,
   }) {
     // 合并所有页面内容
-    final fullContent = originalPages.join('');
+    final String fullContent = originalPages.join();
     
     // 使用新配置重新分页
     return calculatePages(

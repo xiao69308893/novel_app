@@ -4,58 +4,52 @@ import '../../../../app/themes/app_theme.dart';
 import '../../../../shared/models/novel_model.dart';
 
 class NovelList extends StatelessWidget {
+
+  const NovelList({
+    required this.novels, super.key,
+    this.shrinkWrap = false,
+    this.physics,
+    this.padding,
+  });
   final List<NovelSimpleModel> novels;
   final bool shrinkWrap;
   final ScrollPhysics? physics;
   final EdgeInsets? padding;
 
-  const NovelList({
-    Key? key,
-    required this.novels,
-    this.shrinkWrap = false,
-    this.physics,
-    this.padding,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
+  Widget build(BuildContext context) => ListView.separated(
       shrinkWrap: shrinkWrap,
       physics: physics,
       padding: padding ?? const EdgeInsets.all(AppTheme.spacingRegular),
       itemCount: novels.length,
-      separatorBuilder: (context, index) => const Divider(),
-      itemBuilder: (context, index) {
-        return NovelListItem(
+      separatorBuilder: (BuildContext context, int index) => const Divider(),
+      itemBuilder: (BuildContext context, int index) => NovelListItem(
           novel: novels[index],
           onTap: () => _handleNovelTap(context, novels[index]),
-        );
-      },
+        ),
     );
-  }
 
   void _handleNovelTap(BuildContext context, NovelSimpleModel novel) {
     Navigator.pushNamed(
       context,
       '/novel/detail',
-      arguments: {'novelId': novel.id},
+      arguments: <String, String>{'novelId': novel.id},
     );
   }
 }
 
 class NovelListItem extends StatelessWidget {
+
+  const NovelListItem({
+    required this.novel, super.key,
+    this.onTap,
+  });
   final NovelSimpleModel novel;
   final VoidCallback? onTap;
 
-  const NovelListItem({
-    Key? key,
-    required this.novel,
-    this.onTap,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return ListTile(
       onTap: onTap,
@@ -69,12 +63,10 @@ class NovelListItem extends StatelessWidget {
               ? Image.network(
                   novel.coverUrl!,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
+                  errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) => Container(
                       color: Colors.grey[200],
                       child: const Icon(Icons.book, color: Colors.grey),
-                    );
-                  },
+                    ),
                 )
               : Container(
                   color: Colors.grey[200],
@@ -90,7 +82,7 @@ class NovelListItem extends StatelessWidget {
       ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           const SizedBox(height: 4),
           Text(
             novel.authorName,
@@ -98,7 +90,7 @@ class NovelListItem extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Row(
-            children: [
+            children: <Widget>[
               Text(
                 novel.formattedWordCount,
                 style: theme.textTheme.bodySmall?.copyWith(
@@ -118,7 +110,7 @@ class NovelListItem extends StatelessWidget {
       ),
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+        children: <Widget>[
           if (novel.isVip)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),

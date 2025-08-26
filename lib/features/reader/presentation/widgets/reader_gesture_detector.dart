@@ -3,6 +3,16 @@ import 'package:flutter/services.dart';
 
 /// 阅读器手势检测器
 class ReaderGestureDetector extends StatefulWidget {
+
+  const ReaderGestureDetector({
+    required this.child, super.key,
+    this.onTap,
+    this.onLeftTap,
+    this.onRightTap,
+    this.onCenterTap,
+    this.onLongPress,
+    this.enableVolumeKeyTurnPage = false,
+  });
   final Widget child;
   final VoidCallback? onTap;
   final VoidCallback? onLeftTap;
@@ -10,17 +20,6 @@ class ReaderGestureDetector extends StatefulWidget {
   final VoidCallback? onCenterTap;
   final VoidCallback? onLongPress;
   final bool enableVolumeKeyTurnPage;
-
-  const ReaderGestureDetector({
-    Key? key,
-    required this.child,
-    this.onTap,
-    this.onLeftTap,
-    this.onRightTap,
-    this.onCenterTap,
-    this.onLongPress,
-    this.enableVolumeKeyTurnPage = false,
-  }) : super(key: key);
 
   @override
   State<ReaderGestureDetector> createState() => _ReaderGestureDetectorState();
@@ -46,13 +45,12 @@ class _ReaderGestureDetectorState extends State<ReaderGestureDetector> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
+  Widget build(BuildContext context) => GestureDetector(
       onTap: widget.onTap,
       onLongPress: widget.onLongPress,
-      onTapUp: (details) {
-        final screenWidth = MediaQuery.of(context).size.width;
-        final tapX = details.globalPosition.dx;
+      onTapUp: (TapUpDetails details) {
+        final double screenWidth = MediaQuery.of(context).size.width;
+        final double tapX = details.globalPosition.dx;
         
         if (tapX < screenWidth * 0.3) {
           // 左侧点击
@@ -67,5 +65,4 @@ class _ReaderGestureDetectorState extends State<ReaderGestureDetector> {
       },
       child: widget.child,
     );
-  }
 }

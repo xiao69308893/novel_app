@@ -6,6 +6,9 @@ import 'package:flutter/foundation.dart';
 import '../utils/logger.dart';
 
 class DatabaseHelper {
+
+  // 私有构造函数
+  DatabaseHelper._internal();
   // 单例模式
   static DatabaseHelper? _instance;
   static DatabaseHelper get instance {
@@ -16,9 +19,6 @@ class DatabaseHelper {
   Database? _database;
   static const String _databaseName = 'novel_app.db';
   static const int _databaseVersion = 1;
-
-  // 私有构造函数
-  DatabaseHelper._internal();
 
   // 获取数据库实例
   Future<Database> get database async {
@@ -39,8 +39,8 @@ class DatabaseHelper {
       }
       
       // 移动端环境：使用文档目录
-      final documentsDirectory = await getApplicationDocumentsDirectory();
-      final path = join(documentsDirectory.path, _databaseName);
+      final Directory documentsDirectory = await getApplicationDocumentsDirectory();
+      final String path = join(documentsDirectory.path, _databaseName);
       Logger.info('移动端环境：初始化数据库: $path');
       
       return await openDatabase(
@@ -316,13 +316,13 @@ class DatabaseHelper {
   // 插入数据
   Future<int> insert(String table, Map<String, dynamic> data) async {
     try {
-      final db = await database;
-      final now = DateTime.now().millisecondsSinceEpoch;
+      final Database db = await database;
+      final int now = DateTime.now().millisecondsSinceEpoch;
       
       data['created_at'] = now;
       data['updated_at'] = now;
       
-      final id = await db.insert(table, data);
+      final int id = await db.insert(table, data);
       Logger.database('INSERT', table, data);
       return id;
     } catch (e) {
@@ -334,18 +334,18 @@ class DatabaseHelper {
   // 批量插入数据
   Future<void> insertBatch(String table, List<Map<String, dynamic>> dataList) async {
     try {
-      final db = await database;
-      final batch = db.batch();
-      final now = DateTime.now().millisecondsSinceEpoch;
+      final Database db = await database;
+      final Batch batch = db.batch();
+      final int now = DateTime.now().millisecondsSinceEpoch;
       
-      for (final data in dataList) {
+      for (final Map<String, dynamic> data in dataList) {
         data['created_at'] = now;
         data['updated_at'] = now;
         batch.insert(table, data);
       }
       
       await batch.commit(noResult: true);
-      Logger.database('INSERT_BATCH', table, {'count': dataList.length});
+      Logger.database('INSERT_BATCH', table, <String, dynamic>{'count': dataList.length});
     } catch (e) {
       Logger.error('批量数据插入失败: $table', e);
       rethrow;
@@ -360,17 +360,17 @@ class DatabaseHelper {
     List<dynamic>? whereArgs,
   }) async {
     try {
-      final db = await database;
+      final Database db = await database;
       data['updated_at'] = DateTime.now().millisecondsSinceEpoch;
       
-      final count = await db.update(
+      final int count = await db.update(
         table,
         data,
         where: where,
         whereArgs: whereArgs,
       );
       
-      Logger.database('UPDATE', table, {
+      Logger.database('UPDATE', table, <String, dynamic>{
         'data': data,
         'where': where,
         'whereArgs': whereArgs,
@@ -391,14 +391,14 @@ class DatabaseHelper {
     List<dynamic>? whereArgs,
   }) async {
     try {
-      final db = await database;
-      final count = await db.delete(
+      final Database db = await database;
+      final int count = await db.delete(
         table,
         where: where,
         whereArgs: whereArgs,
       );
       
-      Logger.database('DELETE', table, {
+      Logger.database('DELETE', table, <String, dynamic>{
         'where': where,
         'whereArgs': whereArgs,
         'affected': count,
@@ -425,8 +425,8 @@ class DatabaseHelper {
     int? offset,
   }) async {
     try {
-      final db = await database;
-      final result = await db.query(
+      final Database db = await database;
+      final List<Map<String, Object?>> result = await db.query(
         table,
         distinct: distinct,
         columns: columns,
@@ -439,7 +439,7 @@ class DatabaseHelper {
         offset: offset,
       );
       
-      Logger.database('SELECT', table, {
+      Logger.database('SELECT', table, <String, dynamic>{
         'where': where,
         'whereArgs': whereArgs,
         'orderBy': orderBy,
@@ -460,10 +460,10 @@ class DatabaseHelper {
     List<dynamic>? arguments,
   ]) async {
     try {
-      final db = await database;
-      final result = await db.rawQuery(sql, arguments);
+      final Database db = await database;
+      final List<Map<String, Object?>> result = await db.rawQuery(sql, arguments);
       
-      Logger.database('RAW_QUERY', 'custom', {
+      Logger.database('RAW_QUERY', 'custom', <String, dynamic>{
         'sql': sql,
         'arguments': arguments,
         'count': result.length,
@@ -479,10 +479,10 @@ class DatabaseHelper {
   // 原始SQL执行
   Future<int> rawExecute(String sql, [List<dynamic>? arguments]) async {
     try {
-      final db = await database;
-      final result = await db.rawInsert(sql, arguments);
+      final Database db = await database;
+      final int result = await db.rawInsert(sql, arguments);
       
-      Logger.database('RAW_EXECUTE', 'custom', {
+      Logger.database('RAW_EXECUTE', 'custom', <String, dynamic>{
         'sql': sql,
         'arguments': arguments,
         'result': result,
@@ -498,7 +498,7 @@ class DatabaseHelper {
   // 事务操作
   Future<T> transaction<T>(Future<T> Function(Transaction) action) async {
     try {
-      final db = await database;
+      final Database db = await database;
       return await db.transaction(action);
     } catch (e) {
       Logger.error('事务执行失败', e);
@@ -511,11 +511,11 @@ class DatabaseHelper {
   // 清理过期缓存
   Future<void> cleanExpiredCache() async {
     try {
-      final now = DateTime.now().millisecondsSinceEpoch;
-      final count = await delete(
+      final int now = DateTime.now().millisecondsSinceEpoch;
+      final int count = await delete(
         'cache',
         where: 'expire_time IS NOT NULL AND expire_time < ?',
-        whereArgs: [now],
+        whereArgs: <dynamic>[now],
       );
       Logger.info('清理过期缓存: $count条');
     } catch (e) {
@@ -526,14 +526,14 @@ class DatabaseHelper {
   // 清理旧的搜索历史
   Future<void> cleanOldSearchHistory([int keepDays = 30]) async {
     try {
-      final cutoffTime = DateTime.now()
+      final int cutoffTime = DateTime.now()
           .subtract(Duration(days: keepDays))
           .millisecondsSinceEpoch;
       
-      final count = await delete(
+      final int count = await delete(
         'search_history',
         where: 'last_search_at < ?',
-        whereArgs: [cutoffTime],
+        whereArgs: <dynamic>[cutoffTime],
       );
       Logger.info('清理旧搜索历史: $count条');
     } catch (e) {
@@ -544,32 +544,32 @@ class DatabaseHelper {
   // 获取数据库信息
   Future<Map<String, dynamic>> getDatabaseInfo() async {
     try {
-      final db = await database;
-      final path = db.path;
-      final version = await db.getVersion();
+      final Database db = await database;
+      final String path = db.path;
+      final int version = await db.getVersion();
       
       int size = 0;
       if (!kIsWeb) {
         // 只在非Web环境中获取文件大小
-        File dbFile = File(path);
+        final File dbFile = File(path);
         size = await dbFile.length();
       }
       
       // 获取各表记录数
-      final tables = ['users', 'novels', 'chapters', 'bookshelf', 
+      final List<String> tables = <String>['users', 'novels', 'chapters', 'bookshelf', 
                      'reading_progress', 'bookmarks', 'cache', 'search_history'];
-      final tableCounts = <String, int>{};
+      final Map<String, int> tableCounts = <String, int>{};
       
-      for (final table in tables) {
+      for (final String table in tables) {
         try {
-          final result = await rawQuery('SELECT COUNT(*) as count FROM $table');
+          final List<Map<String, dynamic>> result = await rawQuery('SELECT COUNT(*) as count FROM $table');
           tableCounts[table] = result.first['count'] as int;
         } catch (e) {
           tableCounts[table] = 0;
         }
       }
       
-      return {
+      return <String, dynamic>{
         'path': path,
         'version': version,
         'size': size,
@@ -590,12 +590,12 @@ class DatabaseHelper {
         throw UnsupportedError('Web环境不支持数据库备份');
       }
       
-      final db = await database;
-      final documentsDir = await getApplicationDocumentsDirectory();
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final backupPath = join(documentsDir.path, 'backup_${timestamp}_$_databaseName');
+      final Database db = await database;
+      final Directory documentsDir = await getApplicationDocumentsDirectory();
+      final int timestamp = DateTime.now().millisecondsSinceEpoch;
+      final String backupPath = join(documentsDir.path, 'backup_${timestamp}_$_databaseName');
       
-      final dbFile = File(db.path);
+      final File dbFile = File(db.path);
       await dbFile.copy(backupPath);
       
       Logger.info('数据库备份完成: $backupPath');
@@ -626,8 +626,8 @@ class DatabaseHelper {
         Logger.warning('Web环境：数据库已删除');
       } else {
         // 移动端环境：使用文档目录路径
-        final documentsDirectory = await getApplicationDocumentsDirectory();
-        final path = join(documentsDirectory.path, _databaseName);
+        final Directory documentsDirectory = await getApplicationDocumentsDirectory();
+        final String path = join(documentsDirectory.path, _databaseName);
         await databaseFactory.deleteDatabase(path);
         Logger.warning('移动端环境：数据库已删除: $path');
       }

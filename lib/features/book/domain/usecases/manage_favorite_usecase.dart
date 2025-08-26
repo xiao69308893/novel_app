@@ -6,9 +6,9 @@ import '../../../../core/usecases/usecase.dart';
 import '../repositories/book_repository.dart';
 
 class ManageFavoriteUseCase implements UseCase<bool, ManageFavoriteParams> {
-  final BookRepository repository;
 
   ManageFavoriteUseCase(this.repository);
+  final BookRepository repository;
 
   @override
   Future<Either<AppError, bool>> call(ManageFavoriteParams params) async {
@@ -17,22 +17,22 @@ class ManageFavoriteUseCase implements UseCase<bool, ManageFavoriteParams> {
     }
 
     if (params.isFavorite) {
-      return await repository.favoriteBook(params.bookId);
+      return repository.favoriteBook(params.bookId);
     } else {
-      return await repository.unfavoriteBook(params.bookId);
+      return repository.unfavoriteBook(params.bookId);
     }
   }
 }
 
 class ManageFavoriteParams extends Equatable {
-  final String bookId;
-  final bool isFavorite;
 
   const ManageFavoriteParams({
     required this.bookId,
     required this.isFavorite,
   });
+  final String bookId;
+  final bool isFavorite;
 
   @override
-  List<Object> get props => [bookId, isFavorite];
+  List<Object> get props => <Object>[bookId, isFavorite];
 }

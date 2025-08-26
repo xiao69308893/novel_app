@@ -1,5 +1,6 @@
 // 小说仓储实现
 import 'package:dartz/dartz.dart';
+import 'package:novel_app/features/book/data/models/comment_model.dart';
 import '../../../../core/errors/app_error.dart';
 import '../../../../core/network/network_info.dart';
 import '../../../../shared/models/chapter_model.dart';
@@ -12,30 +13,30 @@ import '../datasources/book_local_datasource.dart';
 import '../models/book_detail_model.dart';
 
 class BookRepositoryImpl implements BookRepository {
-  final BookRemoteDataSource remoteDataSource;
-  final BookLocalDataSource localDataSource;
-  final NetworkInfo networkInfo;
 
   BookRepositoryImpl({
     required this.remoteDataSource,
     required this.localDataSource,
     required this.networkInfo,
   });
+  final BookRemoteDataSource remoteDataSource;
+  final BookLocalDataSource localDataSource;
+  final NetworkInfo networkInfo;
 
   @override
   Future<Either<AppError, BookDetail>> getBookDetail(String bookId) async {
     if (await networkInfo.isConnected) {
       try {
-        final bookDetailModel = await remoteDataSource.getBookDetail(bookId);
+        final BookDetailModel bookDetailModel = await remoteDataSource.getBookDetail(bookId);
         
         // 缓存到本地
         await localDataSource.saveBookDetail(bookDetailModel);
         
         // 检查收藏和下载状态
-        final favorites = await localDataSource.getFavoriteBooks() ?? [];
-        final downloaded = await localDataSource.getDownloadedBooks() ?? [];
+        final List<String> favorites = await localDataSource.getFavoriteBooks() ?? <String>[];
+        final List<String> downloaded = await localDataSource.getDownloadedBooks() ?? <String>[];
         
-        final updatedDetail = BookDetailModel(
+        final BookDetailModel updatedDetail = BookDetailModel(
           novel: bookDetailModel.novel,
           chapters: bookDetailModel.chapters,
           readingProgress: bookDetailModel.readingProgress,
@@ -47,7 +48,7 @@ class BookRepositoryImpl implements BookRepository {
         return Right(updatedDetail.toEntity());
       } on AppError catch (e) {
         // 网络请求失败，尝试从本地获取
-        final localDetail = await localDataSource.getBookDetail(bookId);
+        final BookDetailModel? localDetail = await localDataSource.getBookDetail(bookId);
         if (localDetail != null) {
           return Right(localDetail.toEntity());
         }
@@ -57,7 +58,7 @@ class BookRepositoryImpl implements BookRepository {
       }
     } else {
       // 无网络连接，从本地获取
-      final localDetail = await localDataSource.getBookDetail(bookId);
+      final BookDetailModel? localDetail = await localDataSource.getBookDetail(bookId);
       if (localDetail != null) {
         return Right(localDetail.toEntity());
       }
@@ -73,7 +74,7 @@ class BookRepositoryImpl implements BookRepository {
   }) async {
     if (await networkInfo.isConnected) {
       try {
-        final chapters = await remoteDataSource.getChapterList(
+        final List<ChapterSimpleModel> chapters = await remoteDataSource.getChapterList(
           bookId: bookId,
           page: page,
           limit: limit,
@@ -88,7 +89,7 @@ class BookRepositoryImpl implements BookRepository {
       } on AppError catch (e) {
         // 网络请求失败且是首页时，尝试从本地获取
         if (page == 1) {
-          final localChapters = await localDataSource.getChapterList(bookId);
+          final List<ChapterSimpleModel>? localChapters = await localDataSource.getChapterList(bookId);
           if (localChapters != null) {
             return Right(localChapters);
           }
@@ -100,7 +101,7 @@ class BookRepositoryImpl implements BookRepository {
     } else {
       if (page == 1) {
         // 无网络连接，从本地获取首页章节
-        final localChapters = await localDataSource.getChapterList(bookId);
+        final List<ChapterSimpleModel>? localChapters = await localDataSource.getChapterList(bookId);
         if (localChapters != null) {
           return Right(localChapters);
         }
@@ -113,7 +114,7 @@ class BookRepositoryImpl implements BookRepository {
   Future<Either<AppError, ChapterModel>> getChapterDetail(String chapterId) async {
     if (await networkInfo.isConnected) {
       try {
-        final chapter = await remoteDataSource.getChapterDetail(chapterId);
+        final ChapterModel chapter = await remoteDataSource.getChapterDetail(chapterId);
         
         // 缓存到本地
         await localDataSource.saveChapterDetail(chapter);
@@ -121,7 +122,7 @@ class BookRepositoryImpl implements BookRepository {
         return Right(chapter);
       } on AppError catch (e) {
         // 网络请求失败，尝试从本地获取
-        final localChapter = await localDataSource.getChapterDetail(chapterId);
+        final ChapterModel? localChapter = await localDataSource.getChapterDetail(chapterId);
         if (localChapter != null) {
           return Right(localChapter);
         }
@@ -131,7 +132,7 @@ class BookRepositoryImpl implements BookRepository {
       }
     } else {
       // 无网络连接，从本地获取
-      final localChapter = await localDataSource.getChapterDetail(chapterId);
+      final ChapterModel? localChapter = await localDataSource.getChapterDetail(chapterId);
       if (localChapter != null) {
         return Right(localChapter);
       }
@@ -147,12 +148,12 @@ class BookRepositoryImpl implements BookRepository {
   }) async {
     if (await networkInfo.isConnected) {
       try {
-        final commentModels = await remoteDataSource.getBookComments(
+        final List<CommentModel> commentModels = await remoteDataSource.getBookComments(
           bookId: bookId,
           page: page,
           limit: limit,
         );
-        return Right(commentModels.map((model) => model.toEntity()).toList());
+        return Right(commentModels.map((CommentModel model) => model.toEntity()).toList());
       } on AppError catch (e) {
         return Left(e);
       } catch (e) {
@@ -171,12 +172,12 @@ class BookRepositoryImpl implements BookRepository {
   }) async {
     if (await networkInfo.isConnected) {
       try {
-        final commentModels = await remoteDataSource.getChapterComments(
+        final List<CommentModel> commentModels = await remoteDataSource.getChapterComments(
           chapterId: chapterId,
           page: page,
           limit: limit,
         );
-        return Right(commentModels.map((model) => model.toEntity()).toList());
+        return Right(commentModels.map((CommentModel model) => model.toEntity()).toList());
       } on AppError catch (e) {
         return Left(e);
       } catch (e) {
@@ -196,7 +197,7 @@ class BookRepositoryImpl implements BookRepository {
   }) async {
     if (await networkInfo.isConnected) {
       try {
-        final commentModel = await remoteDataSource.postComment(
+        final CommentModel commentModel = await remoteDataSource.postComment(
           targetId: targetId,
           type: type.name,
           content: content,
@@ -217,7 +218,7 @@ class BookRepositoryImpl implements BookRepository {
   Future<Either<AppError, bool>> likeComment(String commentId) async {
     if (await networkInfo.isConnected) {
       try {
-        final result = await remoteDataSource.likeComment(commentId);
+        final bool result = await remoteDataSource.likeComment(commentId);
         return Right(result);
       } on AppError catch (e) {
         return Left(e);
@@ -233,7 +234,7 @@ class BookRepositoryImpl implements BookRepository {
   Future<Either<AppError, bool>> unlikeComment(String commentId) async {
     if (await networkInfo.isConnected) {
       try {
-        final result = await remoteDataSource.unlikeComment(commentId);
+        final bool result = await remoteDataSource.unlikeComment(commentId);
         return Right(result);
       } on AppError catch (e) {
         return Left(e);
@@ -249,7 +250,7 @@ class BookRepositoryImpl implements BookRepository {
   Future<Either<AppError, bool>> deleteComment(String commentId) async {
     if (await networkInfo.isConnected) {
       try {
-        final result = await remoteDataSource.deleteComment(commentId);
+        final bool result = await remoteDataSource.deleteComment(commentId);
         return Right(result);
       } on AppError catch (e) {
         return Left(e);
@@ -265,7 +266,7 @@ class BookRepositoryImpl implements BookRepository {
   Future<Either<AppError, bool>> favoriteBook(String bookId) async {
     if (await networkInfo.isConnected) {
       try {
-        final result = await remoteDataSource.favoriteBook(bookId);
+        final bool result = await remoteDataSource.favoriteBook(bookId);
         if (result) {
           // 更新本地收藏状态
           await localDataSource.addFavoriteBook(bookId);
@@ -285,7 +286,7 @@ class BookRepositoryImpl implements BookRepository {
   Future<Either<AppError, bool>> unfavoriteBook(String bookId) async {
     if (await networkInfo.isConnected) {
       try {
-        final result = await remoteDataSource.unfavoriteBook(bookId);
+        final bool result = await remoteDataSource.unfavoriteBook(bookId);
         if (result) {
           // 更新本地收藏状态
           await localDataSource.removeFavoriteBook(bookId);
@@ -309,7 +310,7 @@ class BookRepositoryImpl implements BookRepository {
   }) async {
     if (await networkInfo.isConnected) {
       try {
-        final result = await remoteDataSource.rateBook(
+        final bool result = await remoteDataSource.rateBook(
           bookId: bookId,
           rating: rating,
           review: review,
@@ -332,7 +333,7 @@ class BookRepositoryImpl implements BookRepository {
   }) async {
     if (await networkInfo.isConnected) {
       try {
-        final result = await remoteDataSource.shareBook(
+        final bool result = await remoteDataSource.shareBook(
           bookId: bookId,
           platform: platform,
         );
@@ -356,7 +357,7 @@ class BookRepositoryImpl implements BookRepository {
   }) async {
     if (await networkInfo.isConnected) {
       try {
-        final result = await remoteDataSource.reportContent(
+        final bool result = await remoteDataSource.reportContent(
           targetId: targetId,
           type: type,
           reason: reason,
@@ -416,7 +417,7 @@ class BookRepositoryImpl implements BookRepository {
   Future<Either<AppError, bool>> cancelDownload(String taskId) async {
     if (await networkInfo.isConnected) {
       try {
-        final result = await remoteDataSource.cancelDownload(taskId);
+        final bool result = await remoteDataSource.cancelDownload(taskId);
         return Right(result);
       } on AppError catch (e) {
         return Left(e);
@@ -432,11 +433,11 @@ class BookRepositoryImpl implements BookRepository {
   Future<Either<AppError, ReadingProgress?>> getReadingProgress(String bookId) async {
     try {
       // 优先从本地获取
-      final localProgress = await localDataSource.getReadingProgress(bookId);
+      final ReadingProgress? localProgress = await localDataSource.getReadingProgress(bookId);
       
       if (await networkInfo.isConnected) {
         try {
-          final remoteProgress = await remoteDataSource.getReadingProgress(bookId);
+          final ReadingProgress? remoteProgress = await remoteDataSource.getReadingProgress(bookId);
           if (remoteProgress != null) {
             // 保存到本地
             await localDataSource.saveReadingProgress(remoteProgress);
@@ -462,7 +463,7 @@ class BookRepositoryImpl implements BookRepository {
   }) async {
     try {
       // 创建进度对象
-      final readingProgress = ReadingProgress(
+      final ReadingProgress readingProgress = ReadingProgress(
         userId: 'current_user', // TODO: 从认证状态获取用户ID
         novelId: bookId,
         chapterId: chapterId,
@@ -479,7 +480,7 @@ class BookRepositoryImpl implements BookRepository {
       
       if (await networkInfo.isConnected) {
         try {
-          final result = await remoteDataSource.updateReadingProgress(
+          final bool result = await remoteDataSource.updateReadingProgress(
             bookId: bookId,
             chapterId: chapterId,
             position: position,
@@ -506,7 +507,7 @@ class BookRepositoryImpl implements BookRepository {
   }) async {
     if (await networkInfo.isConnected) {
       try {
-        final novels = await remoteDataSource.getSimilarBooks(
+        final List<NovelSimpleModel> novels = await remoteDataSource.getSimilarBooks(
           bookId: bookId,
           limit: limit,
         );
@@ -529,7 +530,7 @@ class BookRepositoryImpl implements BookRepository {
   }) async {
     if (await networkInfo.isConnected) {
       try {
-        final novels = await remoteDataSource.getAuthorOtherBooks(
+        final List<NovelSimpleModel> novels = await remoteDataSource.getAuthorOtherBooks(
           authorId: authorId,
           excludeBookId: excludeBookId,
           limit: limit,

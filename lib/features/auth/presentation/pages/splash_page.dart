@@ -6,7 +6,7 @@ import '../cubit/auth_cubit.dart';
 
 /// 启动页面
 class SplashPage extends StatefulWidget {
-  const SplashPage({Key? key}) : super(key: key);
+  const SplashPage({super.key});
 
   @override
   State<SplashPage> createState() => _SplashPageState();
@@ -52,9 +52,8 @@ class _SplashPageState extends State<SplashPage>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BlocListener<AuthCubit, AuthState>(
-      listener: (context, state) {
+  Widget build(BuildContext context) => BlocListener<AuthCubit, AuthState>(
+      listener: (BuildContext context, AuthState state) {
         if (state is AuthAuthenticated) {
           Navigator.pushReplacementNamed(context, '/home');
         } else if (state is AuthUnauthenticated) {
@@ -68,7 +67,7 @@ class _SplashPageState extends State<SplashPage>
             opacity: _fadeAnimation,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: <Widget>[
                 // App Logo
                 Container(
                   width: 120,
@@ -76,7 +75,7 @@ class _SplashPageState extends State<SplashPage>
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
+                    boxShadow: <BoxShadow>[
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 10,
@@ -123,5 +122,4 @@ class _SplashPageState extends State<SplashPage>
         ),
       ),
     );
-  }
 }

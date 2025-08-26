@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:novel_app/core/network/api_response.dart';
 import '../../../../core/api/api_client.dart';
 import '../../../../core/errors/app_error.dart';
 import '../../../../core/errors/error_handler.dart';
@@ -106,11 +107,11 @@ abstract class BookshelfRemoteDataSource {
 
 /// 书架远程数据源实现
 class BookshelfRemoteDataSourceImpl implements BookshelfRemoteDataSource {
-  final ApiClient apiClient;
 
   const BookshelfRemoteDataSourceImpl({
     required this.apiClient,
   });
+  final ApiClient apiClient;
 
   @override
   Future<List<NovelModel>> getFavoriteNovels({
@@ -127,13 +128,13 @@ class BookshelfRemoteDataSourceImpl implements BookshelfRemoteDataSource {
         if (filterBy != null) 'filter_by': filterBy,
       };
 
-      final response = await apiClient.get<Map<String, dynamic>>(
+      final ApiResponse<Map<String, dynamic>> response = await apiClient.get<Map<String, dynamic>>(
         '/user/favorites',
         queryParameters: queryParams,
       );
 
-      final data = response.data?['data'] as Map<String, dynamic>?;
-      final List<dynamic> novelsJson = (data?['list'] as List<dynamic>?) ?? [];
+      final Map<String, dynamic>? data = response.data?['data'] as Map<String, dynamic>?;
+      final List<dynamic> novelsJson = (data?['list'] as List<dynamic>?) ?? <dynamic>[];
       return novelsJson.map((dynamic json) => NovelModel.fromJson(json as Map<String, dynamic>)).toList();
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
@@ -153,13 +154,13 @@ class BookshelfRemoteDataSourceImpl implements BookshelfRemoteDataSource {
         'limit': limit.toString(),
       };
 
-      final response = await apiClient.get<Map<String, dynamic>>(
+      final ApiResponse<Map<String, dynamic>> response = await apiClient.get<Map<String, dynamic>>(
         '/novels/recommended',
         queryParameters: queryParams,
       );
 
-      final data = response.data?['data'] as Map<String, dynamic>?;
-      final List<dynamic> novelsJson = (data?['list'] as List<dynamic>?) ?? [];
+      final Map<String, dynamic>? data = response.data?['data'] as Map<String, dynamic>?;
+      final List<dynamic> novelsJson = (data?['list'] as List<dynamic>?) ?? <dynamic>[];
       return novelsJson.map((dynamic json) => NovelModel.fromJson(json as Map<String, dynamic>)).toList();
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
@@ -173,7 +174,7 @@ class BookshelfRemoteDataSourceImpl implements BookshelfRemoteDataSource {
     try {
       await apiClient.post(
         '/user/favorites',
-        data: {'novel_id': novelId},
+        data: <String, String>{'novel_id': novelId},
       );
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
@@ -196,8 +197,8 @@ class BookshelfRemoteDataSourceImpl implements BookshelfRemoteDataSource {
   @override
   Future<bool> checkFavoriteStatus({required String novelId}) async {
     try {
-      final response = await apiClient.get<Map<String, dynamic>>('/user/favorites/$novelId/status');
-      final data = response.data?['data'] as Map<String, dynamic>?;
+      final ApiResponse<Map<String, dynamic>> response = await apiClient.get<Map<String, dynamic>>('/user/favorites/$novelId/status');
+      final Map<String, dynamic>? data = response.data?['data'] as Map<String, dynamic>?;
       return (data?['is_favorite'] as bool?) ?? false;
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
@@ -211,7 +212,7 @@ class BookshelfRemoteDataSourceImpl implements BookshelfRemoteDataSource {
     try {
       await apiClient.post(
         '/user/favorites/batch',
-        data: {'novel_ids': novelIds, 'action': 'add'},
+        data: <String, Object>{'novel_ids': novelIds, 'action': 'add'},
       );
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
@@ -225,7 +226,7 @@ class BookshelfRemoteDataSourceImpl implements BookshelfRemoteDataSource {
     try {
       await apiClient.post(
         '/user/favorites/batch',
-        data: {'novel_ids': novelIds, 'action': 'remove'},
+        data: <String, Object>{'novel_ids': novelIds, 'action': 'remove'},
       );
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
@@ -237,8 +238,8 @@ class BookshelfRemoteDataSourceImpl implements BookshelfRemoteDataSource {
   @override
   Future<UserModel> getUserProfile() async {
     try {
-      final response = await apiClient.get<Map<String, dynamic>>('/user/profile');
-      final data = response.data?['data'] as Map<String, dynamic>?;
+      final ApiResponse<Map<String, dynamic>> response = await apiClient.get<Map<String, dynamic>>('/user/profile');
+      final Map<String, dynamic>? data = response.data?['data'] as Map<String, dynamic>?;
       if (data == null) {
         throw AppError.unknown('Invalid response data');
       }
@@ -253,11 +254,11 @@ class BookshelfRemoteDataSourceImpl implements BookshelfRemoteDataSource {
   @override
   Future<UserModel> updateUserProfile(UserModel user) async {
     try {
-      final response = await apiClient.put(
+      final ApiResponse response = await apiClient.put(
         '/user/profile',
         data: user.toJson(),
       );
-      final data = response.data?['data'] as Map<String, dynamic>?;
+      final Map<String, dynamic>? data = response.data?['data'] as Map<String, dynamic>?;
       if (data == null) {
         throw AppError.unknown('Invalid response data');
       }
@@ -272,8 +273,8 @@ class BookshelfRemoteDataSourceImpl implements BookshelfRemoteDataSource {
   @override
   Future<Map<String, dynamic>> checkIn() async {
     try {
-      final response = await apiClient.post('/user/checkin');
-      final data = response.data?['data'] as Map<String, dynamic>?;
+      final ApiResponse response = await apiClient.post('/user/checkin');
+      final Map<String, dynamic>? data = response.data?['data'] as Map<String, dynamic>?;
       if (data == null) {
         throw AppError.unknown('Invalid response data');
       }
@@ -288,8 +289,8 @@ class BookshelfRemoteDataSourceImpl implements BookshelfRemoteDataSource {
   @override
   Future<bool> getCheckInStatus() async {
     try {
-      final response = await apiClient.get<Map<String, dynamic>>('/user/checkin/status');
-      final data = response.data?['data'] as Map<String, dynamic>?;
+      final ApiResponse<Map<String, dynamic>> response = await apiClient.get<Map<String, dynamic>>('/user/checkin/status');
+      final Map<String, dynamic>? data = response.data?['data'] as Map<String, dynamic>?;
       return (data?['checked_in'] as bool?) ?? false;
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
@@ -301,9 +302,9 @@ class BookshelfRemoteDataSourceImpl implements BookshelfRemoteDataSource {
   @override
   Future<String> exportUserData() async {
     try {
-      final response = await apiClient.get<Map<String, dynamic>>('/user/data/export');
-      final data = response.data?['data'] as Map<String, dynamic>?;
-      final downloadUrl = data?['download_url'] as String?;
+      final ApiResponse<Map<String, dynamic>> response = await apiClient.get<Map<String, dynamic>>('/user/data/export');
+      final Map<String, dynamic>? data = response.data?['data'] as Map<String, dynamic>?;
+      final String? downloadUrl = data?['download_url'] as String?;
       if (downloadUrl == null) {
         throw AppError.unknown('Invalid response data');
       }
@@ -320,7 +321,7 @@ class BookshelfRemoteDataSourceImpl implements BookshelfRemoteDataSource {
     try {
       await apiClient.post(
         '/user/data/import',
-        data: {'data_path': dataPath},
+        data: <String, String>{'data_path': dataPath},
       );
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
@@ -359,7 +360,7 @@ class BookshelfRemoteDataSourceImpl implements BookshelfRemoteDataSource {
     try {
       await apiClient.put(
         '/user/password',
-        data: {
+        data: <String, String>{
           'old_password': oldPassword,
           'new_password': newPassword,
         },
@@ -382,13 +383,13 @@ class BookshelfRemoteDataSourceImpl implements BookshelfRemoteDataSource {
         'limit': limit.toString(),
       };
 
-      final response = await apiClient.get<Map<String, dynamic>>(
+      final ApiResponse<Map<String, dynamic>> response = await apiClient.get<Map<String, dynamic>>(
         '/user/reading-history',
         queryParameters: queryParams,
       );
 
-      final data = response.data?['data'] as Map<String, dynamic>?;
-      final List<dynamic> historyJson = (data?['list'] as List<dynamic>?) ?? [];
+      final Map<String, dynamic>? data = response.data?['data'] as Map<String, dynamic>?;
+      final List<dynamic> historyJson = (data?['list'] as List<dynamic>?) ?? <dynamic>[];
       return historyJson.map((dynamic json) => ReadingHistory.fromJson(json as Map<String, dynamic>)).toList();
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
@@ -407,7 +408,7 @@ class BookshelfRemoteDataSourceImpl implements BookshelfRemoteDataSource {
     try {
       await apiClient.post(
         '/user/reading-history',
-        data: {
+        data: <String, Object>{
           'novel_id': novelId,
           'chapter_id': chapterId,
           'reading_time': readingTime,
@@ -428,7 +429,7 @@ class BookshelfRemoteDataSourceImpl implements BookshelfRemoteDataSource {
         // 删除指定小说的阅读历史
         await apiClient.delete(
           '/user/reading-history',
-          data: {'novel_ids': novelIds},
+          data: <String, List<String>>{'novel_ids': novelIds},
         );
       } else {
         // 清空所有阅读历史
@@ -444,8 +445,8 @@ class BookshelfRemoteDataSourceImpl implements BookshelfRemoteDataSource {
   @override
   Future<UserStats> getUserStats() async {
     try {
-      final response = await apiClient.get<Map<String, dynamic>>('/user/stats');
-      final data = response.data?['data'] as Map<String, dynamic>?;
+      final ApiResponse<Map<String, dynamic>> response = await apiClient.get<Map<String, dynamic>>('/user/stats');
+      final Map<String, dynamic>? data = response.data?['data'] as Map<String, dynamic>?;
       if (data == null) {
         throw AppError.unknown('Invalid response data');
       }
@@ -460,8 +461,8 @@ class BookshelfRemoteDataSourceImpl implements BookshelfRemoteDataSource {
   @override
   Future<UserSettings> getUserSettings() async {
     try {
-      final response = await apiClient.get<Map<String, dynamic>>('/user/settings');
-      final data = response.data?['data'] as Map<String, dynamic>?;
+      final ApiResponse<Map<String, dynamic>> response = await apiClient.get<Map<String, dynamic>>('/user/settings');
+      final Map<String, dynamic>? data = response.data?['data'] as Map<String, dynamic>?;
       if (data == null) {
         throw AppError.unknown('Invalid response data');
       }
@@ -500,13 +501,13 @@ class BookshelfRemoteDataSourceImpl implements BookshelfRemoteDataSource {
         'limit': limit.toString(),
       };
 
-      final response = await apiClient.get<Map<String, dynamic>>(
+      final ApiResponse<Map<String, dynamic>> response = await apiClient.get<Map<String, dynamic>>(
         '/user/favorites/search',
         queryParameters: queryParams,
       );
 
-      final data = response.data?['data'] as Map<String, dynamic>?;
-      final List<dynamic> novelsJson = (data?['list'] as List<dynamic>?) ?? [];
+      final Map<String, dynamic>? data = response.data?['data'] as Map<String, dynamic>?;
+      final List<dynamic> novelsJson = (data?['list'] as List<dynamic>?) ?? <dynamic>[];
       return novelsJson.map((dynamic json) => NovelModel.fromJson(json as Map<String, dynamic>)).toList();
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
@@ -522,13 +523,13 @@ class BookshelfRemoteDataSourceImpl implements BookshelfRemoteDataSource {
         'limit': limit.toString(),
       };
 
-      final response = await apiClient.get<Map<String, dynamic>>(
+      final ApiResponse<Map<String, dynamic>> response = await apiClient.get<Map<String, dynamic>>(
         '/user/recently-read',
         queryParameters: queryParams,
       );
 
-      final data = response.data?['data'] as Map<String, dynamic>?;
-      final List<dynamic> novelsJson = (data?['list'] as List<dynamic>?) ?? [];
+      final Map<String, dynamic>? data = response.data?['data'] as Map<String, dynamic>?;
+      final List<dynamic> novelsJson = (data?['list'] as List<dynamic>?) ?? <dynamic>[];
       return novelsJson.map((dynamic json) => NovelModel.fromJson(json as Map<String, dynamic>)).toList();
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);

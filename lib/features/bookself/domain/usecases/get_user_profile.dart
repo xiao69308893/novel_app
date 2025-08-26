@@ -6,12 +6,10 @@ import '../repositories/bookshelf_repository.dart';
 
 /// 获取用户资料用例
 class GetUserProfile implements UseCase<UserProfile, NoParams> {
-  final BookshelfRepository repository;
 
   GetUserProfile(this.repository);
+  final BookshelfRepository repository;
 
   @override
-  Future<Either<AppError, UserProfile>> call(NoParams params) async {
-    return await repository.getUserProfile();
-  }
+  Future<Either<AppError, UserProfile>> call(NoParams params) async => repository.getUserProfile();
 }

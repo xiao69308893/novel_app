@@ -6,21 +6,17 @@ import '../cubit/verification_cubit.dart';
 import 'auth_input_field.dart';
 
 class VerificationInput extends StatelessWidget {
+
+  const VerificationInput({
+    required this.controller, required this.phone, required this.type, super.key,
+  });
   final TextEditingController controller;
   final String phone;
   final String type;
 
-  const VerificationInput({
-    Key? key,
-    required this.controller,
-    required this.phone,
-    required this.type,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
+  Widget build(BuildContext context) => Row(
+      children: <Widget>[
         Expanded(
           child: AuthInputField(
             controller: controller,
@@ -29,7 +25,7 @@ class VerificationInput extends StatelessWidget {
             prefixIcon: Icons.sms,
             keyboardType: TextInputType.number,
             maxLength: 6,
-            validator: (value) {
+            validator: (String? value) {
               if (value == null || value.isEmpty) {
                 return '请输入验证码';
               }
@@ -44,8 +40,7 @@ class VerificationInput extends StatelessWidget {
         const SizedBox(width: AppTheme.spacingRegular),
         
         BlocBuilder<VerificationCubit, VerificationState>(
-          builder: (context, state) {
-            return SizedBox(
+          builder: (BuildContext context, VerificationState state) => SizedBox(
               width: 100,
               height: 48,
               child: ElevatedButton(
@@ -60,16 +55,12 @@ class VerificationInput extends StatelessWidget {
                 ),
                 child: _buildButtonChild(state),
               ),
-            );
-          },
+            ),
         ),
       ],
     );
-  }
 
-  bool _canSendCode(VerificationState state) {
-    return state is! VerificationSending && state is! VerificationSent;
-  }
+  bool _canSendCode(VerificationState state) => state is! VerificationSending && state is! VerificationSent;
 
   Widget _buildButtonChild(VerificationState state) {
     if (state is VerificationSending) {

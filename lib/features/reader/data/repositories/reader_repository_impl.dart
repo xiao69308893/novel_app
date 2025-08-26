@@ -12,15 +12,15 @@ import '../datasources/reader_remote_data_source.dart';
 
 /// 阅读器仓储实现
 class ReaderRepositoryImpl implements ReaderRepository {
-  final ReaderRemoteDataSource remoteDataSource;
-  final ReaderLocalDataSource localDataSource;
-  final NetworkInfo networkInfo;
 
   const ReaderRepositoryImpl({
     required this.remoteDataSource,
     required this.localDataSource,
     required this.networkInfo,
   });
+  final ReaderRemoteDataSource remoteDataSource;
+  final ReaderLocalDataSource localDataSource;
+  final NetworkInfo networkInfo;
 
   @override
   ResultFuture<ChapterModel> loadChapter({
@@ -29,7 +29,7 @@ class ReaderRepositoryImpl implements ReaderRepository {
   }) async {
     try {
       // 优先从缓存加载
-      final cachedChapter = await localDataSource.getCachedChapter(
+      final ChapterModel? cachedChapter = await localDataSource.getCachedChapter(
         novelId: novelId,
         chapterId: chapterId,
       );
@@ -41,7 +41,7 @@ class ReaderRepositoryImpl implements ReaderRepository {
       // 检查网络连接
       if (await networkInfo.isConnected) {
         // 从网络加载章节
-        final chapter = await remoteDataSource.loadChapter(
+        final ChapterModel chapter = await remoteDataSource.loadChapter(
           novelId: novelId,
           chapterId: chapterId,
         );
@@ -52,7 +52,7 @@ class ReaderRepositoryImpl implements ReaderRepository {
         return Right(chapter);
       } else {
         // 检查本地是否有缓存
-        final cachedChapter = await localDataSource.getCachedChapter(
+        final ChapterModel? cachedChapter = await localDataSource.getCachedChapter(
           novelId: novelId,
           chapterId: chapterId,
         );
@@ -77,7 +77,7 @@ class ReaderRepositoryImpl implements ReaderRepository {
   }) async {
     try {
       // 优先从缓存获取
-      final cachedChapters = await localDataSource.getCachedChapterList(
+      final List<ChapterSimpleModel>? cachedChapters = await localDataSource.getCachedChapterList(
         novelId: novelId,
       );
 
@@ -88,7 +88,7 @@ class ReaderRepositoryImpl implements ReaderRepository {
       // 检查网络连接
       if (await networkInfo.isConnected) {
         // 从网络获取章节列表
-        final chapters = await remoteDataSource.getChapterList(
+        final List<ChapterSimpleModel> chapters = await remoteDataSource.getChapterList(
           novelId: novelId,
         );
 
@@ -115,7 +115,7 @@ class ReaderRepositoryImpl implements ReaderRepository {
   ResultFuture<NovelModel> getNovelInfo({required String novelId}) async {
     try {
       // 优先从缓存获取
-      final cachedNovel = await localDataSource.getCachedNovelInfo(
+      final NovelModel? cachedNovel = await localDataSource.getCachedNovelInfo(
         novelId: novelId,
       );
 
@@ -126,7 +126,7 @@ class ReaderRepositoryImpl implements ReaderRepository {
       // 检查网络连接
       if (await networkInfo.isConnected) {
         // 从网络获取小说信息
-        final novel = await remoteDataSource.getNovelInfo(novelId: novelId);
+        final NovelModel novel = await remoteDataSource.getNovelInfo(novelId: novelId);
 
         // 缓存小说信息
         await localDataSource.cacheNovelInfo(novel);
@@ -152,7 +152,7 @@ class ReaderRepositoryImpl implements ReaderRepository {
     required double progress,
   }) async {
     try {
-      final readingProgress = ReadingProgress(
+      final ReadingProgress readingProgress = ReadingProgress(
         novelId: novelId,
         chapterId: chapterId,
         position: position,
@@ -191,14 +191,14 @@ class ReaderRepositoryImpl implements ReaderRepository {
   }) async {
     try {
       // 优先从本地获取
-      final localProgress = await localDataSource.getReadingProgress(
+      final ReadingProgress? localProgress = await localDataSource.getReadingProgress(
         novelId: novelId,
       );
 
       // 如果有网络，尝试从服务器获取最新进度
       if (await networkInfo.isConnected) {
         try {
-          final remoteProgress = await remoteDataSource.getReadingProgress(
+          final ReadingProgress? remoteProgress = await remoteDataSource.getReadingProgress(
             novelId: novelId,
           );
 
@@ -234,7 +234,7 @@ class ReaderRepositoryImpl implements ReaderRepository {
     try {
       // 如果有网络，先添加到服务器
       if (await networkInfo.isConnected) {
-        final bookmark = await remoteDataSource.addBookmark(
+        final BookmarkModel bookmark = await remoteDataSource.addBookmark(
           novelId: novelId,
           chapterId: chapterId,
           position: position,
@@ -248,7 +248,7 @@ class ReaderRepositoryImpl implements ReaderRepository {
         return Right(bookmark);
       } else {
         // 离线模式，创建本地书签
-        final bookmark = BookmarkModel(
+        final BookmarkModel bookmark = BookmarkModel(
           id: '${DateTime.now().millisecondsSinceEpoch}', // 临时ID
           novelId: novelId,
           chapterId: chapterId,
@@ -303,7 +303,7 @@ class ReaderRepositoryImpl implements ReaderRepository {
   }) async {
     try {
       // 获取本地书签
-      final localBookmarks = await localDataSource.getBookmarks(
+      final List<BookmarkModel> localBookmarks = await localDataSource.getBookmarks(
         novelId: novelId,
         chapterId: chapterId,
       );
@@ -311,26 +311,26 @@ class ReaderRepositoryImpl implements ReaderRepository {
       // 如果有网络，尝试同步服务器书签
       if (await networkInfo.isConnected) {
         try {
-          final remoteBookmarks = await remoteDataSource.getBookmarks(
+          final List<BookmarkModel> remoteBookmarks = await remoteDataSource.getBookmarks(
             novelId: novelId,
             chapterId: chapterId,
           );
 
           // 合并本地和远程书签（去重）
-          final allBookmarks = <String, BookmarkModel>{};
+          final Map<String, BookmarkModel> allBookmarks = <String, BookmarkModel>{};
           
-          for (final bookmark in localBookmarks) {
+          for (final BookmarkModel bookmark in localBookmarks) {
             allBookmarks[bookmark.id] = bookmark;
           }
           
-          for (final bookmark in remoteBookmarks) {
+          for (final BookmarkModel bookmark in remoteBookmarks) {
             allBookmarks[bookmark.id] = bookmark;
           }
 
-          final mergedBookmarks = allBookmarks.values.toList();
+          final List<BookmarkModel> mergedBookmarks = allBookmarks.values.toList();
           
           // 保存合并后的书签到本地
-          for (final bookmark in mergedBookmarks) {
+          for (final BookmarkModel bookmark in mergedBookmarks) {
             await localDataSource.saveBookmark(bookmark);
           }
 
@@ -363,7 +363,7 @@ class ReaderRepositoryImpl implements ReaderRepository {
   @override
   ResultFuture<ReaderConfig> getReaderConfig() async {
     try {
-      final config = await localDataSource.getReaderConfig();
+      final ReaderConfig? config = await localDataSource.getReaderConfig();
       return Right(config ?? const ReaderConfig());
     } on CacheException catch (e) {
       return Left(StorageError(message: e.message));
@@ -379,7 +379,7 @@ class ReaderRepositoryImpl implements ReaderRepository {
   }) async {
     try {
       if (await networkInfo.isConnected) {
-        final chapter = await remoteDataSource.loadChapter(
+        final ChapterModel chapter = await remoteDataSource.loadChapter(
           novelId: novelId,
           chapterId: chapterId,
         );
@@ -402,7 +402,7 @@ class ReaderRepositoryImpl implements ReaderRepository {
     required String novelId,
   }) async {
     try {
-      final chapterIds = await localDataSource.getCachedChapterIds(
+      final List<String> chapterIds = await localDataSource.getCachedChapterIds(
         novelId: novelId,
       );
       return Right(chapterIds);
@@ -461,12 +461,12 @@ class ReaderRepositoryImpl implements ReaderRepository {
   ResultFuture<ReadingStats> getReadingStats() async {
     try {
       // 本地获取统计
-      final localStats = await localDataSource.getReadingStats();
+      final ReadingStats? localStats = await localDataSource.getReadingStats();
 
       // 如果有网络，尝试获取服务器统计
       if (await networkInfo.isConnected) {
         try {
-          final remoteStats = await remoteDataSource.getReadingStats();
+          final ReadingStats remoteStats = await remoteDataSource.getReadingStats();
           
           // 保存到本地
           await localDataSource.saveReadingStats(remoteStats);
@@ -492,19 +492,19 @@ class ReaderRepositoryImpl implements ReaderRepository {
   }) async {
     try {
       if (await networkInfo.isConnected) {
-        final chapters = await remoteDataSource.searchChapters(
+        final List<ChapterSimpleModel> chapters = await remoteDataSource.searchChapters(
           novelId: novelId,
           keyword: keyword,
         );
         return Right(chapters);
       } else {
         // 离线搜索，从缓存的章节列表中搜索
-        final cachedChapters = await localDataSource.getCachedChapterList(
+        final List<ChapterSimpleModel>? cachedChapters = await localDataSource.getCachedChapterList(
           novelId: novelId,
         );
         
         if (cachedChapters != null) {
-          final filteredChapters = cachedChapters.where((chapter) =>
+          final List<ChapterSimpleModel> filteredChapters = cachedChapters.where((ChapterSimpleModel chapter) =>
             chapter.title.toLowerCase().contains(keyword.toLowerCase()) ||
             chapter.chapterNumber.toString().contains(keyword)
           ).toList();
@@ -530,25 +530,25 @@ class ReaderRepositoryImpl implements ReaderRepository {
   }) async {
     try {
       if (await networkInfo.isConnected) {
-        final adjacentChapters = await remoteDataSource.getAdjacentChapters(
+        final Map<String, ChapterSimpleModel?> adjacentChapters = await remoteDataSource.getAdjacentChapters(
           novelId: novelId,
           chapterId: chapterId,
         );
         return Right(adjacentChapters);
       } else {
         // 离线模式，从缓存的章节列表中查找相邻章节
-        final cachedChapters = await localDataSource.getCachedChapterList(
+        final List<ChapterSimpleModel>? cachedChapters = await localDataSource.getCachedChapterList(
           novelId: novelId,
         );
         
         if (cachedChapters != null) {
-          final currentIndex = cachedChapters.indexWhere((c) => c.id == chapterId);
+          final int currentIndex = cachedChapters.indexWhere((ChapterSimpleModel c) => c.id == chapterId);
           
           if (currentIndex != -1) {
-            final previousChapter = currentIndex > 0 ? cachedChapters[currentIndex - 1] : null;
-            final nextChapter = currentIndex < cachedChapters.length - 1 ? cachedChapters[currentIndex + 1] : null;
+            final ChapterSimpleModel? previousChapter = currentIndex > 0 ? cachedChapters[currentIndex - 1] : null;
+            final ChapterSimpleModel? nextChapter = currentIndex < cachedChapters.length - 1 ? cachedChapters[currentIndex + 1] : null;
             
-            return Right({
+            return Right(<String, ChapterSimpleModel?>{
               'previous': previousChapter,
               'next': nextChapter,
             });
@@ -595,7 +595,7 @@ class ReaderRepositoryImpl implements ReaderRepository {
   }) async {
     try {
       if (await networkInfo.isConnected) {
-        final isPurchased = await remoteDataSource.checkChapterPurchaseStatus(
+        final bool isPurchased = await remoteDataSource.checkChapterPurchaseStatus(
           novelId: novelId,
           chapterId: chapterId,
         );

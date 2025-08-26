@@ -18,12 +18,6 @@ enum CacheType {
 
 /// 缓存项
 class CacheItem<T> {
-  final String key;
-  final T data;
-  final DateTime createdAt;
-  final DateTime? expiresAt;
-  final int? maxAge; // 秒
-  final Map<String, dynamic>? metadata;
 
   const CacheItem({
     required this.key,
@@ -33,6 +27,24 @@ class CacheItem<T> {
     this.maxAge,
     this.metadata,
   });
+
+  /// 从JSON创建
+  factory CacheItem.fromJson(Map<String, dynamic> json) => CacheItem(
+      key: json['key'] as String,
+      data: json['data'] as T,
+      createdAt: DateTime.fromMillisecondsSinceEpoch(json['created_at'] as int),
+      expiresAt: json['expires_at'] != null 
+          ? DateTime.fromMillisecondsSinceEpoch(json['expires_at'] as int)
+          : null,
+      maxAge: json['max_age'] as int?,
+      metadata: json['metadata'] as Map<String, dynamic>?,
+    );
+  final String key;
+  final T data;
+  final DateTime createdAt;
+  final DateTime? expiresAt;
+  final int? maxAge; // 秒
+  final Map<String, dynamic>? metadata;
 
   /// 是否已过期
   bool get isExpired {
@@ -51,15 +63,14 @@ class CacheItem<T> {
       return expiresAt!.difference(DateTime.now()).inSeconds;
     }
     if (maxAge != null) {
-      final expireTime = createdAt.add(Duration(seconds: maxAge!));
+      final DateTime expireTime = createdAt.add(Duration(seconds: maxAge!));
       return expireTime.difference(DateTime.now()).inSeconds;
     }
     return -1;
   }
 
   /// 转换为JSON
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'key': key,
       'data': data,
       'created_at': createdAt.millisecondsSinceEpoch,
@@ -67,33 +78,10 @@ class CacheItem<T> {
       'max_age': maxAge,
       'metadata': metadata,
     };
-  }
-
-  /// 从JSON创建
-  factory CacheItem.fromJson(Map<String, dynamic> json) {
-    return CacheItem(
-      key: json['key'] as String,
-      data: json['data'] as T,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(json['created_at'] as int),
-      expiresAt: json['expires_at'] != null 
-          ? DateTime.fromMillisecondsSinceEpoch(json['expires_at'] as int)
-          : null,
-      maxAge: json['max_age'] as int?,
-      metadata: json['metadata'] as Map<String, dynamic>?,
-    );
-  }
 }
 
 /// 缓存统计信息
 class CacheStats {
-  final int totalItems;
-  final int memoryItems;
-  final int diskItems;
-  final int databaseItems;
-  final int totalSize; // 字节
-  final int hitCount;
-  final int missCount;
-  final double hitRate;
 
   const CacheStats({
     required this.totalItems,
@@ -105,9 +93,16 @@ class CacheStats {
     required this.missCount,
     required this.hitRate,
   });
+  final int totalItems;
+  final int memoryItems;
+  final int diskItems;
+  final int databaseItems;
+  final int totalSize; // 字节
+  final int hitCount;
+  final int missCount;
+  final double hitRate;
 
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'total_items': totalItems,
       'memory_items': memoryItems,
       'disk_items': diskItems,
@@ -117,11 +112,16 @@ class CacheStats {
       'miss_count': missCount,
       'hit_rate': hitRate,
     };
-  }
 }
 
 /// 通用缓存管理器
 class CacheManager {
+
+  // 私有构造函数
+  CacheManager._internal() {
+    _config = const CacheConfig();
+    _initializeCache();
+  }
   // 单例模式
   static CacheManager? _instance;
   static CacheManager get instance {
@@ -130,7 +130,7 @@ class CacheManager {
   }
 
   // 内存缓存
-  final Map<String, CacheItem> _memoryCache = {};
+  final Map<String, CacheItem> _memoryCache = <String, CacheItem>{};
   
   // 磁盘缓存目录
   Directory? _cacheDirectory;
@@ -142,19 +142,13 @@ class CacheManager {
   // 配置
   late final CacheConfig _config;
 
-  // 私有构造函数
-  CacheManager._internal() {
-    _config = CacheConfig();
-    _initializeCache();
-  }
-
   /// 初始化缓存
   Future<void> _initializeCache() async {
     try {
       // Web环境跳过磁盘缓存初始化
       if (!kIsWeb) {
         // 初始化磁盘缓存目录
-        final tempDir = await getTemporaryDirectory();
+        final Directory tempDir = await getTemporaryDirectory();
         _cacheDirectory = Directory(path.join(tempDir.path, 'cache'));
         if (!await _cacheDirectory!.exists()) {
           await _cacheDirectory!.create(recursive: true);
@@ -186,7 +180,7 @@ class CacheManager {
     Map<String, dynamic>? metadata,
   }) async {
     try {
-      final item = CacheItem<T>(
+      final CacheItem<T> item = CacheItem<T>(
         key: key,
         data: data,
         createdAt: DateTime.now(),
@@ -209,7 +203,7 @@ class CacheManager {
   /// 从内存缓存获取
   T? getMemory<T>(String key) {
     try {
-      final item = _memoryCache[key];
+      final CacheItem? item = _memoryCache[key];
       if (item == null) {
         _missCount++;
         return null;
@@ -235,7 +229,7 @@ class CacheManager {
   /// 从内存缓存删除
   Future<bool> removeMemory(String key) async {
     try {
-      final removed = _memoryCache.remove(key) != null;
+      final bool removed = _memoryCache.remove(key) != null;
       if (removed) {
         Logger.cache('REMOVE_MEMORY', key);
       }
@@ -264,7 +258,7 @@ class CacheManager {
     try {
       if (_cacheDirectory == null) return;
 
-      final item = CacheItem<T>(
+      final CacheItem<T> item = CacheItem<T>(
         key: key,
         data: data,
         createdAt: DateTime.now(),
@@ -273,8 +267,8 @@ class CacheManager {
         metadata: metadata,
       );
 
-      final file = File(path.join(_cacheDirectory!.path, '${_sanitizeKey(key)}.cache'));
-      final jsonData = json.encode(item.toJson());
+      final File file = File(path.join(_cacheDirectory!.path, '${_sanitizeKey(key)}.cache'));
+      final String jsonData = json.encode(item.toJson());
       await file.writeAsString(jsonData);
 
       Logger.cache('PUT_DISK', key);
@@ -296,15 +290,15 @@ class CacheManager {
         return null;
       }
 
-      final file = File(path.join(_cacheDirectory!.path, '${_sanitizeKey(key)}.cache'));
+      final File file = File(path.join(_cacheDirectory!.path, '${_sanitizeKey(key)}.cache'));
       if (!await file.exists()) {
         _missCount++;
         return null;
       }
 
-      final jsonData = await file.readAsString();
-      final itemJson = json.decode(jsonData) as Map<String, dynamic>;
-      final item = CacheItem<T>.fromJson(itemJson);
+      final String jsonData = await file.readAsString();
+      final Map<String, dynamic> itemJson = json.decode(jsonData) as Map<String, dynamic>;
+      final CacheItem<T> item = CacheItem<T>.fromJson(itemJson);
 
       if (item.isExpired) {
         await file.delete();
@@ -332,7 +326,7 @@ class CacheManager {
     try {
       if (_cacheDirectory == null) return false;
 
-      final file = File(path.join(_cacheDirectory!.path, '${_sanitizeKey(key)}.cache'));
+      final File file = File(path.join(_cacheDirectory!.path, '${_sanitizeKey(key)}.cache'));
       if (await file.exists()) {
         await file.delete();
         Logger.cache('REMOVE_DISK', key);
@@ -362,18 +356,18 @@ class CacheManager {
     }
     
     try {
-      final db = DatabaseHelper.instance;
-      final jsonData = json.encode(data);
-      final expireTime = expiresAt?.millisecondsSinceEpoch ?? 
+      final DatabaseHelper db = DatabaseHelper.instance;
+      final String jsonData = json.encode(data);
+      final int? expireTime = expiresAt?.millisecondsSinceEpoch ?? 
                         (duration != null ? DateTime.now().add(duration).millisecondsSinceEpoch : null);
 
-      final existingCache = await db.query(
+      final List<Map<String, dynamic>> existingCache = await db.query(
         'cache',
         where: 'cache_key = ?',
-        whereArgs: [key],
+        whereArgs: <dynamic>[key],
       );
 
-      final cacheData = {
+      final Map<String, Object?> cacheData = <String, Object?>{
         'cache_key': key,
         'cache_data': jsonData,
         'cache_type': type ?? 'general',
@@ -385,7 +379,7 @@ class CacheManager {
           'cache',
           cacheData,
           where: 'cache_key = ?',
-          whereArgs: [key],
+          whereArgs: <dynamic>[key],
         );
       } else {
         await db.insert('cache', cacheData);
@@ -406,11 +400,11 @@ class CacheManager {
     }
     
     try {
-      final db = DatabaseHelper.instance;
-      final result = await db.query(
+      final DatabaseHelper db = DatabaseHelper.instance;
+      final List<Map<String, dynamic>> result = await db.query(
         'cache',
         where: 'cache_key = ?',
-        whereArgs: [key],
+        whereArgs: <dynamic>[key],
       );
 
       if (result.isEmpty) {
@@ -418,18 +412,18 @@ class CacheManager {
         return null;
       }
 
-      final cacheData = result.first;
-      final expireTime = cacheData['expire_time'] as int?;
+      final Map<String, dynamic> cacheData = result.first;
+      final int? expireTime = cacheData['expire_time'] as int?;
       
       // 检查是否过期
       if (expireTime != null && DateTime.now().millisecondsSinceEpoch > expireTime) {
-        await db.delete('cache', where: 'cache_key = ?', whereArgs: [key]);
+        await db.delete('cache', where: 'cache_key = ?', whereArgs: <dynamic>[key]);
         _missCount++;
         Logger.cache('EXPIRED_DATABASE', key);
         return null;
       }
 
-      final jsonData = cacheData['cache_data'] as String;
+      final String jsonData = cacheData['cache_data'] as String;
       final data = json.decode(jsonData) as T;
 
       _hitCount++;
@@ -450,11 +444,11 @@ class CacheManager {
     }
     
     try {
-      final db = DatabaseHelper.instance;
-      final count = await db.delete(
+      final DatabaseHelper db = DatabaseHelper.instance;
+      final int count = await db.delete(
         'cache',
         where: 'cache_key = ?',
-        whereArgs: [key],
+        whereArgs: <dynamic>[key],
       );
       
       if (count > 0) {
@@ -504,9 +498,9 @@ class CacheManager {
       case CacheType.memory:
         return getMemory<T>(key);
       case CacheType.disk:
-        return await getDisk<T>(key);
+        return getDisk<T>(key);
       case CacheType.database:
-        return await getDatabase<T>(key);
+        return getDatabase<T>(key);
       default:
         return getMemory<T>(key);
     }
@@ -519,13 +513,13 @@ class CacheManager {
   }) async {
     switch (type) {
       case CacheType.memory:
-        return await removeMemory(key);
+        return removeMemory(key);
       case CacheType.disk:
-        return await removeDisk(key);
+        return removeDisk(key);
       case CacheType.database:
-        return await removeDatabase(key);
+        return removeDatabase(key);
       default:
-        return await removeMemory(key);
+        return removeMemory(key);
     }
   }
 
@@ -561,24 +555,24 @@ class CacheManager {
   Future<void> _cleanExpiredCache() async {
     try {
       // 清理内存缓存
-      final expiredMemoryKeys = _memoryCache.entries
-          .where((entry) => entry.value.isExpired)
-          .map((entry) => entry.key)
+      final List<String> expiredMemoryKeys = _memoryCache.entries
+          .where((MapEntry<String, CacheItem> entry) => entry.value.isExpired)
+          .map((MapEntry<String, CacheItem> entry) => entry.key)
           .toList();
       
-      for (final key in expiredMemoryKeys) {
+      for (final String key in expiredMemoryKeys) {
         _memoryCache.remove(key);
       }
 
       // 清理磁盘缓存（Web环境跳过）
       if (!kIsWeb && _cacheDirectory != null && await _cacheDirectory!.exists()) {
-        final files = await _cacheDirectory!.list().toList();
-        for (final file in files) {
+        final List<FileSystemEntity> files = await _cacheDirectory!.list().toList();
+        for (final FileSystemEntity file in files) {
           if (file is File && file.path.endsWith('.cache')) {
             try {
-              final jsonData = await file.readAsString();
-              final itemJson = json.decode(jsonData) as Map<String, dynamic>;
-              final item = CacheItem.fromJson(itemJson);
+              final String jsonData = await file.readAsString();
+              final Map<String, dynamic> itemJson = json.decode(jsonData) as Map<String, dynamic>;
+              final CacheItem item = CacheItem.fromJson(itemJson);
               
               if (item.isExpired) {
                 await file.delete();
@@ -610,10 +604,10 @@ class CacheManager {
   Future<void> _checkMemoryCacheSize() async {
     if (_memoryCache.length > _config.maxMemoryItems) {
       // 按创建时间排序，删除最旧的缓存项
-      final sortedEntries = _memoryCache.entries.toList()
-        ..sort((a, b) => a.value.createdAt.compareTo(b.value.createdAt));
+      final List<MapEntry<String, CacheItem>> sortedEntries = _memoryCache.entries.toList()
+        ..sort((MapEntry<String, CacheItem> a, MapEntry<String, CacheItem> b) => a.value.createdAt.compareTo(b.value.createdAt));
       
-      final removeCount = _memoryCache.length - _config.maxMemoryItems;
+      final int removeCount = _memoryCache.length - _config.maxMemoryItems;
       for (int i = 0; i < removeCount; i++) {
         _memoryCache.remove(sortedEntries[i].key);
       }
@@ -652,28 +646,28 @@ class CacheManager {
   /// 获取缓存统计信息
   Future<CacheStats> getStats() async {
     try {
-      final memoryItems = _memoryCache.length;
+      final int memoryItems = _memoryCache.length;
       
       int diskItems = 0;
       if (!kIsWeb && _cacheDirectory != null && await _cacheDirectory!.exists()) {
-        final files = await _cacheDirectory!.list().toList();
-        diskItems = files.where((file) => file.path.endsWith('.cache')).length;
+        final List<FileSystemEntity> files = await _cacheDirectory!.list().toList();
+        diskItems = files.where((FileSystemEntity file) => file.path.endsWith('.cache')).length;
       }
 
       int databaseItems = 0;
       if (!kIsWeb) {
         try {
-          final db = DatabaseHelper.instance;
-          final dbResult = await db.rawQuery('SELECT COUNT(*) as count FROM cache');
+          final DatabaseHelper db = DatabaseHelper.instance;
+          final List<Map<String, dynamic>> dbResult = await db.rawQuery('SELECT COUNT(*) as count FROM cache');
           databaseItems = dbResult.first['count'] as int;
         } catch (e) {
           Logger.error('获取数据库缓存统计失败', e);
         }
       }
 
-      final totalItems = memoryItems + diskItems + databaseItems;
-      final totalRequests = _hitCount + _missCount;
-      final hitRate = totalRequests > 0 ? _hitCount / totalRequests : 0.0;
+      final int totalItems = memoryItems + diskItems + databaseItems;
+      final int totalRequests = _hitCount + _missCount;
+      final double hitRate = totalRequests > 0 ? _hitCount / totalRequests : 0.0;
 
       return CacheStats(
         totalItems: totalItems,
@@ -707,8 +701,8 @@ class CacheManager {
     try {
       // 计算磁盘缓存大小（Web环境跳过）
       if (!kIsWeb && _cacheDirectory != null && await _cacheDirectory!.exists()) {
-        final files = await _cacheDirectory!.list().toList();
-        for (final file in files) {
+        final List<FileSystemEntity> files = await _cacheDirectory!.list().toList();
+        for (final FileSystemEntity file in files) {
           if (file is File) {
             totalSize += await file.length();
           }
@@ -716,7 +710,7 @@ class CacheManager {
       }
 
       // 内存缓存大小估算
-      for (final item in _memoryCache.values) {
+      for (final CacheItem item in _memoryCache.values) {
         totalSize += json.encode(item.toJson()).length;
       }
     } catch (e) {
@@ -727,14 +721,12 @@ class CacheManager {
   }
 
   /// 清理键名（用于文件名）
-  String _sanitizeKey(String key) {
-    return key.replaceAll(RegExp(r'[^\w\-_.]'), '_');
-  }
+  String _sanitizeKey(String key) => key.replaceAll(RegExp(r'[^\w\-_.]'), '_');
 
   /// 加载统计信息
   void _loadStats() {
-    _hitCount = PreferencesHelper.getInt('cache_hit_count', 0);
-    _missCount = PreferencesHelper.getInt('cache_miss_count', 0);
+    _hitCount = PreferencesHelper.getInt('cache_hit_count');
+    _missCount = PreferencesHelper.getInt('cache_miss_count');
   }
 
   /// 保存统计信息
@@ -752,7 +744,7 @@ class CacheManager {
   }
 
   Future<List<String>> getAllKeys() async {
-    final allKeys = await _memoryCache.keys.toList();
+    final List<String> allKeys = _memoryCache.keys.toList();
     return allKeys;
   }
 
@@ -760,11 +752,6 @@ class CacheManager {
 
 /// 缓存配置
 class CacheConfig {
-  final Duration defaultDuration;
-  final int maxMemoryItems;
-  final int maxDiskSize; // MB
-  final bool enableAutoClean;
-  final Duration cleanInterval;
 
   const CacheConfig({
     this.defaultDuration = const Duration(hours: 1),
@@ -773,4 +760,9 @@ class CacheConfig {
     this.enableAutoClean = true,
     this.cleanInterval = const Duration(hours: 6),
   });
+  final Duration defaultDuration;
+  final int maxMemoryItems;
+  final int maxDiskSize; // MB
+  final bool enableAutoClean;
+  final Duration cleanInterval;
 }

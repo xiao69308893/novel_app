@@ -11,16 +11,9 @@ class ThemeConfig {
     const ColorScheme colorScheme = ColorScheme.light(
       primary: AppTheme.primaryColor,
       primaryContainer: AppTheme.primaryVariant,
-      secondary: AppTheme.secondaryColor,
       secondaryContainer: AppTheme.secondaryVariant,
-      surface: AppTheme.surfaceColor,
-      background: AppTheme.backgroundColor,
-      error: AppTheme.errorColor,
-      onPrimary: Colors.white,
       onSecondary: Colors.white,
       onSurface: AppTheme.textPrimaryColor,
-      onBackground: AppTheme.textPrimaryColor,
-      onError: Colors.white,
     );
     
     return ThemeData(
@@ -253,15 +246,11 @@ class ThemeConfig {
     const ColorScheme colorScheme = ColorScheme.dark(
       primary: AppTheme.primaryColor,
       primaryContainer: AppTheme.primaryVariant,
-      secondary: AppTheme.secondaryColor,
       secondaryContainer: AppTheme.secondaryVariant,
       surface: AppTheme.darkSurfaceColor,
-      background: AppTheme.darkBackgroundColor,
       error: AppTheme.errorColor,
       onPrimary: Colors.white,
       onSecondary: Colors.white,
-      onSurface: AppTheme.darkTextPrimaryColor,
-      onBackground: AppTheme.darkTextPrimaryColor,
       onError: Colors.white,
     );
     

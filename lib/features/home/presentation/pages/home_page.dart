@@ -1,6 +1,7 @@
 // 首页主页面
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:novel_app/features/home/domain/entities/recommendation.dart';
 import '../../../../app/themes/app_theme.dart';
 import '../../../../shared/widgets/common_app_bar.dart';
 import '../../../../shared/widgets/loading_widget.dart';
@@ -12,7 +13,7 @@ import '../widgets/home_banner.dart';
 import '../widgets/home_section.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -30,7 +31,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
       // 先初始化模拟数据（仅在开发环境）
       try {
         print('开始初始化模拟数据...');
-        final localDataSource = HomeLocalDataSourceImpl();
+        final HomeLocalDataSourceImpl localDataSource = HomeLocalDataSourceImpl();
         await localDataSource.initMockData();
         print('模拟数据初始化完成');
       } catch (e) {
@@ -50,7 +51,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
       appBar: CommonAppBar(
         title: '小说阅读',
         showBackButton: false,
-        actions: [
+        actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
@@ -66,7 +67,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
         ],
       ),
       body: BlocBuilder<HomeCubit, HomeState>(
-        builder: (context, state) {
+        builder: (BuildContext context, HomeState state) {
           if (state is HomeLoading) {
             return const LoadingWidget();
           } else if (state is HomeError) {
@@ -87,9 +88,8 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
     );
   }
 
-  Widget _buildHomeContent(HomeLoaded state) {
-    return CustomScrollView(
-      slivers: [
+  Widget _buildHomeContent(HomeLoaded state) => CustomScrollView(
+      slivers: <Widget>[
         // 轮播图
         if (state.banners.isNotEmpty)
           SliverToBoxAdapter(
@@ -102,19 +102,15 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
         ),
 
         // 动态构建内容区块
-        ...state.config.visibleSections.map((section) {
-          return _buildSection(section, state);
-        }).toList(),
+        ...state.config.visibleSections.map((HomeSection section) => _buildSection(section, state)),
       ],
     );
-  }
 
-  Widget _buildFunctionSection() {
-    return Container(
+  Widget _buildFunctionSection() => Container(
       padding: const EdgeInsets.all(AppTheme.spacingRegular),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
+        children: <Widget>[
           _buildFunctionItem(
             icon: Icons.trending_up,
             title: '排行榜',
@@ -138,19 +134,18 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
         ],
       ),
     );
-  }
 
   Widget _buildFunctionItem({
     required IconData icon,
     required String title,
     required VoidCallback onTap,
   }) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     
     return GestureDetector(
       onTap: onTap,
       child: Column(
-        children: [
+        children: <Widget>[
           Container(
             width: 48,
             height: 48,
@@ -177,8 +172,8 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
   Widget _buildSection(HomeSection section, HomeLoaded state) {
     switch (section.type) {
       case 'recommendation':
-        final recommendations = state.recommendations
-            .where((r) => r.type.name == section.config['type'])
+        final List<Recommendation> recommendations = state.recommendations
+            .where((Recommendation r) => r.type.name == section.config['type'])
             .toList();
         
         if (recommendations.isNotEmpty) {

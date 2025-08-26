@@ -5,8 +5,7 @@ class BannerModel extends Banner {
   const BannerModel({
     required super.id,
     required super.title,
-    super.subtitle,
-    required super.imageUrl,
+    required super.imageUrl, required super.createdAt, super.subtitle,
     super.type,
     super.targetId,
     super.targetUrl,
@@ -14,11 +13,9 @@ class BannerModel extends Banner {
     super.isActive,
     super.startTime,
     super.endTime,
-    required super.createdAt,
   });
 
-  factory BannerModel.fromJson(Map<String, dynamic> json) {
-    return BannerModel(
+  factory BannerModel.fromJson(Map<String, dynamic> json) => BannerModel(
       id: json['id'] as String,
       title: json['title'] as String,
       subtitle: json['subtitle'] as String?,
@@ -36,10 +33,8 @@ class BannerModel extends Banner {
           : null,
       createdAt: DateTime.parse(json['created_at'] as String),
     );
-  }
 
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'id': id,
       'title': title,
       'subtitle': subtitle,
@@ -53,9 +48,6 @@ class BannerModel extends Banner {
       'end_time': endTime?.toIso8601String(),
       'created_at': createdAt.toIso8601String(),
     };
-  }
 
-  Banner toEntity() {
-    return this;
-  }
+  Banner toEntity() => this;
 }

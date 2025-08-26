@@ -4,22 +4,17 @@ import 'bookshelf_item.dart';
 
 /// 书架筛选栏组件
 class BookshelfFilterBar extends StatelessWidget {
+
+  const BookshelfFilterBar({
+    required this.sortType, required this.viewType, required this.onSortChanged, required this.onViewChanged, super.key,
+  });
   final BookshelfSortType sortType;
   final BookshelfViewType viewType;
   final Function(BookshelfSortType) onSortChanged;
   final Function(BookshelfViewType) onViewChanged;
 
-  const BookshelfFilterBar({
-    Key? key,
-    required this.sortType,
-    required this.viewType,
-    required this.onSortChanged,
-    required this.onViewChanged,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context) => Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppTheme.spacingRegular,
         vertical: AppTheme.spacingSmall,
@@ -29,18 +24,17 @@ class BookshelfFilterBar extends StatelessWidget {
         border: Border(
           bottom: BorderSide(
             color: Colors.grey[200]!,
-            width: 1,
           ),
         ),
       ),
       child: Row(
-        children: [
+        children: <Widget>[
           // 排序按钮
           Expanded(
             child: GestureDetector(
               onTap: () => _showSortOptions(context),
               child: Row(
-                children: [
+                children: <Widget>[
                   Icon(
                     Icons.sort,
                     size: 18,
@@ -73,7 +67,7 @@ class BookshelfFilterBar extends StatelessWidget {
           
           // 视图切换按钮
           Row(
-            children: [
+            children: <Widget>[
               IconButton(
                 icon: Icon(
                   Icons.grid_view,
@@ -105,7 +99,6 @@ class BookshelfFilterBar extends StatelessWidget {
         ],
       ),
     );
-  }
 
   String _getSortTypeName(BookshelfSortType sortType) {
     switch (sortType) {
@@ -123,11 +116,11 @@ class BookshelfFilterBar extends StatelessWidget {
   void _showSortOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => Container(
+      builder: (BuildContext context) => Container(
         padding: const EdgeInsets.all(AppTheme.spacingRegular),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: <Widget>[
             const Text(
               '排序方式',
               style: TextStyle(
@@ -173,7 +166,7 @@ class BookshelfFilterBar extends StatelessWidget {
     IconData icon,
     String title,
   ) {
-    final isSelected = sortType == type;
+    final bool isSelected = sortType == type;
     
     return ListTile(
       leading: Icon(

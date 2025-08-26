@@ -42,7 +42,7 @@ class AppRoutes {
   static const String webview = '/webview';
   
   // 获取所有路由列表
-  static List<String> get allRoutes => [
+  static List<String> get allRoutes => <String>[
         splash,
         home,
         onboarding,
@@ -71,7 +71,7 @@ class AppRoutes {
       ];
 
   // 需要认证的路由
-  static List<String> get authenticatedRoutes => [
+  static List<String> get authenticatedRoutes => <String>[
         home,
         bookshelf,
         collection,
@@ -84,7 +84,7 @@ class AppRoutes {
       ];
 
   // 认证相关路由
-  static List<String> get authRoutes => [
+  static List<String> get authRoutes => <String>[
         login,
         register,
         forgotPassword,

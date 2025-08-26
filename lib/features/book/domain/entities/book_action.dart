@@ -14,27 +14,24 @@ enum BookActionType {
   final int value;
   final String displayName;
 
-  static BookActionType fromValue(int? value) {
-    return BookActionType.values.firstWhere(
-      (t) => t.value == value,
+  static BookActionType fromValue(int? value) => BookActionType.values.firstWhere(
+      (BookActionType t) => t.value == value,
       orElse: () => BookActionType.favorite,
     );
-  }
 }
 
 class BookAction extends Equatable {
+
+  const BookAction({
+    required this.type,
+    required this.bookId,
+    required this.timestamp, this.data,
+  });
   final BookActionType type;
   final String bookId;
   final Map<String, dynamic>? data;
   final DateTime timestamp;
 
-  const BookAction({
-    required this.type,
-    required this.bookId,
-    this.data,
-    required this.timestamp,
-  });
-
   @override
-  List<Object?> get props => [type, bookId, data, timestamp];
+  List<Object?> get props => <Object?>[type, bookId, data, timestamp];
 }

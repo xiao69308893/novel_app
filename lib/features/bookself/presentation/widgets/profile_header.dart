@@ -5,24 +5,23 @@ import '../../../../app/themes/app_theme.dart';
 
 /// 个人中心头部组件
 class ProfileHeader extends StatelessWidget {
-  final UserModel user;
 
   const ProfileHeader({
-    Key? key,
-    required this.user,
-  }) : super(key: key);
+    required this.user, super.key,
+  });
+  final UserModel user;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: user.isVip 
-              ? [Colors.amber[400]!, Colors.amber[200]!]
-              : [theme.primaryColor, theme.primaryColor.withValues(alpha: 0.7)],
+              ? <Color>[Colors.amber[400]!, Colors.amber[200]!]
+              : <Color>[theme.primaryColor, theme.primaryColor.withValues(alpha: 0.7)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -32,13 +31,13 @@ class ProfileHeader extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(AppTheme.spacingLarge),
           child: Column(
-            children: [
+            children: <Widget>[
               // 头像和基本信息
               Row(
-                children: [
+                children: <Widget>[
                   // 用户头像
                   Stack(
-                    children: [
+                    children: <Widget>[
                       GestureDetector(
                         onTap: () => _showAvatarDialog(context),
                         child: Hero(
@@ -74,7 +73,7 @@ class ProfileHeader extends StatelessWidget {
                             decoration: const BoxDecoration(
                               color: Colors.amber,
                               shape: BoxShape.circle,
-                              boxShadow: [
+                              boxShadow: <BoxShadow>[
                                 BoxShadow(
                                   color: Colors.black26,
                                   blurRadius: 4,
@@ -98,10 +97,10 @@ class ProfileHeader extends StatelessWidget {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
                         // 用户名和等级
                         Row(
-                          children: [
+                          children: <Widget>[
                             Flexible(
                               child: Text(
                                 user.displayName,
@@ -140,7 +139,7 @@ class ProfileHeader extends StatelessWidget {
                         
                         // 用户ID
                         Row(
-                          children: [
+                          children: <Widget>[
                             Text(
                               'ID: ${user.id}',
                               style: TextStyle(
@@ -227,7 +226,7 @@ class ProfileHeader extends StatelessWidget {
   void _showAvatarDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => Dialog(
+      builder: (BuildContext context) => Dialog(
         backgroundColor: Colors.transparent,
         child: GestureDetector(
           onTap: () => Navigator.pop(context),
@@ -273,7 +272,5 @@ class ProfileHeader extends StatelessWidget {
     );
   }
 
-  String _formatDate(DateTime date) {
-    return '${date.year}年${date.month}月${date.day}日';
-  }
+  String _formatDate(DateTime date) => '${date.year}年${date.month}月${date.day}日';
 }

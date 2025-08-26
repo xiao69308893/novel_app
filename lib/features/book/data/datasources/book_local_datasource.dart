@@ -35,9 +35,9 @@ class BookLocalDataSourceImpl implements BookLocalDataSource {
   @override
   Future<BookDetailModel?> getBookDetail(String bookId) async {
     try {
-      final detailJson = await PreferencesHelper.getString('$_bookDetailPrefix$bookId');
+      final String? detailJson = PreferencesHelper.getString('$_bookDetailPrefix$bookId');
       if (detailJson != null) {
-        final detailMap = json.decode(detailJson) as Map<String, dynamic>;
+        final Map<String, dynamic> detailMap = json.decode(detailJson) as Map<String, dynamic>;
         return BookDetailModel.fromJson(detailMap);
       }
       return null;
@@ -48,14 +48,14 @@ class BookLocalDataSourceImpl implements BookLocalDataSource {
 
   @override
   Future<void> saveBookDetail(BookDetailModel bookDetail) async {
-    final detailJson = json.encode(bookDetail.toJson());
+    final String detailJson = json.encode(bookDetail.toJson());
     await PreferencesHelper.setString('$_bookDetailPrefix${bookDetail.novel.id}', detailJson);
   }
 
   @override
   Future<List<ChapterSimpleModel>?> getChapterList(String bookId) async {
     try {
-      final chaptersJson = await PreferencesHelper.getString('$_chapterListPrefix$bookId');
+      final String? chaptersJson = PreferencesHelper.getString('$_chapterListPrefix$bookId');
       if (chaptersJson != null) {
         final List<dynamic> chaptersList = json.decode(chaptersJson) as List<dynamic>;
 
@@ -71,8 +71,8 @@ class BookLocalDataSourceImpl implements BookLocalDataSource {
 
   @override
   Future<void> saveChapterList(String bookId, List<ChapterSimpleModel> chapters) async {
-    final chaptersJson = json.encode(
-      chapters.map((chapter) => chapter.toJson()).toList(),
+    final String chaptersJson = json.encode(
+      chapters.map((ChapterSimpleModel chapter) => chapter.toJson()).toList(),
     );
     await PreferencesHelper.setString('$_chapterListPrefix$bookId', chaptersJson);
   }
@@ -80,9 +80,9 @@ class BookLocalDataSourceImpl implements BookLocalDataSource {
   @override
   Future<ChapterModel?> getChapterDetail(String chapterId) async {
     try {
-      final chapterJson = await PreferencesHelper.getString('$_chapterDetailPrefix$chapterId');
+      final String? chapterJson = PreferencesHelper.getString('$_chapterDetailPrefix$chapterId');
       if (chapterJson != null) {
-        final chapterMap = json.decode(chapterJson) as Map<String, dynamic>;
+        final Map<String, dynamic> chapterMap = json.decode(chapterJson) as Map<String, dynamic>;
         return ChapterModel.fromJson(chapterMap);
       }
       return null;
@@ -93,16 +93,16 @@ class BookLocalDataSourceImpl implements BookLocalDataSource {
 
   @override
   Future<void> saveChapterDetail(ChapterModel chapter) async {
-    final chapterJson = json.encode(chapter.toJson());
+    final String chapterJson = json.encode(chapter.toJson());
     await PreferencesHelper.setString('$_chapterDetailPrefix${chapter.id}', chapterJson);
   }
 
   @override
   Future<ReadingProgress?> getReadingProgress(String bookId) async {
     try {
-      final progressJson = await PreferencesHelper.getString('$_readingProgressPrefix$bookId');
+      final String? progressJson = PreferencesHelper.getString('$_readingProgressPrefix$bookId');
       if (progressJson != null) {
-        final progressMap = json.decode(progressJson) as Map<String, dynamic>;
+        final Map<String, dynamic> progressMap = json.decode(progressJson) as Map<String, dynamic>;
         return ReadingProgress.fromJson(progressMap);
       }
       return null;
@@ -113,14 +113,14 @@ class BookLocalDataSourceImpl implements BookLocalDataSource {
 
   @override
   Future<void> saveReadingProgress(ReadingProgress progress) async {
-    final progressJson = json.encode(progress.toJson());
+    final String progressJson = json.encode(progress.toJson());
     await PreferencesHelper.setString('$_readingProgressPrefix${progress.novelId}', progressJson);
   }
 
   @override
   Future<List<String>?> getFavoriteBooks() async {
     try {
-      final favoritesJson = await PreferencesHelper.getString(_favoriteBooksKey);
+      final String? favoritesJson = PreferencesHelper.getString(_favoriteBooksKey);
       if (favoritesJson != null) {
         final List<dynamic> favoritesList = json.decode(favoritesJson) as List<dynamic>;
 
@@ -134,13 +134,13 @@ class BookLocalDataSourceImpl implements BookLocalDataSource {
 
   @override
   Future<void> saveFavoriteBooks(List<String> bookIds) async {
-    final favoritesJson = json.encode(bookIds);
+    final String favoritesJson = json.encode(bookIds);
     await PreferencesHelper.setString(_favoriteBooksKey, favoritesJson);
   }
 
   @override
   Future<void> addFavoriteBook(String bookId) async {
-    final favorites = await getFavoriteBooks() ?? [];
+    final List<String> favorites = await getFavoriteBooks() ?? <String>[];
     if (!favorites.contains(bookId)) {
       favorites.add(bookId);
       await saveFavoriteBooks(favorites);
@@ -149,7 +149,7 @@ class BookLocalDataSourceImpl implements BookLocalDataSource {
 
   @override
   Future<void> removeFavoriteBook(String bookId) async {
-    final favorites = await getFavoriteBooks() ?? [];
+    final List<String> favorites = await getFavoriteBooks() ?? <String>[];
     favorites.remove(bookId);
     await saveFavoriteBooks(favorites);
   }
@@ -157,7 +157,7 @@ class BookLocalDataSourceImpl implements BookLocalDataSource {
   @override
   Future<List<String>?> getDownloadedBooks() async {
     try {
-      final downloadedJson = await PreferencesHelper.getString(_downloadedBooksKey);
+      final String? downloadedJson = PreferencesHelper.getString(_downloadedBooksKey);
       if (downloadedJson != null) {
         final List<dynamic> downloadedList = json.decode(downloadedJson) as List<dynamic>;
         return downloadedList.cast<String>();
@@ -170,13 +170,13 @@ class BookLocalDataSourceImpl implements BookLocalDataSource {
 
   @override
   Future<void> saveDownloadedBooks(List<String> bookIds) async {
-    final downloadedJson = json.encode(bookIds);
+    final String downloadedJson = json.encode(bookIds);
     await PreferencesHelper.setString(_downloadedBooksKey, downloadedJson);
   }
 
   @override
   Future<void> addDownloadedBook(String bookId) async {
-    final downloaded = await getDownloadedBooks() ?? [];
+    final List<String> downloaded = await getDownloadedBooks() ?? <String>[];
     if (!downloaded.contains(bookId)) {
       downloaded.add(bookId);
       await saveDownloadedBooks(downloaded);
@@ -185,7 +185,7 @@ class BookLocalDataSourceImpl implements BookLocalDataSource {
 
   @override
   Future<void> removeDownloadedBook(String bookId) async {
-    final downloaded = await getDownloadedBooks() ?? [];
+    final List<String> downloaded = await getDownloadedBooks() ?? <String>[];
     downloaded.remove(bookId);
     await saveDownloadedBooks(downloaded);
   }

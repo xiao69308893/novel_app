@@ -5,18 +5,15 @@ import '../../../../app/themes/app_theme.dart';
 
 /// 章节列表抽屉组件
 class ChapterListDrawer extends StatefulWidget {
+
+  const ChapterListDrawer({
+    required this.novel, required this.chapters, required this.currentChapterId, super.key,
+    this.onChapterSelected,
+  });
   final NovelModel novel;
   final List<ChapterSimpleModel> chapters;
   final String currentChapterId;
   final ValueChanged<String>? onChapterSelected;
-
-  const ChapterListDrawer({
-    Key? key,
-    required this.novel,
-    required this.chapters,
-    required this.currentChapterId,
-    this.onChapterSelected,
-  }) : super(key: key);
 
   @override
   State<ChapterListDrawer> createState() => _ChapterListDrawerState();
@@ -25,7 +22,7 @@ class ChapterListDrawer extends StatefulWidget {
 class _ChapterListDrawerState extends State<ChapterListDrawer> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
-  List<ChapterSimpleModel> _filteredChapters = [];
+  List<ChapterSimpleModel> _filteredChapters = <ChapterSimpleModel>[];
   bool _isReverse = false;
 
   @override
@@ -47,12 +44,12 @@ class _ChapterListDrawerState extends State<ChapterListDrawer> {
   }
 
   void _scrollToCurrentChapter() {
-    final currentIndex = _filteredChapters.indexWhere(
-      (chapter) => chapter.id == widget.currentChapterId,
+    final int currentIndex = _filteredChapters.indexWhere(
+      (ChapterSimpleModel chapter) => chapter.id == widget.currentChapterId,
     );
     
     if (currentIndex != -1) {
-      final offset = currentIndex * 60.0; // 估算每个项目的高度
+      final double offset = currentIndex * 60.0; // 估算每个项目的高度
       _scrollController.animateTo(
         offset,
         duration: const Duration(milliseconds: 300),
@@ -67,7 +64,7 @@ class _ChapterListDrawerState extends State<ChapterListDrawer> {
         _filteredChapters = widget.chapters;
       } else {
         _filteredChapters = widget.chapters
-            .where((chapter) =>
+            .where((ChapterSimpleModel chapter) =>
                 chapter.title.toLowerCase().contains(query.toLowerCase()) ||
                 chapter.chapterNumber.toString().contains(query))
             .toList();
@@ -83,10 +80,9 @@ class _ChapterListDrawerState extends State<ChapterListDrawer> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Drawer(
+  Widget build(BuildContext context) => Drawer(
       child: Column(
-        children: [
+        children: <Widget>[
           // 头部
           _buildHeader(),
           
@@ -100,10 +96,8 @@ class _ChapterListDrawerState extends State<ChapterListDrawer> {
         ],
       ),
     );
-  }
 
-  Widget _buildHeader() {
-    return Container(
+  Widget _buildHeader() => Container(
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top + AppTheme.spacingRegular,
         left: AppTheme.spacingRegular,
@@ -115,9 +109,9 @@ class _ChapterListDrawerState extends State<ChapterListDrawer> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Row(
-            children: [
+            children: <Widget>[
               Expanded(
                 child: Text(
                   widget.novel.title,
@@ -150,10 +144,8 @@ class _ChapterListDrawerState extends State<ChapterListDrawer> {
         ],
       ),
     );
-  }
 
-  Widget _buildSearchBar() {
-    return Container(
+  Widget _buildSearchBar() => Container(
       padding: const EdgeInsets.all(AppTheme.spacingRegular),
       child: TextField(
         controller: _searchController,
@@ -180,7 +172,6 @@ class _ChapterListDrawerState extends State<ChapterListDrawer> {
         onChanged: _filterChapters,
       ),
     );
-  }
 
   Widget _buildChapterList() {
     if (_filteredChapters.isEmpty) {
@@ -192,18 +183,18 @@ class _ChapterListDrawerState extends State<ChapterListDrawer> {
     return ListView.builder(
       controller: _scrollController,
       itemCount: _filteredChapters.length,
-      itemBuilder: (context, index) {
-        final chapter = _filteredChapters[index];
+      itemBuilder: (BuildContext context, int index) {
+        final ChapterSimpleModel chapter = _filteredChapters[index];
         return _buildChapterItem(chapter);
       },
     );
   }
 
   Widget _buildChapterItem(ChapterSimpleModel chapter) {
-    final isCurrentChapter = chapter.id == widget.currentChapterId;
-    final theme = Theme.of(context);
+    final bool isCurrentChapter = chapter.id == widget.currentChapterId;
+    final ThemeData theme = Theme.of(context);
 
-    return Container(
+    return DecoratedBox(
       decoration: BoxDecoration(
         color: isCurrentChapter
             ? theme.primaryColor.withValues(alpha: 0.1)
@@ -228,7 +219,7 @@ class _ChapterListDrawerState extends State<ChapterListDrawer> {
           overflow: TextOverflow.ellipsis,
         ),
         subtitle: Row(
-          children: [
+          children: <Widget>[
             Text(
               chapter.chapterNumberText,
               style: TextStyle(
@@ -292,10 +283,10 @@ class _ChapterListDrawerState extends State<ChapterListDrawer> {
   void _showPurchaseDialog(ChapterSimpleModel chapter) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (BuildContext context) => AlertDialog(
         title: const Text('章节购买'),
         content: Text('《${chapter.title}》需要${chapter.priceText}才能阅读'),
-        actions: [
+        actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('取消'),

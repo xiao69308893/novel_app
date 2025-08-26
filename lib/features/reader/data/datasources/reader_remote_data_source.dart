@@ -1,4 +1,5 @@
 import 'package:novel_app/core/errors/exceptions.dart';
+import 'package:novel_app/core/network/api_response.dart';
 
 import '../../../../core/api/api_client.dart';
 import '../../../../shared/models/chapter_model.dart' hide ReadingProgress;
@@ -92,9 +93,9 @@ abstract class ReaderRemoteDataSource {
 
 /// 阅读器远程数据源实现
 class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
-  final ApiClient apiClient;
 
   const ReaderRemoteDataSourceImpl({required this.apiClient});
+  final ApiClient apiClient;
 
   @override
   Future<ChapterModel> loadChapter({
@@ -102,7 +103,7 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
     required String chapterId,
   }) async {
     try {
-      final response = await apiClient.get(
+      final ApiResponse response = await apiClient.get(
         '/novels/$novelId/chapters/$chapterId',
       );
 
@@ -130,9 +131,9 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
     required String novelId,
   }) async {
     try {
-      final response = await apiClient.get(
+      final ApiResponse response = await apiClient.get(
         '/novels/$novelId/chapters',
-        queryParameters: {
+        queryParameters: <String, dynamic>{
           'simple': true, // 获取简化版章节列表
         },
       );
@@ -159,7 +160,7 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
   @override
   Future<NovelModel> getNovelInfo({required String novelId}) async {
     try {
-      final response = await apiClient.get('/novels/$novelId');
+      final ApiResponse response = await apiClient.get('/novels/$novelId');
 
       if (response.code == 200) {
         return NovelModel.fromJson(response.data['data'] as Map<String, dynamic>);
@@ -186,9 +187,9 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
     required double progress,
   }) async {
     try {
-      final response = await apiClient.post(
+      final ApiResponse response = await apiClient.post(
         '/reading/progress',
-        data: {
+        data: <String, Object>{
           'novelId': novelId,
           'chapterId': chapterId,
           'position': position,
@@ -217,7 +218,7 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
     required String novelId,
   }) async {
     try {
-      final response = await apiClient.get(
+      final ApiResponse response = await apiClient.get(
         '/reading/progress/$novelId',
       );
 
@@ -250,9 +251,9 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
     String? content,
   }) async {
     try {
-      final response = await apiClient.post(
+      final ApiResponse response = await apiClient.post(
         '/bookmarks',
-        data: {
+        data: <String, Object?>{
           'novelId': novelId,
           'chapterId': chapterId,
           'position': position,
@@ -282,7 +283,7 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
   @override
   Future<void> deleteBookmark({required String bookmarkId}) async {
     try {
-      final response = await apiClient.delete('/bookmarks/$bookmarkId');
+      final ApiResponse response = await apiClient.delete('/bookmarks/$bookmarkId');
 
       if (response.code != 200) {
         throw ServerException(
@@ -305,12 +306,12 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
     String? chapterId,
   }) async {
     try {
-      final queryParams = <String, dynamic>{'novelId': novelId};
+      final Map<String, dynamic> queryParams = <String, dynamic>{'novelId': novelId};
       if (chapterId != null) {
         queryParams['chapterId'] = chapterId;
       }
 
-      final response = await apiClient.get(
+      final ApiResponse response = await apiClient.get(
         '/bookmarks',
         queryParameters: queryParams,
       );
@@ -320,7 +321,7 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
 
         return data.map((json) => BookmarkModel.fromJson(json as Map<String, dynamic>)).toList();
       } else if (response.code == 404) {
-        return []; // 没有书签，返回空列表
+        return <BookmarkModel>[]; // 没有书签，返回空列表
       } else {
         throw ServerException(
           message: (response.data['message'] as String?) ?? '获取书签列表失败',
@@ -342,9 +343,9 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
     required int minutes,
   }) async {
     try {
-      final response = await apiClient.post(
+      final ApiResponse response = await apiClient.post(
         '/reading/time',
-        data: {
+        data: <String, Object>{
           'novelId': novelId,
           'minutes': minutes,
           'date': DateTime.now().toIso8601String().split('T')[0],
@@ -369,7 +370,7 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
   @override
   Future<ReadingStats> getReadingStats() async {
     try {
-      final response = await apiClient.get('/reading/stats');
+      final ApiResponse response = await apiClient.get('/reading/stats');
 
       if (response.code == 200) {
         return ReadingStats.fromMap(response.data['data'] as Map<String, dynamic>);
@@ -394,9 +395,9 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
     required String keyword,
   }) async {
     try {
-      final response = await apiClient.get(
+      final ApiResponse response = await apiClient.get(
         '/novels/$novelId/chapters/search',
-        queryParameters: {
+        queryParameters: <String, dynamic>{
           'keyword': keyword,
         },
       );
@@ -425,13 +426,13 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
     required String chapterId,
   }) async {
     try {
-      final response = await apiClient.get(
+      final ApiResponse response = await apiClient.get(
         '/novels/$novelId/chapters/$chapterId/adjacent',
       );
 
       if (response.code == 200) {
         final data = response.data['data'];
-        return {
+        return <String, ChapterSimpleModel?>{
           'previous': data['previous'] != null
               ? ChapterSimpleModel.fromJson(data['previous'] as Map<String, dynamic>)
               : null,
@@ -460,9 +461,9 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
     required String chapterId,
   }) async {
     try {
-      final response = await apiClient.post(
+      final ApiResponse response = await apiClient.post(
         '/purchases/chapters',
-        data: {
+        data: <String, String>{
           'novelId': novelId,
           'chapterId': chapterId,
         },
@@ -489,9 +490,9 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
     required String chapterId,
   }) async {
     try {
-      final response = await apiClient.get(
+      final ApiResponse response = await apiClient.get(
         '/purchases/chapters/status',
-        queryParameters: {
+        queryParameters: <String, dynamic>{
           'novelId': novelId,
           'chapterId': chapterId,
         },

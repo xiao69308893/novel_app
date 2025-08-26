@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:novel_app/features/reader/domain/entities/reader_config.dart' hide ReaderTheme;
 import '../../../../shared/widgets/loading_widget.dart';
 import '../../../../shared/widgets/error_widget.dart';
 import '../../../../app/themes/app_theme.dart';
@@ -12,16 +13,15 @@ import '../widgets/chapter_list_drawer.dart';
 
 /// 阅读器页面
 class ReaderPage extends StatefulWidget {
+
+  const ReaderPage({
+    required this.novelId, super.key,
+    this.chapterId,
+    this.chapterNumber,
+  });
   final String novelId;
   final String? chapterId;
   final int? chapterNumber;
-
-  const ReaderPage({
-    Key? key,
-    required this.novelId,
-    this.chapterId,
-    this.chapterNumber,
-  }) : super(key: key);
 
   @override
   State<ReaderPage> createState() => _ReaderPageState();
@@ -43,15 +43,13 @@ class _ReaderPageState extends State<ReaderPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<ReaderBloc, ReaderState>(
-      builder: (context, state) {
+  Widget build(BuildContext context) => BlocBuilder<ReaderBloc, ReaderState>(
+      builder: (BuildContext context, ReaderState state) {
         if (state is ReaderLoading) {
           return Scaffold(
             backgroundColor: Colors.black,
             body: LoadingWidget(
               message: state.message,
-              center: true,
             ),
           );
         }
@@ -79,10 +77,8 @@ class _ReaderPageState extends State<ReaderPage> {
         return const SizedBox.shrink();
       },
     );
-  }
 
-  Widget _buildReaderInterface(BuildContext context, ReaderLoaded state) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
+  Widget _buildReaderInterface(BuildContext context, ReaderLoaded state) => AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
         statusBarColor: state.config.theme.backgroundColor,
         statusBarIconBrightness: state.config.theme == ReaderTheme.light 
@@ -95,7 +91,7 @@ class _ReaderPageState extends State<ReaderPage> {
           novel: state.novel,
           chapters: state.chapterList,
           currentChapterId: state.session.currentChapter.id,
-          onChapterSelected: (chapterId) {
+          onChapterSelected: (String chapterId) {
             Navigator.pop(context);
             context.read<ReaderBloc>().add(LoadChapter(
               novelId: widget.novelId,
@@ -104,7 +100,7 @@ class _ReaderPageState extends State<ReaderPage> {
           },
         ),
         body: Stack(
-          children: [
+          children: <Widget>[
             // 主要阅读内容
             ReaderContent(
               session: state.session,
@@ -112,7 +108,7 @@ class _ReaderPageState extends State<ReaderPage> {
               onTap: () {
                 context.read<ReaderBloc>().add(const ToggleUIVisibility());
               },
-              onPageTurn: (forward) {
+              onPageTurn: (bool forward) {
                 context.read<ReaderBloc>().add(TurnPage(forward));
               },
             ),
@@ -135,7 +131,7 @@ class _ReaderPageState extends State<ReaderPage> {
                 onAutoPageToggle: () {
                   context.read<ReaderBloc>().add(const ToggleAutoPage());
                 },
-                onProgressChanged: (page) {
+                onProgressChanged: (int page) {
                   context.read<ReaderBloc>().add(JumpToPage(page));
                 },
               ),
@@ -144,7 +140,7 @@ class _ReaderPageState extends State<ReaderPage> {
             if (_showSettingsPanel)
               ReaderSettingsPanel(
                 config: state.config,
-                onConfigChanged: (config) {
+                onConfigChanged: (ReaderConfig config) {
                   context.read<ReaderBloc>().add(UpdateReaderConfig(config));
                 },
                 onClose: () {
@@ -176,5 +172,4 @@ class _ReaderPageState extends State<ReaderPage> {
         ),
       ),
     );
-  }
 }

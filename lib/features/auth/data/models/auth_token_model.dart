@@ -9,8 +9,7 @@ class AuthTokenModel extends AuthToken {
     super.tokenType,
   });
 
-  factory AuthTokenModel.fromJson(Map<String, dynamic> json) {
-    return AuthTokenModel(
+  factory AuthTokenModel.fromJson(Map<String, dynamic> json) => AuthTokenModel(
       accessToken: json['access_token'] as String,
       refreshToken: json['refresh_token'] as String,
       expiresAt: DateTime.fromMillisecondsSinceEpoch(
@@ -18,23 +17,18 @@ class AuthTokenModel extends AuthToken {
       ),
       tokenType: json['token_type'] as String? ?? 'Bearer',
     );
-  }
 
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'access_token': accessToken,
       'refresh_token': refreshToken,
       'expires_at': expiresAt.millisecondsSinceEpoch ~/ 1000,
       'token_type': tokenType,
     };
-  }
 
-  AuthToken toEntity() {
-    return AuthToken(
+  AuthToken toEntity() => AuthToken(
       accessToken: accessToken,
       refreshToken: refreshToken,
       expiresAt: expiresAt,
       tokenType: tokenType,
     );
-  }
 }

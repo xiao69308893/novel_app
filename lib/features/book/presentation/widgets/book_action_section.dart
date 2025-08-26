@@ -4,31 +4,30 @@ import '../../../../app/themes/app_theme.dart';
 import '../../domain/entities/book_detail.dart';
 
 class BookActionSection extends StatelessWidget {
+
+  const BookActionSection({
+    required this.bookDetail, super.key,
+    this.onStartReading,
+    this.onToggleFavorite,
+    this.onDownload,
+  });
   final BookDetail bookDetail;
   final VoidCallback? onStartReading;
   final VoidCallback? onToggleFavorite;
   final VoidCallback? onDownload;
 
-  const BookActionSection({
-    Key? key,
-    required this.bookDetail,
-    this.onStartReading,
-    this.onToggleFavorite,
-    this.onDownload,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return Container(
       padding: const EdgeInsets.all(AppTheme.spacingRegular),
       child: Column(
-        children: [
+        children: <Widget>[
           // 统计信息
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
+            children: <Widget>[
               _buildStatItem(
                 icon: Icons.visibility,
                 label: '阅读',
@@ -56,7 +55,7 @@ class BookActionSection extends StatelessWidget {
 
           // 操作按钮
           Row(
-            children: [
+            children: <Widget>[
               // 开始阅读
               Expanded(
                 flex: 3,
@@ -72,7 +71,7 @@ class BookActionSection extends StatelessWidget {
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                    children: <Widget>[
                       const Icon(Icons.play_arrow),
                       const SizedBox(width: AppTheme.spacingSmall),
                       Text(
@@ -115,9 +114,8 @@ class BookActionSection extends StatelessWidget {
     required IconData icon,
     required String label,
     required String value,
-  }) {
-    return Column(
-      children: [
+  }) => Column(
+      children: <Widget>[
         Icon(icon, size: 20, color: Colors.grey[600]),
         const SizedBox(height: 4),
         Text(
@@ -136,14 +134,12 @@ class BookActionSection extends StatelessWidget {
         ),
       ],
     );
-  }
 
   Widget _buildActionButton({
     required IconData icon,
     required Color color,
     required VoidCallback? onTap,
-  }) {
-    return GestureDetector(
+  }) => GestureDetector(
       onTap: onTap,
       child: Container(
         width: 48,
@@ -156,5 +152,4 @@ class BookActionSection extends StatelessWidget {
         child: Icon(icon, color: color),
       ),
     );
-  }
 }

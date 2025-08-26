@@ -14,6 +14,18 @@ enum LoadingType {
 
 /// 通用加载组件
 class LoadingWidget extends StatelessWidget {
+
+  const LoadingWidget({
+    super.key,
+    this.type = LoadingType.circular,
+    this.message,
+    this.size,
+    this.color,
+    this.showBackground = false,
+    this.backgroundColor,
+    this.textStyle,
+    this.center = true,
+  });
   /// 加载类型
   final LoadingType type;
   
@@ -38,29 +50,17 @@ class LoadingWidget extends StatelessWidget {
   /// 是否显示在中心
   final bool center;
 
-  const LoadingWidget({
-    Key? key,
-    this.type = LoadingType.circular,
-    this.message,
-    this.size,
-    this.color,
-    this.showBackground = false,
-    this.backgroundColor,
-    this.textStyle,
-    this.center = true,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final loadingColor = color ?? theme.primaryColor;
+    final ThemeData theme = Theme.of(context);
+    final Color loadingColor = color ?? theme.primaryColor;
     
     Widget loadingWidget = _buildLoadingIndicator(loadingColor);
     
     if (message != null) {
       loadingWidget = Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
+        children: <Widget>[
           loadingWidget,
           const SizedBox(height: AppTheme.spacingRegular),
           Text(
@@ -92,7 +92,7 @@ class LoadingWidget extends StatelessWidget {
 
   /// 构建加载指示器
   Widget _buildLoadingIndicator(Color color) {
-    final indicatorSize = size ?? 24.0;
+    final double indicatorSize = size ?? 24.0;
     
     switch (type) {
       case LoadingType.circular:
@@ -143,16 +143,15 @@ class LoadingWidget extends StatelessWidget {
 
 /// 点状加载指示器
 class DotsLoadingIndicator extends StatefulWidget {
+
+  const DotsLoadingIndicator({
+    required this.color, super.key,
+    this.size = 24.0,
+    this.dotCount = 3,
+  });
   final Color color;
   final double size;
   final int dotCount;
-
-  const DotsLoadingIndicator({
-    Key? key,
-    required this.color,
-    this.size = 24.0,
-    this.dotCount = 3,
-  }) : super(key: key);
 
   @override
   State<DotsLoadingIndicator> createState() => _DotsLoadingIndicatorState();
@@ -171,8 +170,7 @@ class _DotsLoadingIndicatorState extends State<DotsLoadingIndicator>
       vsync: this,
     );
 
-    _animations = List.generate(widget.dotCount, (index) {
-      return Tween<double>(begin: 0.0, end: 1.0).animate(
+    _animations = List.generate(widget.dotCount, (int index) => Tween<double>(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
           parent: _controller,
           curve: Interval(
@@ -181,8 +179,7 @@ class _DotsLoadingIndicatorState extends State<DotsLoadingIndicator>
             curve: Curves.easeInOut,
           ),
         ),
-      );
-    });
+      ));
 
     _controller.repeat();
   }
@@ -195,18 +192,16 @@ class _DotsLoadingIndicatorState extends State<DotsLoadingIndicator>
 
   @override
   Widget build(BuildContext context) {
-    final dotSize = widget.size / 6;
+    final double dotSize = widget.size / 6;
     
     return SizedBox(
       width: widget.size,
       height: dotSize,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: List.generate(widget.dotCount, (index) {
-          return AnimatedBuilder(
+        children: List.generate(widget.dotCount, (int index) => AnimatedBuilder(
             animation: _animations[index],
-            builder: (context, child) {
-              return Opacity(
+            builder: (BuildContext context, Widget? child) => Opacity(
                 opacity: _animations[index].value,
                 child: Container(
                   width: dotSize,
@@ -216,10 +211,8 @@ class _DotsLoadingIndicatorState extends State<DotsLoadingIndicator>
                     shape: BoxShape.circle,
                   ),
                 ),
-              );
-            },
-          );
-        }),
+              ),
+          )),
       ),
     );
   }
@@ -227,14 +220,13 @@ class _DotsLoadingIndicatorState extends State<DotsLoadingIndicator>
 
 /// 脉冲加载指示器
 class PulseLoadingIndicator extends StatefulWidget {
-  final Color color;
-  final double size;
 
   const PulseLoadingIndicator({
-    Key? key,
-    required this.color,
+    required this.color, super.key,
     this.size = 24.0,
-  }) : super(key: key);
+  });
+  final Color color;
+  final double size;
 
   @override
   State<PulseLoadingIndicator> createState() => _PulseLoadingIndicatorState();
@@ -272,11 +264,9 @@ class _PulseLoadingIndicatorState extends State<PulseLoadingIndicator>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
+  Widget build(BuildContext context) => AnimatedBuilder(
       animation: _controller,
-      builder: (context, child) {
-        return Transform.scale(
+      builder: (BuildContext context, Widget? child) => Transform.scale(
           scale: _scaleAnimation.value,
           child: Opacity(
             opacity: _opacityAnimation.value,
@@ -289,22 +279,19 @@ class _PulseLoadingIndicatorState extends State<PulseLoadingIndicator>
               ),
             ),
           ),
-        );
-      },
+        ),
     );
-  }
 }
 
 /// 波浪加载指示器
 class WaveLoadingIndicator extends StatefulWidget {
-  final Color color;
-  final double size;
 
   const WaveLoadingIndicator({
-    Key? key,
-    required this.color,
+    required this.color, super.key,
     this.size = 24.0,
-  }) : super(key: key);
+  });
+  final Color color;
+  final double size;
 
   @override
   State<WaveLoadingIndicator> createState() => _WaveLoadingIndicatorState();
@@ -323,8 +310,7 @@ class _WaveLoadingIndicatorState extends State<WaveLoadingIndicator>
       vsync: this,
     );
 
-    _animations = List.generate(4, (index) {
-      return Tween<double>(begin: 0.0, end: 1.0).animate(
+    _animations = List.generate(4, (int index) => Tween<double>(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
           parent: _controller,
           curve: Interval(
@@ -333,8 +319,7 @@ class _WaveLoadingIndicatorState extends State<WaveLoadingIndicator>
             curve: Curves.easeInOut,
           ),
         ),
-      );
-    });
+      ));
 
     _controller.repeat();
   }
@@ -347,29 +332,25 @@ class _WaveLoadingIndicatorState extends State<WaveLoadingIndicator>
 
   @override
   Widget build(BuildContext context) {
-    final barWidth = widget.size / 8;
-    final barHeight = widget.size;
+    final double barWidth = widget.size / 8;
+    final double barHeight = widget.size;
     
     return SizedBox(
       width: widget.size,
       height: barHeight,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: List.generate(4, (index) {
-          return AnimatedBuilder(
+        children: List.generate(4, (int index) => AnimatedBuilder(
             animation: _animations[index],
-            builder: (context, child) {
-              return Container(
+            builder: (BuildContext context, Widget? child) => Container(
                 width: barWidth,
                 height: barHeight * _animations[index].value,
                 decoration: BoxDecoration(
                   color: widget.color,
                   borderRadius: BorderRadius.circular(barWidth / 2),
                 ),
-              );
-            },
-          );
-        }),
+              ),
+          )),
       ),
     );
   }
@@ -377,18 +358,16 @@ class _WaveLoadingIndicatorState extends State<WaveLoadingIndicator>
 
 /// 骨架屏加载指示器
 class SkeletonLoadingIndicator extends StatefulWidget {
+
+  const SkeletonLoadingIndicator({
+    required this.width, required this.height, super.key,
+    this.baseColor,
+    this.highlightColor,
+  });
   final double width;
   final double height;
   final Color? baseColor;
   final Color? highlightColor;
-
-  const SkeletonLoadingIndicator({
-    Key? key,
-    required this.width,
-    required this.height,
-    this.baseColor,
-    this.highlightColor,
-  }) : super(key: key);
 
   @override
   State<SkeletonLoadingIndicator> createState() => _SkeletonLoadingIndicatorState();
@@ -422,25 +401,22 @@ class _SkeletonLoadingIndicatorState extends State<SkeletonLoadingIndicator>
 
   @override
   Widget build(BuildContext context) {
-    final baseColor = widget.baseColor ?? Colors.grey[300]!;
-    final highlightColor = widget.highlightColor ?? Colors.grey[100]!;
+    final Color baseColor = widget.baseColor ?? Colors.grey[300]!;
+    final Color highlightColor = widget.highlightColor ?? Colors.grey[100]!;
 
     return AnimatedBuilder(
       animation: _animation,
-      builder: (context, child) {
-        return Container(
+      builder: (BuildContext context, Widget? child) => Container(
           width: widget.width,
           height: widget.height,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [
+              colors: <Color>[
                 baseColor,
                 highlightColor,
                 baseColor,
               ],
-              stops: [
+              stops: <double>[
                 _animation.value - 1,
                 _animation.value,
                 _animation.value + 1,
@@ -448,14 +424,19 @@ class _SkeletonLoadingIndicatorState extends State<SkeletonLoadingIndicator>
             ),
             borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
           ),
-        );
-      },
+        ),
     );
   }
 }
 
 /// 全屏加载遮罩
 class LoadingOverlay extends StatelessWidget {
+
+  const LoadingOverlay({
+    required this.isLoading, required this.child, super.key,
+    this.loadingWidget,
+    this.overlayColor,
+  });
   /// 是否显示
   final bool isLoading;
   
@@ -468,21 +449,12 @@ class LoadingOverlay extends StatelessWidget {
   /// 遮罩颜色
   final Color? overlayColor;
 
-  const LoadingOverlay({
-    Key? key,
-    required this.isLoading,
-    required this.child,
-    this.loadingWidget,
-    this.overlayColor,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
+  Widget build(BuildContext context) => Stack(
+      children: <Widget>[
         child,
         if (isLoading)
-          Container(
+          ColoredBox(
             color: overlayColor ?? Colors.black.withValues(alpha: 0.3),
             child: loadingWidget ?? 
                 const LoadingWidget(
@@ -492,11 +464,18 @@ class LoadingOverlay extends StatelessWidget {
           ),
       ],
     );
-  }
 }
 
 /// 列表加载更多组件
 class LoadMoreWidget extends StatelessWidget {
+
+  const LoadMoreWidget({
+    required this.isLoading, required this.hasMore, super.key,
+    this.onLoadMore,
+    this.loadingText,
+    this.noMoreText,
+    this.loadMoreText,
+  });
   /// 是否正在加载
   final bool isLoading;
   
@@ -515,19 +494,9 @@ class LoadMoreWidget extends StatelessWidget {
   /// 点击加载更多文本
   final String? loadMoreText;
 
-  const LoadMoreWidget({
-    Key? key,
-    required this.isLoading,
-    required this.hasMore,
-    this.onLoadMore,
-    this.loadingText,
-    this.noMoreText,
-    this.loadMoreText,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     
     if (isLoading) {
       return Container(
@@ -535,7 +504,7 @@ class LoadMoreWidget extends StatelessWidget {
         alignment: Alignment.center,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             const SizedBox(
               width: 16,
               height: 16,
@@ -582,6 +551,12 @@ class LoadMoreWidget extends StatelessWidget {
 
 /// 下拉刷新组件
 class RefreshWidget extends StatelessWidget {
+
+  const RefreshWidget({
+    required this.child, super.key,
+    this.onRefresh,
+    this.color,
+  });
   /// 子组件
   final Widget child;
   
@@ -590,13 +565,6 @@ class RefreshWidget extends StatelessWidget {
   
   /// 刷新指示器颜色
   final Color? color;
-
-  const RefreshWidget({
-    Key? key,
-    required this.child,
-    this.onRefresh,
-    this.color,
-  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -614,6 +582,11 @@ class RefreshWidget extends StatelessWidget {
 
 /// 加载状态构建器
 class LoadingBuilder extends StatelessWidget {
+
+  const LoadingBuilder({
+    required this.isLoading, required this.contentBuilder, super.key,
+    this.loadingBuilder,
+  });
   /// 是否正在加载
   final bool isLoading;
   
@@ -622,13 +595,6 @@ class LoadingBuilder extends StatelessWidget {
   
   /// 内容组件构建器
   final Widget Function() contentBuilder;
-
-  const LoadingBuilder({
-    Key? key,
-    required this.isLoading,
-    this.loadingBuilder,
-    required this.contentBuilder,
-  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -650,7 +616,7 @@ class LoadingUtils {
     showDialog<void>(
       context: context,
       barrierDismissible: barrierDismissible,
-      builder: (context) => Dialog(
+      builder: (BuildContext context) => Dialog(
         backgroundColor: Colors.transparent,
         elevation: 0,
         child: LoadingWidget(
@@ -672,34 +638,32 @@ class LoadingUtils {
     int itemCount = 5,
     double itemHeight = 80,
     EdgeInsets? padding,
-  }) {
-    return ListView.builder(
+  }) => ListView.builder(
       padding: padding,
       itemCount: itemCount,
-      itemBuilder: (context, index) {
-        return Container(
+      itemBuilder: (BuildContext context, int index) => Container(
           height: itemHeight,
           margin: const EdgeInsets.symmetric(
             horizontal: AppTheme.spacingRegular,
             vertical: AppTheme.spacingSmall,
           ),
           child: Row(
-            children: [
+            children: <Widget>[
               SkeletonLoadingIndicator(
                 width: itemHeight - 16,
                 height: itemHeight - 16,
               ),
               const SizedBox(width: AppTheme.spacingRegular),
-              Expanded(
+              const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+                  children: <Widget>[
                     SkeletonLoadingIndicator(
                       width: double.infinity,
                       height: 16,
                     ),
-                    const SizedBox(height: AppTheme.spacingSmall),
+                    SizedBox(height: AppTheme.spacingSmall),
                     SkeletonLoadingIndicator(
                       width: 100,
                       height: 12,
@@ -709,8 +673,6 @@ class LoadingUtils {
               ),
             ],
           ),
-        );
-      },
+        ),
     );
-  }
 }

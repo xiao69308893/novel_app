@@ -1,14 +1,14 @@
 /// 自定义异常类
 abstract class AppException implements Exception {
-  final String message;
-  final String? code;
-  final dynamic details;
 
   const AppException({
     required this.message,
     this.code,
     this.details,
   });
+  final String message;
+  final String? code;
+  final dynamic details;
 
   @override
   String toString() => 'AppException: $message';
@@ -17,53 +17,53 @@ abstract class AppException implements Exception {
 /// 服务器异常
 class ServerException extends AppException {
   const ServerException({
-    required String message,
-    String? code,
-    dynamic details,
-  }) : super(message: message, code: code, details: details);
+    required super.message,
+    super.code,
+    super.details,
+  });
 }
 
 /// 缓存异常
 class CacheException extends AppException {
   const CacheException({
-    required String message,
-    String? code,
-    dynamic details,
-  }) : super(message: message, code: code, details: details);
+    required super.message,
+    super.code,
+    super.details,
+  });
 }
 
 /// 网络异常
 class NetworkException extends AppException {
   const NetworkException({
-    required String message,
-    String? code,
-    dynamic details,
-  }) : super(message: message, code: code, details: details);
+    required super.message,
+    super.code,
+    super.details,
+  });
 }
 
 /// 数据解析异常
 class ParseException extends AppException {
   const ParseException({
-    required String message,
-    String? code,
-    dynamic details,
-  }) : super(message: message, code: code, details: details);
+    required super.message,
+    super.code,
+    super.details,
+  });
 }
 
 /// 权限异常
 class PermissionException extends AppException {
   const PermissionException({
-    required String message,
-    String? code,
-    dynamic details,
-  }) : super(message: message, code: code, details: details);
+    required super.message,
+    super.code,
+    super.details,
+  });
 }
 
 /// 存储异常
 class StorageException extends AppException {
   const StorageException({
-    required String message,
-    String? code,
-    dynamic details,
-  }) : super(message: message, code: code, details: details);
+    required super.message,
+    super.code,
+    super.details,
+  });
 }

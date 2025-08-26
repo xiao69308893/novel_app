@@ -3,33 +3,29 @@ import '../../../../app/themes/app_theme.dart';
 
 /// 阅读进度指示器组件
 class ReadingProgressIndicator extends StatelessWidget {
+
+  const ReadingProgressIndicator({
+    required this.currentPage, required this.totalPages, required this.progress, super.key,
+    this.onPageChanged,
+  });
   final int currentPage;
   final int totalPages;
   final double progress;
   final ValueChanged<int>? onPageChanged;
 
-  const ReadingProgressIndicator({
-    Key? key,
-    required this.currentPage,
-    required this.totalPages,
-    required this.progress,
-    this.onPageChanged,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context) => Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppTheme.spacingRegular,
         vertical: AppTheme.spacingSmall,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
+        children: <Widget>[
           // 进度文本
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+            children: <Widget>[
               Text(
                 '第 ${currentPage + 1} 页',
                 style: const TextStyle(
@@ -68,10 +64,9 @@ class ReadingProgressIndicator extends StatelessWidget {
             ),
             child: Slider(
               value: currentPage.toDouble(),
-              min: 0,
               max: (totalPages - 1).toDouble(),
               divisions: totalPages - 1,
-              onChanged: (value) {
+              onChanged: (double value) {
                 onPageChanged?.call(value.round());
               },
             ),
@@ -79,5 +74,4 @@ class ReadingProgressIndicator extends StatelessWidget {
         ],
       ),
     );
-  }
 }

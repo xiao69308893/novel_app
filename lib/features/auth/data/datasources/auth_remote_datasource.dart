@@ -67,9 +67,9 @@ abstract class AuthRemoteDataSource {
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  final ApiClient apiClient;
 
   AuthRemoteDataSourceImpl({required this.apiClient});
+  final ApiClient apiClient;
 
   @override
   Future<AuthTokenModel> loginWithPassword({
@@ -79,7 +79,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       final ApiResponse<Map<String, dynamic>> response = await apiClient.post<Map<String, dynamic>>(
         '/auth/login',
-        data: {
+        data: <String, String>{
           'username': username,
           'password': password,
         },
@@ -101,7 +101,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       final ApiResponse<Map<String, dynamic>> response = await apiClient.post<Map<String, dynamic>>(
         '/auth/login/phone',
-        data: {
+        data: <String, String>{
           'phone': phone,
           'verification_code': verificationCode,
         },
@@ -124,7 +124,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     String? inviteCode,
   }) async {
     try {
-      final Map<String, dynamic> data = {
+      final Map<String, dynamic> data = <String, dynamic>{
         'username': username,
         'password': password,
       };
@@ -133,7 +133,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (phone != null) data['phone'] = phone;
       if (inviteCode != null) data['invite_code'] = inviteCode;
 
-      final response = await apiClient.post<Map<String, dynamic>>(
+      final ApiResponse<Map<String, dynamic>> response = await apiClient.post<Map<String, dynamic>>(
         '/auth/register', 
         data: data,
       );
@@ -156,7 +156,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       await apiClient.post<Map<String, dynamic>>(
         '/auth/sms/send',
-        data: {
+        data: <String, String>{
           'phone': phone,
           'type': type,
         },
@@ -177,7 +177,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       await apiClient.post<Map<String, dynamic>>(
         '/auth/email/send',
-        data: {
+        data: <String, String>{
           'email': email,
           'type': type,
         },
@@ -199,7 +199,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       await apiClient.post<Map<String, dynamic>>(
         '/auth/password/forgot',
-        data: {
+        data: <String, String>{
           'account': account,
           'verification_code': verificationCode,
           'new_password': newPassword,
@@ -216,9 +216,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<AuthTokenModel> refreshToken(String refreshToken) async {
     try {
-      final response = await apiClient.post<Map<String, dynamic>>(
+      final ApiResponse<Map<String, dynamic>> response = await apiClient.post<Map<String, dynamic>>(
         '/auth/token/refresh',
-        data: {
+        data: <String, String>{
           'refresh_token': refreshToken,
         },
       );
@@ -279,7 +279,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       await apiClient.put<Map<String, dynamic>>(
         '/auth/password/change',
-        data: {
+        data: <String, String>{
           'old_password': oldPassword,
           'new_password': newPassword,
         },
@@ -300,7 +300,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       await apiClient.post<Map<String, dynamic>>(
         '/auth/phone/bind',
-        data: {
+        data: <String, String>{
           'phone': phone,
           'verification_code': verificationCode,
         },
@@ -321,7 +321,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       await apiClient.post<Map<String, dynamic>>(
         '/auth/email/bind',
-        data: {
+        data: <String, String>{
           'email': email,
           'verification_code': verificationCode,
         },

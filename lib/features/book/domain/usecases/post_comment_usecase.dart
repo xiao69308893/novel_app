@@ -7,9 +7,9 @@ import '../entities/comment.dart';
 import '../repositories/book_repository.dart';
 
 class PostCommentUseCase implements UseCase<Comment, PostCommentParams> {
-  final BookRepository repository;
 
   PostCommentUseCase(this.repository);
+  final BookRepository repository;
 
   @override
   Future<Either<AppError, Comment>> call(PostCommentParams params) async {
@@ -24,7 +24,7 @@ class PostCommentUseCase implements UseCase<Comment, PostCommentParams> {
       return Left(DataError.validation(message: '评论内容不能超过500字'));
     }
 
-    return await repository.postComment(
+    return repository.postComment(
       targetId: params.targetId,
       type: params.type,
       content: params.content.trim(),
@@ -34,10 +34,6 @@ class PostCommentUseCase implements UseCase<Comment, PostCommentParams> {
 }
 
 class PostCommentParams extends Equatable {
-  final String targetId;
-  final CommentType type;
-  final String content;
-  final String? parentId;
 
   const PostCommentParams({
     required this.targetId,
@@ -45,7 +41,11 @@ class PostCommentParams extends Equatable {
     required this.content,
     this.parentId,
   });
+  final String targetId;
+  final CommentType type;
+  final String content;
+  final String? parentId;
 
   @override
-  List<Object?> get props => [targetId, type, content, parentId];
+  List<Object?> get props => <Object?>[targetId, type, content, parentId];
 }

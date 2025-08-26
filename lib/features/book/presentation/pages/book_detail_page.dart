@@ -1,6 +1,8 @@
 // 小说详情页面
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:novel_app/features/book/domain/entities/book_detail.dart';
+import 'package:novel_app/shared/models/chapter_model.dart';
 import '../../../../shared/widgets/common_app_bar.dart';
 import '../../../../shared/widgets/loading_widget.dart';
 import '../../../../shared/widgets/error_widget.dart';
@@ -12,12 +14,11 @@ import '../widgets/chapter_preview_section.dart';
 import '../widgets/book_recommendation_section.dart';
 
 class BookDetailPage extends StatefulWidget {
-  final String bookId;
 
   const BookDetailPage({
-    Key? key,
-    required this.bookId,
-  }) : super(key: key);
+    required this.bookId, super.key,
+  });
+  final String bookId;
 
   @override
   State<BookDetailPage> createState() => _BookDetailPageState();
@@ -31,10 +32,9 @@ class _BookDetailPageState extends State<BookDetailPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       body: BlocConsumer<BookDetailCubit, BookDetailState>(
-        listener: (context, state) {
+        listener: (BuildContext context, BookDetailState state) {
           if (state is BookDetailError) {
             DialogUtils.showError(
               context,
@@ -42,7 +42,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
             );
           }
         },
-        builder: (context, state) {
+        builder: (BuildContext context, BookDetailState state) {
           if (state is BookDetailLoading) {
             return const Scaffold(
               appBar: CommonAppBar(title: '小说详情'),
@@ -67,14 +67,13 @@ class _BookDetailPageState extends State<BookDetailPage> {
         },
       ),
     );
-  }
 
   Widget _buildBookDetail(BookDetailLoaded state) {
-    final bookDetail = state.bookDetail;
+    final BookDetail bookDetail = state.bookDetail;
     
     return Scaffold(
       body: CustomScrollView(
-        slivers: [
+        slivers: <Widget>[
           // 自定义AppBar
           SliverAppBar(
             expandedHeight: 300,
@@ -82,7 +81,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
             flexibleSpace: FlexibleSpaceBar(
               background: BookInfoSection(bookDetail: bookDetail),
             ),
-            actions: [
+            actions: <Widget>[
               IconButton(
                 icon: const Icon(Icons.share),
                 onPressed: () => _showShareDialog(context),
@@ -110,7 +109,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
               chapters: state.chapters,
               readingProgress: bookDetail.readingProgress,
               onViewAllChapters: () => _viewAllChapters(context),
-              onChapterTap: (chapter) => _readChapter(context, chapter),
+              onChapterTap: (ChapterSimpleModel chapter) => _readChapter(context, chapter),
             ),
           ),
 
@@ -142,8 +141,8 @@ class _BookDetailPageState extends State<BookDetailPage> {
   }
 
   void _startReading(BookDetailLoaded state) {
-    final chapters = state.chapters;
-    final progress = state.bookDetail.readingProgress;
+    final List<ChapterSimpleModel> chapters = state.chapters;
+    final ReadingProgress? progress = state.bookDetail.readingProgress;
     
     if (chapters.isEmpty) {
       DialogUtils.showError(context, content: '暂无可阅读章节');
@@ -165,7 +164,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
     Navigator.pushNamed(
       context,
       '/reader',
-      arguments: {
+      arguments: <String, String>{
         'bookId': state.bookDetail.novel.id,
         'chapterId': chapterId,
       },
@@ -176,7 +175,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
     Navigator.pushNamed(
       context,
       '/book/chapters',
-      arguments: {'bookId': widget.bookId},
+      arguments: <String, String>{'bookId': widget.bookId},
     );
   }
 
@@ -184,7 +183,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
     Navigator.pushNamed(
       context,
       '/reader',
-      arguments: {
+      arguments: <String, dynamic>{
         'bookId': widget.bookId,
         'chapterId': chapter.id,
       },
@@ -195,7 +194,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
     DialogUtils.showBottomSheet(
       context,
       title: '分享到',
-      items: [
+      items: <BottomSheetItem>[
         BottomSheetItem(
           title: '微信',
           icon: const Icon(Icons.chat),
@@ -219,7 +218,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
     DialogUtils.showBottomSheet(
       context,
       title: '更多操作',
-      items: [
+      items: <BottomSheetItem>[
         BottomSheetItem(
           title: '评分',
           icon: const Icon(Icons.star),

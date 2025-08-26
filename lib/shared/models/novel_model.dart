@@ -12,12 +12,10 @@ enum NovelStatus {
   final int value;
   final String displayName;
 
-  static NovelStatus fromValue(int? value) {
-    return NovelStatus.values.firstWhere(
-      (s) => s.value == value,
+  static NovelStatus fromValue(int? value) => NovelStatus.values.firstWhere(
+      (NovelStatus s) => s.value == value,
       orElse: () => NovelStatus.serializing,
     );
-  }
 }
 
 /// VIP章节类型枚举
@@ -31,16 +29,32 @@ enum VipType {
   final int value;
   final String displayName;
 
-  static VipType fromValue(int? value) {
-    return VipType.values.firstWhere(
-      (v) => v.value == value,
+  static VipType fromValue(int? value) => VipType.values.firstWhere(
+      (VipType v) => v.value == value,
       orElse: () => VipType.free,
     );
-  }
 }
 
 /// 小说分类
 class NovelCategory extends Equatable {
+
+  const NovelCategory({
+    required this.id,
+    required this.name,
+    this.description,
+    this.icon,
+    this.sort = 0,
+    this.enabled = true,
+  });
+
+  factory NovelCategory.fromJson(Map<String, dynamic> json) => NovelCategory(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      description: json['description'] as String?,
+      icon: json['icon'] as String?,
+      sort: json['sort'] as int? ?? 0,
+      enabled: json['enabled'] as bool? ?? true,
+    );
   /// 分类ID
   final String id;
   
@@ -59,28 +73,7 @@ class NovelCategory extends Equatable {
   /// 是否启用
   final bool enabled;
 
-  const NovelCategory({
-    required this.id,
-    required this.name,
-    this.description,
-    this.icon,
-    this.sort = 0,
-    this.enabled = true,
-  });
-
-  factory NovelCategory.fromJson(Map<String, dynamic> json) {
-    return NovelCategory(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String?,
-      icon: json['icon'] as String?,
-      sort: json['sort'] as int? ?? 0,
-      enabled: json['enabled'] as bool? ?? true,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'id': id,
       'name': name,
       'description': description,
@@ -88,10 +81,9 @@ class NovelCategory extends Equatable {
       'sort': sort,
       'enabled': enabled,
     };
-  }
 
   @override
-  List<Object?> get props => [id, name, description, icon, sort, enabled];
+  List<Object?> get props => <Object?>[id, name, description, icon, sort, enabled];
 
   @override
   String toString() => 'NovelCategory{id: $id, name: $name}';
@@ -99,6 +91,20 @@ class NovelCategory extends Equatable {
 
 /// 小说标签
 class NovelTag extends Equatable {
+
+  const NovelTag({
+    required this.id,
+    required this.name,
+    this.color,
+    this.useCount = 0,
+  });
+
+  factory NovelTag.fromJson(Map<String, dynamic> json) => NovelTag(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      color: json['color'] as String?,
+      useCount: json['use_count'] as int? ?? 0,
+    );
   /// 标签ID
   final String id;
   
@@ -111,33 +117,15 @@ class NovelTag extends Equatable {
   /// 使用次数
   final int useCount;
 
-  const NovelTag({
-    required this.id,
-    required this.name,
-    this.color,
-    this.useCount = 0,
-  });
-
-  factory NovelTag.fromJson(Map<String, dynamic> json) {
-    return NovelTag(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      color: json['color'] as String?,
-      useCount: json['use_count'] as int? ?? 0,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'id': id,
       'name': name,
       'color': color,
       'use_count': useCount,
     };
-  }
 
   @override
-  List<Object?> get props => [id, name, color, useCount];
+  List<Object?> get props => <Object?>[id, name, color, useCount];
 
   @override
   String toString() => 'NovelTag{id: $id, name: $name}';
@@ -145,6 +133,24 @@ class NovelTag extends Equatable {
 
 /// 小说作者
 class NovelAuthor extends Equatable {
+
+  const NovelAuthor({
+    required this.id,
+    required this.name,
+    this.avatar,
+    this.bio,
+    this.worksCount = 0,
+    this.fansCount = 0,
+  });
+
+  factory NovelAuthor.fromJson(Map<String, dynamic> json) => NovelAuthor(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      avatar: json['avatar'] as String?,
+      bio: json['bio'] as String?,
+      worksCount: json['works_count'] as int? ?? 0,
+      fansCount: json['fans_count'] as int? ?? 0,
+    );
   /// 作者ID
   final String id;
   
@@ -163,28 +169,7 @@ class NovelAuthor extends Equatable {
   /// 粉丝数量
   final int fansCount;
 
-  const NovelAuthor({
-    required this.id,
-    required this.name,
-    this.avatar,
-    this.bio,
-    this.worksCount = 0,
-    this.fansCount = 0,
-  });
-
-  factory NovelAuthor.fromJson(Map<String, dynamic> json) {
-    return NovelAuthor(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      avatar: json['avatar'] as String?,
-      bio: json['bio'] as String?,
-      worksCount: json['works_count'] as int? ?? 0,
-      fansCount: json['fans_count'] as int? ?? 0,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'id': id,
       'name': name,
       'avatar': avatar,
@@ -192,10 +177,9 @@ class NovelAuthor extends Equatable {
       'works_count': worksCount,
       'fans_count': fansCount,
     };
-  }
 
   @override
-  List<Object?> get props => [id, name, avatar, bio, worksCount, fansCount];
+  List<Object?> get props => <Object?>[id, name, avatar, bio, worksCount, fansCount];
 
   @override
   String toString() => 'NovelAuthor{id: $id, name: $name}';
@@ -203,6 +187,26 @@ class NovelAuthor extends Equatable {
 
 /// 小说评分
 class NovelRating extends Equatable {
+
+  const NovelRating({
+    this.average = 0.0,
+    this.count = 0,
+    this.star5Count = 0,
+    this.star4Count = 0,
+    this.star3Count = 0,
+    this.star2Count = 0,
+    this.star1Count = 0,
+  });
+
+  factory NovelRating.fromJson(Map<String, dynamic> json) => NovelRating(
+      average: (json['average'] as num?)?.toDouble() ?? 0.0,
+      count: json['count'] as int? ?? 0,
+      star5Count: json['star5_count'] as int? ?? 0,
+      star4Count: json['star4_count'] as int? ?? 0,
+      star3Count: json['star3_count'] as int? ?? 0,
+      star2Count: json['star2_count'] as int? ?? 0,
+      star1Count: json['star1_count'] as int? ?? 0,
+    );
   /// 总评分
   final double average;
   
@@ -224,30 +228,7 @@ class NovelRating extends Equatable {
   /// 1星评分数量
   final int star1Count;
 
-  const NovelRating({
-    this.average = 0.0,
-    this.count = 0,
-    this.star5Count = 0,
-    this.star4Count = 0,
-    this.star3Count = 0,
-    this.star2Count = 0,
-    this.star1Count = 0,
-  });
-
-  factory NovelRating.fromJson(Map<String, dynamic> json) {
-    return NovelRating(
-      average: (json['average'] as num?)?.toDouble() ?? 0.0,
-      count: json['count'] as int? ?? 0,
-      star5Count: json['star5_count'] as int? ?? 0,
-      star4Count: json['star4_count'] as int? ?? 0,
-      star3Count: json['star3_count'] as int? ?? 0,
-      star2Count: json['star2_count'] as int? ?? 0,
-      star1Count: json['star1_count'] as int? ?? 0,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'average': average,
       'count': count,
       'star5_count': star5Count,
@@ -256,13 +237,12 @@ class NovelRating extends Equatable {
       'star2_count': star2Count,
       'star1_count': star1Count,
     };
-  }
 
   /// 评分分布百分比
   Map<int, double> get distribution {
-    if (count == 0) return {5: 0, 4: 0, 3: 0, 2: 0, 1: 0};
+    if (count == 0) return <int, double>{5: 0, 4: 0, 3: 0, 2: 0, 1: 0};
     
-    return {
+    return <int, double>{
       5: star5Count / count * 100,
       4: star4Count / count * 100,
       3: star3Count / count * 100,
@@ -272,7 +252,7 @@ class NovelRating extends Equatable {
   }
 
   @override
-  List<Object> get props => [
+  List<Object> get props => <Object>[
         average,
         count,
         star5Count,
@@ -285,6 +265,28 @@ class NovelRating extends Equatable {
 
 /// 小说统计
 class NovelStats extends Equatable {
+
+  const NovelStats({
+    this.readCount = 0,
+    this.favoriteCount = 0,
+    this.commentCount = 0,
+    this.shareCount = 0,
+    this.recommendCount = 0,
+    this.todayReadCount = 0,
+    this.weekReadCount = 0,
+    this.monthReadCount = 0,
+  });
+
+  factory NovelStats.fromJson(Map<String, dynamic> json) => NovelStats(
+      readCount: json['read_count'] as int? ?? 0,
+      favoriteCount: json['favorite_count'] as int? ?? 0,
+      commentCount: json['comment_count'] as int? ?? 0,
+      shareCount: json['share_count'] as int? ?? 0,
+      recommendCount: json['recommend_count'] as int? ?? 0,
+      todayReadCount: json['today_read_count'] as int? ?? 0,
+      weekReadCount: json['week_read_count'] as int? ?? 0,
+      monthReadCount: json['month_read_count'] as int? ?? 0,
+    );
   /// 阅读次数
   final int readCount;
   
@@ -309,32 +311,7 @@ class NovelStats extends Equatable {
   /// 本月阅读次数
   final int monthReadCount;
 
-  const NovelStats({
-    this.readCount = 0,
-    this.favoriteCount = 0,
-    this.commentCount = 0,
-    this.shareCount = 0,
-    this.recommendCount = 0,
-    this.todayReadCount = 0,
-    this.weekReadCount = 0,
-    this.monthReadCount = 0,
-  });
-
-  factory NovelStats.fromJson(Map<String, dynamic> json) {
-    return NovelStats(
-      readCount: json['read_count'] as int? ?? 0,
-      favoriteCount: json['favorite_count'] as int? ?? 0,
-      commentCount: json['comment_count'] as int? ?? 0,
-      shareCount: json['share_count'] as int? ?? 0,
-      recommendCount: json['recommend_count'] as int? ?? 0,
-      todayReadCount: json['today_read_count'] as int? ?? 0,
-      weekReadCount: json['week_read_count'] as int? ?? 0,
-      monthReadCount: json['month_read_count'] as int? ?? 0,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'read_count': readCount,
       'favorite_count': favoriteCount,
       'comment_count': commentCount,
@@ -344,21 +321,18 @@ class NovelStats extends Equatable {
       'week_read_count': weekReadCount,
       'month_read_count': monthReadCount,
     };
-  }
 
   /// 热度值计算
-  double get hotScore {
-    return (readCount * 1.0 +
+  double get hotScore => (readCount * 1.0 +
             favoriteCount * 2.0 +
             commentCount * 1.5 +
             shareCount * 3.0 +
             recommendCount * 2.5 +
             todayReadCount * 5.0) /
         100;
-  }
 
   @override
-  List<Object> get props => [
+  List<Object> get props => <Object>[
         readCount,
         favoriteCount,
         commentCount,
@@ -372,6 +346,68 @@ class NovelStats extends Equatable {
 
 /// 小说模型
 class NovelModel extends Equatable {
+
+  const NovelModel({
+    required this.id,
+    required this.title,
+    required this.author,
+    required this.publishTime, required this.createdAt, required this.updatedAt, this.description,
+    this.coverUrl,
+    this.category,
+    this.tags = const <NovelTag>[],
+    this.status = NovelStatus.serializing,
+    this.vipType = VipType.free,
+    this.wordCount = 0,
+    this.chapterCount = 0,
+    this.latestChapterTitle,
+    this.latestChapterId,
+    this.lastUpdateTime,
+    this.rating,
+    this.stats,
+    this.isFinished = false,
+    this.isVip = false,
+    this.isHot = false,
+    this.isRecommended = false,
+    this.extra,
+  });
+
+  /// 从JSON创建小说模型
+  factory NovelModel.fromJson(Map<String, dynamic> json) => NovelModel(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      author: NovelAuthor.fromJson(json['author'] as Map<String, dynamic>),
+      description: json['description'] as String?,
+      coverUrl: json['cover_url'] as String?,
+      category: json['category'] != null
+          ? NovelCategory.fromJson(json['category'] as Map<String, dynamic>)
+          : null,
+      tags: (json['tags'] as List?)
+          ?.map((tag) => NovelTag.fromJson(tag as Map<String, dynamic>))
+          .toList() ?? <NovelTag>[],
+      status: NovelStatus.fromValue(json['status'] as int?),
+      vipType: VipType.fromValue(json['vip_type'] as int?),
+      wordCount: json['word_count'] as int? ?? 0,
+      chapterCount: json['chapter_count'] as int? ?? 0,
+      latestChapterTitle: json['latest_chapter_title'] as String?,
+      latestChapterId: json['latest_chapter_id'] as String?,
+      lastUpdateTime: json['last_update_time'] != null
+          ? DateTime.parse(json['last_update_time'] as String)
+          : null,
+      publishTime: DateTime.parse(json['publish_time'] as String),
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
+      rating: json['rating'] != null
+          ? NovelRating.fromJson(json['rating'] as Map<String, dynamic>)
+          : null,
+      stats: json['stats'] != null
+          ? NovelStats.fromJson(json['stats'] as Map<String, dynamic>)
+          : null,
+      isFinished: json['is_finished'] as bool? ?? false,
+      isVip: json['is_vip'] as bool? ?? false,
+      isHot: json['is_hot'] as bool? ?? false,
+      isRecommended: json['is_recommended'] as bool? ?? false,
+      extra: json['extra'] as Map<String, dynamic>?,
+    );
   /// 小说ID
   final String id;
   
@@ -444,83 +480,15 @@ class NovelModel extends Equatable {
   /// 扩展字段
   final Map<String, dynamic>? extra;
 
-  const NovelModel({
-    required this.id,
-    required this.title,
-    required this.author,
-    this.description,
-    this.coverUrl,
-    this.category,
-    this.tags = const [],
-    this.status = NovelStatus.serializing,
-    this.vipType = VipType.free,
-    this.wordCount = 0,
-    this.chapterCount = 0,
-    this.latestChapterTitle,
-    this.latestChapterId,
-    this.lastUpdateTime,
-    required this.publishTime,
-    required this.createdAt,
-    required this.updatedAt,
-    this.rating,
-    this.stats,
-    this.isFinished = false,
-    this.isVip = false,
-    this.isHot = false,
-    this.isRecommended = false,
-    this.extra,
-  });
-
-  /// 从JSON创建小说模型
-  factory NovelModel.fromJson(Map<String, dynamic> json) {
-    return NovelModel(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      author: NovelAuthor.fromJson(json['author'] as Map<String, dynamic>),
-      description: json['description'] as String?,
-      coverUrl: json['cover_url'] as String?,
-      category: json['category'] != null
-          ? NovelCategory.fromJson(json['category'] as Map<String, dynamic>)
-          : null,
-      tags: (json['tags'] as List?)
-          ?.map((tag) => NovelTag.fromJson(tag as Map<String, dynamic>))
-          .toList() ?? [],
-      status: NovelStatus.fromValue(json['status'] as int?),
-      vipType: VipType.fromValue(json['vip_type'] as int?),
-      wordCount: json['word_count'] as int? ?? 0,
-      chapterCount: json['chapter_count'] as int? ?? 0,
-      latestChapterTitle: json['latest_chapter_title'] as String?,
-      latestChapterId: json['latest_chapter_id'] as String?,
-      lastUpdateTime: json['last_update_time'] != null
-          ? DateTime.parse(json['last_update_time'] as String)
-          : null,
-      publishTime: DateTime.parse(json['publish_time'] as String),
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String),
-      rating: json['rating'] != null
-          ? NovelRating.fromJson(json['rating'] as Map<String, dynamic>)
-          : null,
-      stats: json['stats'] != null
-          ? NovelStats.fromJson(json['stats'] as Map<String, dynamic>)
-          : null,
-      isFinished: json['is_finished'] as bool? ?? false,
-      isVip: json['is_vip'] as bool? ?? false,
-      isHot: json['is_hot'] as bool? ?? false,
-      isRecommended: json['is_recommended'] as bool? ?? false,
-      extra: json['extra'] as Map<String, dynamic>?,
-    );
-  }
-
   /// 转换为JSON
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'id': id,
       'title': title,
       'author': author.toJson(),
       'description': description,
       'cover_url': coverUrl,
       'category': category?.toJson(),
-      'tags': tags.map((tag) => tag.toJson()).toList(),
+      'tags': tags.map((NovelTag tag) => tag.toJson()).toList(),
       'status': status.value,
       'vip_type': vipType.value,
       'word_count': wordCount,
@@ -539,7 +507,6 @@ class NovelModel extends Equatable {
       'is_recommended': isRecommended,
       'extra': extra,
     };
-  }
 
   /// 复制并修改小说信息
   NovelModel copyWith({
@@ -567,8 +534,7 @@ class NovelModel extends Equatable {
     bool? isHot,
     bool? isRecommended,
     Map<String, dynamic>? extra,
-  }) {
-    return NovelModel(
+  }) => NovelModel(
       id: id ?? this.id,
       title: title ?? this.title,
       author: author ?? this.author,
@@ -594,12 +560,11 @@ class NovelModel extends Equatable {
       isRecommended: isRecommended ?? this.isRecommended,
       extra: extra ?? this.extra,
     );
-  }
 
   /// 格式化字数显示
   String get formattedWordCount {
     if (wordCount < 10000) {
-      return '${wordCount}字';
+      return '$wordCount字';
     } else if (wordCount < 100000000) {
       return '${(wordCount / 10000).toStringAsFixed(1)}万字';
     } else {
@@ -609,9 +574,9 @@ class NovelModel extends Equatable {
 
   /// 格式化阅读次数
   String get formattedReadCount {
-    final readCount = stats?.readCount ?? 0;
+    final int readCount = stats?.readCount ?? 0;
     if (readCount < 10000) {
-      return '${readCount}次阅读';
+      return '$readCount次阅读';
     } else if (readCount < 100000000) {
       return '${(readCount / 10000).toStringAsFixed(1)}万次阅读';
     } else {
@@ -625,8 +590,8 @@ class NovelModel extends Equatable {
     
     if (lastUpdateTime == null) return '未知';
     
-    final now = DateTime.now();
-    final diff = now.difference(lastUpdateTime!);
+    final DateTime now = DateTime.now();
+    final Duration diff = now.difference(lastUpdateTime!);
     
     if (diff.inDays == 0) {
       if (diff.inHours == 0) {
@@ -650,9 +615,7 @@ class NovelModel extends Equatable {
   }
 
   /// 是否新书（发布30天内）
-  bool get isNewBook {
-    return DateTime.now().difference(publishTime).inDays <= 30;
-  }
+  bool get isNewBook => DateTime.now().difference(publishTime).inDays <= 30;
 
   /// 平均评分显示
   String get ratingDisplay {
@@ -661,7 +624,7 @@ class NovelModel extends Equatable {
   }
 
   /// 标签名称列表
-  List<String> get tagNames => tags.map((tag) => tag.name).toList();
+  List<String> get tagNames => tags.map((NovelTag tag) => tag.name).toList();
 
   /// 分类名称
   String get categoryName => category?.name ?? '未分类';
@@ -670,7 +633,7 @@ class NovelModel extends Equatable {
   double get hotScore => stats?.hotScore ?? 0.0;
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         id,
         title,
         author,
@@ -698,13 +661,62 @@ class NovelModel extends Equatable {
       ];
 
   @override
-  String toString() {
-    return 'NovelModel{id: $id, title: $title, author: ${author.name}}';
-  }
+  String toString() => 'NovelModel{id: $id, title: $title, author: ${author.name}}';
 }
 
 /// 小说简化模型（用于列表显示）
 class NovelSimpleModel extends Equatable {
+
+  const NovelSimpleModel({
+    required this.id,
+    required this.title,
+    required this.authorName,
+    this.coverUrl,
+    this.categoryName,
+    this.status = NovelStatus.serializing,
+    this.wordCount = 0,
+    this.chapterCount = 0,
+    this.latestChapterTitle,
+    this.lastUpdateTime,
+    this.isFinished = false,
+    this.isVip = false,
+    this.isHot = false,
+  });
+
+  /// 从完整模型创建简化模型
+  factory NovelSimpleModel.fromNovel(NovelModel novel) => NovelSimpleModel(
+      id: novel.id,
+      title: novel.title,
+      authorName: novel.author.name,
+      coverUrl: novel.coverUrl,
+      categoryName: novel.category?.name,
+      status: novel.status,
+      wordCount: novel.wordCount,
+      chapterCount: novel.chapterCount,
+      latestChapterTitle: novel.latestChapterTitle,
+      lastUpdateTime: novel.lastUpdateTime,
+      isFinished: novel.isFinished,
+      isVip: novel.isVip,
+      isHot: novel.isHot,
+    );
+
+  factory NovelSimpleModel.fromJson(Map<String, dynamic> json) => NovelSimpleModel(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      authorName: json['author_name'] as String,
+      coverUrl: json['cover_url'] as String?,
+      categoryName: json['category_name'] as String?,
+      status: NovelStatus.fromValue(json['status'] as int?),
+      wordCount: json['word_count'] as int? ?? 0,
+      chapterCount: json['chapter_count'] as int? ?? 0,
+      latestChapterTitle: json['latest_chapter_title'] as String?,
+      lastUpdateTime: json['last_update_time'] != null
+          ? DateTime.parse(json['last_update_time'] as String)
+          : null,
+      isFinished: json['is_finished'] as bool? ?? false,
+      isVip: json['is_vip'] as bool? ?? false,
+      isHot: json['is_hot'] as bool? ?? false,
+    );
   /// 小说ID
   final String id;
   
@@ -744,63 +756,7 @@ class NovelSimpleModel extends Equatable {
   /// 是否热门
   final bool isHot;
 
-  const NovelSimpleModel({
-    required this.id,
-    required this.title,
-    required this.authorName,
-    this.coverUrl,
-    this.categoryName,
-    this.status = NovelStatus.serializing,
-    this.wordCount = 0,
-    this.chapterCount = 0,
-    this.latestChapterTitle,
-    this.lastUpdateTime,
-    this.isFinished = false,
-    this.isVip = false,
-    this.isHot = false,
-  });
-
-  /// 从完整模型创建简化模型
-  factory NovelSimpleModel.fromNovel(NovelModel novel) {
-    return NovelSimpleModel(
-      id: novel.id,
-      title: novel.title,
-      authorName: novel.author.name,
-      coverUrl: novel.coverUrl,
-      categoryName: novel.category?.name,
-      status: novel.status,
-      wordCount: novel.wordCount,
-      chapterCount: novel.chapterCount,
-      latestChapterTitle: novel.latestChapterTitle,
-      lastUpdateTime: novel.lastUpdateTime,
-      isFinished: novel.isFinished,
-      isVip: novel.isVip,
-      isHot: novel.isHot,
-    );
-  }
-
-  factory NovelSimpleModel.fromJson(Map<String, dynamic> json) {
-    return NovelSimpleModel(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      authorName: json['author_name'] as String,
-      coverUrl: json['cover_url'] as String?,
-      categoryName: json['category_name'] as String?,
-      status: NovelStatus.fromValue(json['status'] as int?),
-      wordCount: json['word_count'] as int? ?? 0,
-      chapterCount: json['chapter_count'] as int? ?? 0,
-      latestChapterTitle: json['latest_chapter_title'] as String?,
-      lastUpdateTime: json['last_update_time'] != null
-          ? DateTime.parse(json['last_update_time'] as String)
-          : null,
-      isFinished: json['is_finished'] as bool? ?? false,
-      isVip: json['is_vip'] as bool? ?? false,
-      isHot: json['is_hot'] as bool? ?? false,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'id': id,
       'title': title,
       'author_name': authorName,
@@ -815,12 +771,11 @@ class NovelSimpleModel extends Equatable {
       'is_vip': isVip,
       'is_hot': isHot,
     };
-  }
 
   /// 格式化字数显示
   String get formattedWordCount {
     if (wordCount < 10000) {
-      return '${wordCount}字';
+      return '$wordCount字';
     } else {
       return '${(wordCount / 10000).toStringAsFixed(1)}万字';
     }
@@ -832,8 +787,8 @@ class NovelSimpleModel extends Equatable {
     
     if (lastUpdateTime == null) return '未知';
     
-    final now = DateTime.now();
-    final diff = now.difference(lastUpdateTime!);
+    final DateTime now = DateTime.now();
+    final Duration diff = now.difference(lastUpdateTime!);
     
     if (diff.inDays == 0) {
       return '今日更新';
@@ -845,7 +800,7 @@ class NovelSimpleModel extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         id,
         title,
         authorName,
@@ -862,7 +817,5 @@ class NovelSimpleModel extends Equatable {
       ];
 
   @override
-  String toString() {
-    return 'NovelSimpleModel{id: $id, title: $title, author: $authorName}';
-  }
+  String toString() => 'NovelSimpleModel{id: $id, title: $title, author: $authorName}';
 }

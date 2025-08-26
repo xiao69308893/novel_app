@@ -6,6 +6,15 @@ import '../../domain/entities/reading_session.dart';
 
 /// 阅读器控制栏组件
 class ReaderControls extends StatelessWidget {
+
+  const ReaderControls({
+    required this.novel, required this.session, required this.config, super.key,
+    this.onMenuTap,
+    this.onSettingsTap,
+    this.onBookmarkTap,
+    this.onAutoPageToggle,
+    this.onProgressChanged,
+  });
   final NovelModel novel;
   final ReadingSession session;
   final ReaderConfig config;
@@ -15,22 +24,9 @@ class ReaderControls extends StatelessWidget {
   final VoidCallback? onAutoPageToggle;
   final ValueChanged<int>? onProgressChanged;
 
-  const ReaderControls({
-    Key? key,
-    required this.novel,
-    required this.session,
-    required this.config,
-    this.onMenuTap,
-    this.onSettingsTap,
-    this.onBookmarkTap,
-    this.onAutoPageToggle,
-    this.onProgressChanged,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
+  Widget build(BuildContext context) => Column(
+      children: <Widget>[
         // 顶部控制栏
         _buildTopBar(context),
         
@@ -40,10 +36,8 @@ class ReaderControls extends StatelessWidget {
         _buildBottomBar(context),
       ],
     );
-  }
 
-  Widget _buildTopBar(BuildContext context) {
-    return Container(
+  Widget _buildTopBar(BuildContext context) => Container(
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top,
         left: AppTheme.spacingRegular,
@@ -54,7 +48,7 @@ class ReaderControls extends StatelessWidget {
         color: Colors.black.withValues(alpha: 0.7),
       ),
       child: Row(
-        children: [
+        children: <Widget>[
           // 返回按钮
           IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -66,7 +60,7 @@ class ReaderControls extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
-              children: [
+              children: <Widget>[
                 Text(
                   novel.title,
                   style: const TextStyle(
@@ -110,10 +104,8 @@ class ReaderControls extends StatelessWidget {
         ],
       ),
     );
-  }
 
-  Widget _buildBottomBar(BuildContext context) {
-    return Container(
+  Widget _buildBottomBar(BuildContext context) => Container(
       padding: EdgeInsets.only(
         left: AppTheme.spacingRegular,
         right: AppTheme.spacingRegular,
@@ -124,10 +116,10 @@ class ReaderControls extends StatelessWidget {
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
+        children: <Widget>[
           // 进度条
           Row(
-            children: [
+            children: <Widget>[
               Text(
                 '${session.currentPage + 1}',
                 style: const TextStyle(color: Colors.white, fontSize: 12),
@@ -136,10 +128,9 @@ class ReaderControls extends StatelessWidget {
               Expanded(
                 child: Slider(
                   value: session.currentPage.toDouble(),
-                  min: 0,
                   max: (session.pages.length - 1).toDouble(),
                   divisions: session.pages.length - 1,
-                  onChanged: (value) {
+                  onChanged: (double value) {
                     onProgressChanged?.call(value.round());
                   },
                   activeColor: Colors.white,
@@ -157,7 +148,7 @@ class ReaderControls extends StatelessWidget {
           // 控制按钮
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
+            children: <Widget>[
               IconButton(
                 icon: const Icon(Icons.brightness_6, color: Colors.white),
                 onPressed: () {
@@ -189,5 +180,4 @@ class ReaderControls extends StatelessWidget {
         ],
       ),
     );
-  }
 }

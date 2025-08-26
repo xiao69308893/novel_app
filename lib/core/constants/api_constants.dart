@@ -210,13 +210,13 @@ class ApiConstants {
   
   // ==================== 请求头常量 ====================
   
-  static const Map<String, String> defaultHeaders = {
+  static const Map<String, String> defaultHeaders = <String, String>{
     'Content-Type': 'application/json',
     'Accept': 'application/json',
     'User-Agent': 'NovelApp/1.0.0',
   };
   
-  static const Map<String, String> multipartHeaders = {
+  static const Map<String, String> multipartHeaders = <String, String>{
     'Content-Type': 'multipart/form-data',
     'Accept': 'application/json',
   };
@@ -326,7 +326,7 @@ class ApiConstants {
     String url = apiPath + endpoint;
     
     if (pathParams != null) {
-      pathParams.forEach((key, value) {
+      pathParams.forEach((String key, String value) {
         url = url.replaceAll('{$key}', value);
       });
     }
@@ -338,31 +338,23 @@ class ApiConstants {
   static String buildQueryString(Map<String, dynamic> params) {
     if (params.isEmpty) return '';
     
-    final queryParts = params.entries
-        .where((entry) => entry.value != null)
-        .map((entry) => '${entry.key}=${Uri.encodeComponent(entry.value.toString())}')
+    final List<String> queryParts = params.entries
+        .where((MapEntry<String, dynamic> entry) => entry.value != null)
+        .map((MapEntry<String, dynamic> entry) => '${entry.key}=${Uri.encodeComponent(entry.value.toString())}')
         .toList();
     
     return queryParts.isNotEmpty ? '?${queryParts.join('&')}' : '';
   }
   
   // 获取用户代理字符串
-  static String getUserAgent() {
-    return 'NovelApp/$appVersion ($platform; $osVersion)';
-  }
+  static String getUserAgent() => 'NovelApp/$appVersion ($platform; $osVersion)';
   
   // 检查是否为成功状态码
-  static bool isSuccessStatusCode(int statusCode) {
-    return statusCode >= 200 && statusCode < 300;
-  }
+  static bool isSuccessStatusCode(int statusCode) => statusCode >= 200 && statusCode < 300;
   
   // 检查是否为客户端错误
-  static bool isClientError(int statusCode) {
-    return statusCode >= 400 && statusCode < 500;
-  }
+  static bool isClientError(int statusCode) => statusCode >= 400 && statusCode < 500;
   
   // 检查是否为服务器错误
-  static bool isServerError(int statusCode) {
-    return statusCode >= 500 && statusCode < 600;
-  }
+  static bool isServerError(int statusCode) => statusCode >= 500 && statusCode < 600;
 }

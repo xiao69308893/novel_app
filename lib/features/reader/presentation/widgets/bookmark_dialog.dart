@@ -4,20 +4,17 @@ import '../../../../app/themes/app_theme.dart';
 
 /// 书签对话框组件
 class BookmarkDialog extends StatefulWidget {
+
+  const BookmarkDialog({
+    required this.novelTitle, required this.chapterTitle, required this.content, super.key,
+    this.initialNote,
+    this.onSave,
+  });
   final String novelTitle;
   final String chapterTitle;
   final String content;
   final String? initialNote;
   final ValueChanged<String?>? onSave;
-
-  const BookmarkDialog({
-    Key? key,
-    required this.novelTitle,
-    required this.chapterTitle,
-    required this.content,
-    this.initialNote,
-    this.onSave,
-  }) : super(key: key);
 
   @override
   State<BookmarkDialog> createState() => _BookmarkDialogState();
@@ -39,14 +36,13 @@ class _BookmarkDialogState extends State<BookmarkDialog> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
+  Widget build(BuildContext context) => AlertDialog(
       title: const Text('添加书签'),
       content: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: <Widget>[
             // 位置信息
             Container(
               padding: const EdgeInsets.all(AppTheme.spacingRegular),
@@ -56,7 +52,7 @@ class _BookmarkDialogState extends State<BookmarkDialog> {
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Text(
                     widget.novelTitle,
                     style: const TextStyle(
@@ -105,7 +101,7 @@ class _BookmarkDialogState extends State<BookmarkDialog> {
           ],
         ),
       ),
-      actions: [
+      actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: const Text('取消'),
@@ -121,30 +117,27 @@ class _BookmarkDialogState extends State<BookmarkDialog> {
         ),
       ],
     );
-  }
 }
 
 /// 书签列表对话框
 class BookmarkListDialog extends StatelessWidget {
+
+  const BookmarkListDialog({
+    required this.bookmarks, super.key,
+    this.onBookmarkTap,
+    this.onBookmarkDelete,
+  });
   final List<BookmarkModel> bookmarks;
   final ValueChanged<BookmarkModel>? onBookmarkTap;
   final ValueChanged<BookmarkModel>? onBookmarkDelete;
 
-  const BookmarkListDialog({
-    Key? key,
-    required this.bookmarks,
-    this.onBookmarkTap,
-    this.onBookmarkDelete,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      child: Container(
+  Widget build(BuildContext context) => Dialog(
+      child: SizedBox(
         width: double.maxFinite,
         height: MediaQuery.of(context).size.height * 0.7,
         child: Column(
-          children: [
+          children: <Widget>[
             // 头部
             Container(
               padding: const EdgeInsets.all(AppTheme.spacingRegular),
@@ -154,7 +147,7 @@ class BookmarkListDialog extends StatelessWidget {
                 ),
               ),
               child: Row(
-                children: [
+                children: <Widget>[
                   const Text(
                     '书签列表',
                     style: TextStyle(
@@ -177,7 +170,7 @@ class BookmarkListDialog extends StatelessWidget {
                   ? const Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                        children: <Widget>[
                           Icon(
                             Icons.bookmark_border,
                             size: 64,
@@ -196,8 +189,8 @@ class BookmarkListDialog extends StatelessWidget {
                     )
                   : ListView.builder(
                       itemCount: bookmarks.length,
-                      itemBuilder: (context, index) {
-                        final bookmark = bookmarks[index];
+                      itemBuilder: (BuildContext context, int index) {
+                        final BookmarkModel bookmark = bookmarks[index];
                         return _buildBookmarkItem(context, bookmark);
                       },
                     ),
@@ -206,10 +199,8 @@ class BookmarkListDialog extends StatelessWidget {
         ),
       ),
     );
-  }
 
-  Widget _buildBookmarkItem(BuildContext context, BookmarkModel bookmark) {
-    return Card(
+  Widget _buildBookmarkItem(BuildContext context, BookmarkModel bookmark) => Card(
       margin: const EdgeInsets.symmetric(
         horizontal: AppTheme.spacingRegular,
         vertical: AppTheme.spacingSmall,
@@ -223,14 +214,14 @@ class BookmarkListDialog extends StatelessWidget {
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             if (bookmark.content != null)
               Text(
                 bookmark.content!,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-            if (bookmark.note != null) ...[
+            if (bookmark.note != null) ...<Widget>[
               const SizedBox(height: 4),
               Text(
                 '备注：${bookmark.note}',
@@ -251,7 +242,7 @@ class BookmarkListDialog extends StatelessWidget {
           ],
         ),
         trailing: PopupMenuButton<String>(
-          onSelected: (value) {
+          onSelected: (String value) {
             switch (value) {
               case 'jump':
                 onBookmarkTap?.call(bookmark);
@@ -262,7 +253,7 @@ class BookmarkListDialog extends StatelessWidget {
                 break;
             }
           },
-          itemBuilder: (context) => [
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
             const PopupMenuItem(
               value: 'jump',
               child: Text('跳转到此处'),
@@ -279,15 +270,14 @@ class BookmarkListDialog extends StatelessWidget {
         },
       ),
     );
-  }
 
   void _showDeleteDialog(BuildContext context, BookmarkModel bookmark) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (BuildContext context) => AlertDialog(
         title: const Text('删除书签'),
         content: const Text('确定要删除这个书签吗？'),
-        actions: [
+        actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('取消'),

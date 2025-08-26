@@ -11,19 +11,16 @@ class HomeSectionModel extends HomeSection {
     super.isVisible,
   });
 
-  factory HomeSectionModel.fromJson(Map<String, dynamic> json) {
-    return HomeSectionModel(
+  factory HomeSectionModel.fromJson(Map<String, dynamic> json) => HomeSectionModel(
       id: json['id'] as String,
       title: json['title'] as String,
       type: json['type'] as String,
-      config: json['config'] as Map<String, dynamic>? ?? {},
+      config: json['config'] as Map<String, dynamic>? ?? <String, dynamic>{},
       sort: json['sort'] as int? ?? 0,
       isVisible: json['is_visible'] as bool? ?? true,
     );
-  }
 
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'id': id,
       'title': title,
       'type': type,
@@ -31,10 +28,8 @@ class HomeSectionModel extends HomeSection {
       'sort': sort,
       'is_visible': isVisible,
     };
-  }
 
-  HomeSection toEntity() {
-    return HomeSection(
+  HomeSection toEntity() => HomeSection(
       id: id,
       title: title,
       type: type,
@@ -42,33 +37,24 @@ class HomeSectionModel extends HomeSection {
       sort: sort,
       isVisible: isVisible,
     );
-  }
 }
 
 class HomeConfigModel extends HomeConfig {
-  const HomeConfigModel({
-    required super.version,
-    super.sections,
-    super.globalConfig,
-    required super.updatedAt,
-  });
+  const HomeConfigModel({required super.version, required super.updatedAt,super.sections, super.globalConfig});
 
-  factory HomeConfigModel.fromJson(Map<String, dynamic> json) {
-    return HomeConfigModel(
+  factory HomeConfigModel.fromJson(Map<String, dynamic> json) => HomeConfigModel(
       version: json['version'] as String,
       sections: (json['sections'] as List?)
           ?.map((section) => HomeSectionModel.fromJson(section as Map<String, dynamic>))
           .cast<HomeSection>()
-          .toList() ?? [],
-      globalConfig: json['global_config'] as Map<String, dynamic>? ?? {},
+          .toList() ?? <HomeSection>[],
+      globalConfig: json['global_config'] as Map<String, dynamic>? ?? <String, dynamic>{},
       updatedAt: DateTime.parse(json['updated_at'] as String),
     );
-  }
 
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'version': version,
-      'sections': sections.map((section) {
+      'sections': sections.map((HomeSection section) {
         if (section is HomeSectionModel) {
           return section.toJson();
         } else {
@@ -85,14 +71,11 @@ class HomeConfigModel extends HomeConfig {
       'global_config': globalConfig,
       'updated_at': updatedAt.toIso8601String(),
     };
-  }
 
-  HomeConfig toEntity() {
-    return HomeConfig(
+  HomeConfig toEntity() => HomeConfig(
       version: version,
       sections: sections,
       globalConfig: globalConfig,
       updatedAt: updatedAt,
     );
-  }
 }

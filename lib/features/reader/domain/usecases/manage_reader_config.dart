@@ -1,3 +1,7 @@
+import 'package:dartz/dartz.dart';
+
+import 'package:novel_app/core/errors/app_error.dart';
+
 import '../../../../core/usecases/usecase.dart';
 import '../../../../core/utils/typedef.dart';
 import '../entities/reader_config.dart';
@@ -10,9 +14,7 @@ class SaveReaderConfig extends UseCase<void, ReaderConfig> {
   final ReaderRepository repository;
 
   @override
-  ResultFuture<void> call(ReaderConfig config) async {
-    return await repository.saveReaderConfig(config: config);
-  }
+  ResultFuture<void> call(ReaderConfig config) async => repository.saveReaderConfig(config: config);
 }
 
 /// 获取阅读器配置用例
@@ -22,9 +24,7 @@ class GetReaderConfig extends UseCase<ReaderConfig, NoParams> {
   final ReaderRepository repository;
 
   @override
-  ResultFuture<ReaderConfig> call(NoParams params) async {
-    return await repository.getReaderConfig();
-  }
+  ResultFuture<ReaderConfig> call(NoParams params) async => repository.getReaderConfig();
 }
 
 /// 重置阅读器配置用例
@@ -36,8 +36,8 @@ class ResetReaderConfig extends UseCase<void, NoParams> {
   @override
   ResultFuture<void> call(NoParams params) async {
     // 保存默认配置
-    const defaultConfig = ReaderConfig();
-    return await repository.saveReaderConfig(config: defaultConfig);
+    const ReaderConfig defaultConfig = ReaderConfig();
+    return repository.saveReaderConfig(config: defaultConfig);
   }
 }
 
@@ -49,13 +49,13 @@ class UpdateFontSize extends UseCase<void, double> {
 
   @override
   ResultFuture<void> call(double fontSize) async {
-    final configResult = await repository.getReaderConfig();
+    final Either<AppError, ReaderConfig> configResult = await repository.getReaderConfig();
     
     return configResult.fold(
-      (failure) => throw failure,
-      (config) async {
-        final updatedConfig = config.copyWith(fontSize: fontSize);
-        return await repository.saveReaderConfig(config: updatedConfig);
+      (AppError failure) => throw failure,
+      (ReaderConfig config) async {
+        final ReaderConfig updatedConfig = config.copyWith(fontSize: fontSize);
+        return repository.saveReaderConfig(config: updatedConfig);
       },
     );
   }
@@ -69,13 +69,13 @@ class UpdateReaderTheme extends UseCase<void, ReaderTheme> {
 
   @override
   ResultFuture<void> call(ReaderTheme theme) async {
-    final configResult = await repository.getReaderConfig();
+    final Either<AppError, ReaderConfig> configResult = await repository.getReaderConfig();
     
     return configResult.fold(
-      (failure) => throw failure,
-      (config) async {
-        final updatedConfig = config.copyWith(theme: theme);
-        return await repository.saveReaderConfig(config: updatedConfig);
+      (AppError failure) => throw failure,
+      (ReaderConfig config) async {
+        final ReaderConfig updatedConfig = config.copyWith(theme: theme);
+        return repository.saveReaderConfig(config: updatedConfig);
       },
     );
   }
@@ -89,13 +89,13 @@ class UpdatePageMode extends UseCase<void, PageMode> {
 
   @override
   ResultFuture<void> call(PageMode pageMode) async {
-    final configResult = await repository.getReaderConfig();
+    final Either<AppError, ReaderConfig> configResult = await repository.getReaderConfig();
     
     return configResult.fold(
-      (failure) => throw failure,
-      (config) async {
-        final updatedConfig = config.copyWith(pageMode: pageMode);
-        return await repository.saveReaderConfig(config: updatedConfig);
+      (AppError failure) => throw failure,
+      (ReaderConfig config) async {
+        final ReaderConfig updatedConfig = config.copyWith(pageMode: pageMode);
+        return repository.saveReaderConfig(config: updatedConfig);
       },
     );
   }
@@ -109,13 +109,13 @@ class UpdateLineHeight extends UseCase<void, double> {
 
   @override
   ResultFuture<void> call(double lineHeight) async {
-    final configResult = await repository.getReaderConfig();
+    final Either<AppError, ReaderConfig> configResult = await repository.getReaderConfig();
     
     return configResult.fold(
-      (failure) => throw failure,
-      (config) async {
-        final updatedConfig = config.copyWith(lineHeight: lineHeight);
-        return await repository.saveReaderConfig(config: updatedConfig);
+      (AppError failure) => throw failure,
+      (ReaderConfig config) async {
+        final ReaderConfig updatedConfig = config.copyWith(lineHeight: lineHeight);
+        return repository.saveReaderConfig(config: updatedConfig);
       },
     );
   }
@@ -129,15 +129,15 @@ class ToggleVolumeKeyTurnPage extends UseCase<void, NoParams> {
 
   @override
   ResultFuture<void> call(NoParams params) async {
-    final configResult = await repository.getReaderConfig();
+    final Either<AppError, ReaderConfig> configResult = await repository.getReaderConfig();
     
     return configResult.fold(
-      (failure) => throw failure,
-      (config) async {
-        final updatedConfig = config.copyWith(
+      (AppError failure) => throw failure,
+      (ReaderConfig config) async {
+        final ReaderConfig updatedConfig = config.copyWith(
           volumeKeyTurnPage: !config.volumeKeyTurnPage,
         );
-        return await repository.saveReaderConfig(config: updatedConfig);
+        return repository.saveReaderConfig(config: updatedConfig);
       },
     );
   }
@@ -151,15 +151,15 @@ class ToggleKeepScreenOn extends UseCase<void, NoParams> {
 
   @override
   ResultFuture<void> call(NoParams params) async {
-    final configResult = await repository.getReaderConfig();
+    final Either<AppError, ReaderConfig> configResult = await repository.getReaderConfig();
     
     return configResult.fold(
-      (failure) => throw failure,
-      (config) async {
-        final updatedConfig = config.copyWith(
+      (AppError failure) => throw failure,
+      (ReaderConfig config) async {
+        final ReaderConfig updatedConfig = config.copyWith(
           keepScreenOn: !config.keepScreenOn,
         );
-        return await repository.saveReaderConfig(config: updatedConfig);
+        return repository.saveReaderConfig(config: updatedConfig);
       },
     );
   }
@@ -173,15 +173,15 @@ class ToggleFullScreenMode extends UseCase<void, NoParams> {
 
   @override
   ResultFuture<void> call(NoParams params) async {
-    final configResult = await repository.getReaderConfig();
+    final Either<AppError, ReaderConfig> configResult = await repository.getReaderConfig();
     
     return configResult.fold(
-      (failure) => throw failure,
-      (config) async {
-        final updatedConfig = config.copyWith(
+      (AppError failure) => throw failure,
+      (ReaderConfig config) async {
+        final ReaderConfig updatedConfig = config.copyWith(
           fullScreenMode: !config.fullScreenMode,
         );
-        return await repository.saveReaderConfig(config: updatedConfig);
+        return repository.saveReaderConfig(config: updatedConfig);
       },
     );
   }

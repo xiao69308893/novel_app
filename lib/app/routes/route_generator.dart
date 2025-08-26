@@ -28,7 +28,7 @@ class RouteGenerator {
   RouteGenerator._();
   
   static Route<dynamic> generateRoute(RouteSettings settings) {
-    final args = settings.arguments as Map<String, dynamic>?;
+    final Map<String, dynamic>? args = settings.arguments as Map<String, dynamic>?;
     
     Logger.info('生成路由: ${settings.name}, 参数: $args');
     
@@ -40,7 +40,7 @@ class RouteGenerator {
       case AppRoutes.home:
         return _buildRoute(
           BlocProvider(
-            create: (context) => _createHomeCubit(),
+            create: (BuildContext context) => _createHomeCubit(),
             child: const HomePage(),
           ),
           settings,
@@ -77,7 +77,7 @@ class RouteGenerator {
       case AppRoutes.bookshelf:
         return _buildRoute(
           BlocProvider(
-            create: (context) => GetIt.instance<BookshelfBloc>(),
+            create: (BuildContext context) => GetIt.instance<BookshelfBloc>(),
             child: const BookshelfPage(),
           ),
           settings,
@@ -253,17 +253,12 @@ class RouteGenerator {
   }
   
   // 构建普通路由
-  static Route<dynamic> _buildRoute(Widget page, RouteSettings settings) {
-    return PageRouteBuilder(
+  static Route<dynamic> _buildRoute(Widget page, RouteSettings settings) => PageRouteBuilder(
       settings: settings,
-      pageBuilder: (context, animation, secondaryAnimation) => page,
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        return _buildTransition(animation, child, settings.name);
-      },
-      transitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) => page,
+      transitionsBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) => _buildTransition(animation, child, settings.name),
       reverseTransitionDuration: const Duration(milliseconds: 250),
     );
-  }
   
   // 构建页面切换动画
   static Widget _buildTransition(
@@ -325,7 +320,7 @@ class RouteGenerator {
     
     return MaterialPageRoute(
       settings: settings,
-      builder: (context) => Scaffold(
+      builder: (BuildContext context) => Scaffold(
         appBar: AppBar(
           title: const Text('页面未找到'),
         ),
@@ -362,20 +357,20 @@ class RouteGenerator {
   // 创建 HomeCubit 实例
   static HomeCubit _createHomeCubit() {
     // 创建依赖项
-    final apiClient = ApiClient.instance;
-    final remoteDataSource = HomeRemoteDataSourceImpl(apiClient: apiClient);
-    final localDataSource = HomeLocalDataSourceImpl();
-    final networkInfo = NetworkInfoImpl(connectivity: Connectivity());
+    final ApiClient apiClient = ApiClient.instance;
+    final HomeRemoteDataSourceImpl remoteDataSource = HomeRemoteDataSourceImpl(apiClient: apiClient);
+    final HomeLocalDataSourceImpl localDataSource = HomeLocalDataSourceImpl();
+    final NetworkInfoImpl networkInfo = NetworkInfoImpl(connectivity: Connectivity());
     
     // 创建仓储
-    final repository = HomeRepositoryImpl(
+    final HomeRepositoryImpl repository = HomeRepositoryImpl(
       remoteDataSource: remoteDataSource,
       localDataSource: localDataSource,
       networkInfo: networkInfo,
     );
     
     // 创建用例
-    final getHomeDataUseCase = GetHomeDataUseCase(repository);
+    final GetHomeDataUseCase getHomeDataUseCase = GetHomeDataUseCase(repository);
     
     // 创建并返回 HomeCubit
     return HomeCubit(getHomeDataUseCase: getHomeDataUseCase);

@@ -3,6 +3,16 @@ import 'package:flutter/material.dart';
 import '../../../../app/themes/app_theme.dart';
 
 class AuthButton extends StatelessWidget {
+
+  const AuthButton({
+    required this.text, super.key,
+    this.onPressed,
+    this.isLoading = false,
+    this.color,
+    this.textColor,
+    this.width,
+    this.height = 48,
+  });
   final String text;
   final VoidCallback? onPressed;
   final bool isLoading;
@@ -11,20 +21,9 @@ class AuthButton extends StatelessWidget {
   final double? width;
   final double height;
 
-  const AuthButton({
-    Key? key,
-    required this.text,
-    this.onPressed,
-    this.isLoading = false,
-    this.color,
-    this.textColor,
-    this.width,
-    this.height = 48,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     
     return SizedBox(
       width: width ?? double.infinity,

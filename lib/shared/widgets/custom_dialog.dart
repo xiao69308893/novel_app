@@ -13,6 +13,22 @@ enum DialogType {
 
 /// 通用对话框
 class CustomDialog extends StatelessWidget {
+
+  const CustomDialog({
+    super.key,
+    this.type = DialogType.info,
+    this.title,
+    this.content,
+    this.contentWidget,
+    this.confirmText,
+    this.cancelText,
+    this.onConfirm,
+    this.onCancel,
+    this.showCancelButton = true,
+    this.barrierDismissible = true,
+    this.icon,
+    this.actions,
+  });
   /// 对话框类型
   final DialogType type;
   
@@ -49,25 +65,9 @@ class CustomDialog extends StatelessWidget {
   /// 自定义操作按钮
   final List<Widget>? actions;
 
-  const CustomDialog({
-    Key? key,
-    this.type = DialogType.info,
-    this.title,
-    this.content,
-    this.contentWidget,
-    this.confirmText,
-    this.cancelText,
-    this.onConfirm,
-    this.onCancel,
-    this.showCancelButton = true,
-    this.barrierDismissible = true,
-    this.icon,
-    this.actions,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     
     return AlertDialog(
       shape: RoundedRectangleBorder(
@@ -88,11 +88,11 @@ class CustomDialog extends StatelessWidget {
     if (title == null && icon == null) return null;
     
     return Row(
-      children: [
-        if (icon != null) ...[
+      children: <Widget>[
+        if (icon != null) ...<Widget>[
           icon!,
           const SizedBox(width: AppTheme.spacingRegular),
-        ] else if (type != DialogType.custom) ...[
+        ] else if (type != DialogType.custom) ...<Widget>[
           Icon(
             _getTypeIcon(),
             color: _getTypeColor(),
@@ -133,7 +133,7 @@ class CustomDialog extends StatelessWidget {
       return actions;
     }
     
-    final buttons = <Widget>[];
+    final List<Widget> buttons = <Widget>[];
     
     if (showCancelButton) {
       buttons.add(
@@ -198,6 +198,13 @@ class CustomDialog extends StatelessWidget {
 
 /// 加载对话框
 class LoadingDialog extends StatelessWidget {
+
+  const LoadingDialog({
+    super.key,
+    this.message,
+    this.cancellable = false,
+    this.onCancel,
+  });
   /// 加载文本
   final String? message;
   
@@ -207,16 +214,8 @@ class LoadingDialog extends StatelessWidget {
   /// 取消回调
   final VoidCallback? onCancel;
 
-  const LoadingDialog({
-    Key? key,
-    this.message,
-    this.cancellable = false,
-    this.onCancel,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
+  Widget build(BuildContext context) => WillPopScope(
       onWillPop: () async => cancellable,
       child: AlertDialog(
         shape: RoundedRectangleBorder(
@@ -224,9 +223,9 @@ class LoadingDialog extends StatelessWidget {
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: <Widget>[
             const CircularProgressIndicator(),
-            if (message != null) ...[
+            if (message != null) ...<Widget>[
               const SizedBox(height: AppTheme.spacingRegular),
               Text(
                 message!,
@@ -237,7 +236,7 @@ class LoadingDialog extends StatelessWidget {
           ],
         ),
         actions: cancellable
-            ? [
+            ? <Widget>[
                 TextButton(
                   onPressed: onCancel ?? () => Navigator.of(context).pop(),
                   child: const Text('取消'),
@@ -246,11 +245,23 @@ class LoadingDialog extends StatelessWidget {
             : null,
       ),
     );
-  }
 }
 
 /// 输入对话框
 class InputDialog extends StatefulWidget {
+
+  const InputDialog({
+    super.key,
+    this.title,
+    this.hint,
+    this.initialValue,
+    this.confirmText,
+    this.cancelText,
+    this.validator,
+    this.keyboardType,
+    this.maxLines = 1,
+    this.maxLength,
+  });
   /// 标题
   final String? title;
   
@@ -278,26 +289,13 @@ class InputDialog extends StatefulWidget {
   /// 最大长度
   final int? maxLength;
 
-  const InputDialog({
-    Key? key,
-    this.title,
-    this.hint,
-    this.initialValue,
-    this.confirmText,
-    this.cancelText,
-    this.validator,
-    this.keyboardType,
-    this.maxLines = 1,
-    this.maxLength,
-  }) : super(key: key);
-
   @override
   State<InputDialog> createState() => _InputDialogState();
 }
 
 class _InputDialogState extends State<InputDialog> {
   late TextEditingController _controller;
-  final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? _errorText;
 
   @override
@@ -344,7 +342,7 @@ class _InputDialogState extends State<InputDialog> {
           },
         ),
       ),
-      actions: [
+      actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Text(widget.cancelText ?? '取消'),
@@ -359,7 +357,7 @@ class _InputDialogState extends State<InputDialog> {
 
   void _handleConfirm() {
     if (widget.validator != null) {
-      final error = widget.validator!(_controller.text);
+      final String? error = widget.validator!(_controller.text);
       if (error != null) {
         setState(() {
           _errorText = error;
@@ -374,6 +372,17 @@ class _InputDialogState extends State<InputDialog> {
 
 /// 列表选择对话框
 class ListSelectionDialog<T> extends StatefulWidget {
+
+  const ListSelectionDialog({
+    required this.items, required this.titleBuilder, super.key,
+    this.title,
+    this.subtitleBuilder,
+    this.initialValue,
+    this.multiSelect = false,
+    this.initialValues,
+    this.confirmText,
+    this.cancelText,
+  });
   /// 标题
   final String? title;
   
@@ -401,40 +410,26 @@ class ListSelectionDialog<T> extends StatefulWidget {
   /// 取消按钮文本
   final String? cancelText;
 
-  const ListSelectionDialog({
-    Key? key,
-    this.title,
-    required this.items,
-    required this.titleBuilder,
-    this.subtitleBuilder,
-    this.initialValue,
-    this.multiSelect = false,
-    this.initialValues,
-    this.confirmText,
-    this.cancelText,
-  }) : super(key: key);
-
   @override
   State<ListSelectionDialog<T>> createState() => _ListSelectionDialogState<T>();
 }
 
 class _ListSelectionDialogState<T> extends State<ListSelectionDialog<T>> {
   T? _selectedItem;
-  final Set<T> _selectedItems = {};
+  final Set<T> _selectedItems = <T>{};
 
   @override
   void initState() {
     super.initState();
     if (widget.multiSelect) {
-      _selectedItems.addAll(widget.initialValues ?? []);
+      _selectedItems.addAll(widget.initialValues ?? <T>[]);
     } else {
       _selectedItem = widget.initialValue;
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
+  Widget build(BuildContext context) => AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
       ),
@@ -444,13 +439,13 @@ class _ListSelectionDialogState<T> extends State<ListSelectionDialog<T>> {
         child: ListView.builder(
           shrinkWrap: true,
           itemCount: widget.items.length,
-          itemBuilder: (context, index) {
+          itemBuilder: (BuildContext context, int index) {
             final item = widget.items[index];
             return _buildListItem(item);
           },
         ),
       ),
-      actions: [
+      actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Text(widget.cancelText ?? '取消'),
@@ -461,7 +456,6 @@ class _ListSelectionDialogState<T> extends State<ListSelectionDialog<T>> {
         ),
       ],
     );
-  }
 
   Widget _buildListItem(T item) {
     if (widget.multiSelect) {
@@ -471,7 +465,7 @@ class _ListSelectionDialogState<T> extends State<ListSelectionDialog<T>> {
             ? Text(widget.subtitleBuilder!(item) ?? '')
             : null,
         value: _selectedItems.contains(item),
-        onChanged: (selected) {
+        onChanged: (bool? selected) {
           setState(() {
             if (selected == true) {
               _selectedItems.add(item);
@@ -509,6 +503,13 @@ class _ListSelectionDialogState<T> extends State<ListSelectionDialog<T>> {
 
 /// 底部选择对话框
 class BottomSheetDialog extends StatelessWidget {
+
+  const BottomSheetDialog({
+    required this.items, super.key,
+    this.title,
+    this.showCancelButton = true,
+    this.cancelText,
+  });
   /// 标题
   final String? title;
   
@@ -521,17 +522,8 @@ class BottomSheetDialog extends StatelessWidget {
   /// 取消按钮文本
   final String? cancelText;
 
-  const BottomSheetDialog({
-    Key? key,
-    this.title,
-    required this.items,
-    this.showCancelButton = true,
-    this.cancelText,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context) => DecoratedBox(
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(
@@ -540,15 +532,14 @@ class BottomSheetDialog extends StatelessWidget {
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          if (title != null) ...[
+        children: <Widget>[
+          if (title != null) ...<Widget>[
             Container(
               padding: const EdgeInsets.all(AppTheme.spacingRegular),
               decoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
                     color: Colors.grey[300]!,
-                    width: 1,
                   ),
                 ),
               ),
@@ -561,9 +552,9 @@ class BottomSheetDialog extends StatelessWidget {
           ],
           
           // 选项列表
-          ...items.map((item) => _buildItem(context, item)),
+          ...items.map((BottomSheetItem item) => _buildItem(context, item)),
           
-          if (showCancelButton) ...[
+          if (showCancelButton) ...<Widget>[
             const Divider(height: 1),
             ListTile(
               title: Text(
@@ -582,10 +573,8 @@ class BottomSheetDialog extends StatelessWidget {
         ],
       ),
     );
-  }
 
-  Widget _buildItem(BuildContext context, BottomSheetItem item) {
-    return ListTile(
+  Widget _buildItem(BuildContext context, BottomSheetItem item) => ListTile(
       leading: item.icon,
       title: Text(item.title),
       subtitle: item.subtitle != null ? Text(item.subtitle!) : null,
@@ -594,16 +583,10 @@ class BottomSheetDialog extends StatelessWidget {
         item.onTap?.call();
       },
     );
-  }
 }
 
 /// 底部选择对话框选项
 class BottomSheetItem {
-  final String title;
-  final String? subtitle;
-  final Widget? icon;
-  final dynamic value;
-  final VoidCallback? onTap;
 
   const BottomSheetItem({
     required this.title,
@@ -612,6 +595,11 @@ class BottomSheetItem {
     this.value,
     this.onTap,
   });
+  final String title;
+  final String? subtitle;
+  final Widget? icon;
+  final dynamic value;
+  final VoidCallback? onTap;
 }
 
 /// 对话框工具类
@@ -619,33 +607,27 @@ class DialogUtils {
   /// 显示信息对话框
   static Future<bool?> showInfo(
     BuildContext context, {
-    String? title,
-    required String content,
+    required String content, String? title,
     String? confirmText,
     bool showCancelButton = false,
-  }) {
-    return showDialog<bool>(
+  }) => showDialog<bool>(
       context: context,
-      builder: (context) => CustomDialog(
-        type: DialogType.info,
+      builder: (BuildContext context) => CustomDialog(
         title: title ?? '提示',
         content: content,
         confirmText: confirmText,
         showCancelButton: showCancelButton,
       ),
     );
-  }
 
   /// 显示成功对话框
   static Future<bool?> showSuccess(
     BuildContext context, {
-    String? title,
-    required String content,
+    required String content, String? title,
     String? confirmText,
-  }) {
-    return showDialog<bool>(
+  }) => showDialog<bool>(
       context: context,
-      builder: (context) => CustomDialog(
+      builder: (BuildContext context) => CustomDialog(
         type: DialogType.success,
         title: title ?? '成功',
         content: content,
@@ -653,19 +635,16 @@ class DialogUtils {
         showCancelButton: false,
       ),
     );
-  }
 
   /// 显示警告对话框
   static Future<bool?> showWarning(
     BuildContext context, {
-    String? title,
-    required String content,
+    required String content, String? title,
     String? confirmText,
     String? cancelText,
-  }) {
-    return showDialog<bool>(
+  }) => showDialog<bool>(
       context: context,
-      builder: (context) => CustomDialog(
+      builder: (BuildContext context) => CustomDialog(
         type: DialogType.warning,
         title: title ?? '警告',
         content: content,
@@ -673,18 +652,15 @@ class DialogUtils {
         cancelText: cancelText,
       ),
     );
-  }
 
   /// 显示错误对话框
   static Future<bool?> showError(
     BuildContext context, {
-    String? title,
-    required String content,
+    required String content, String? title,
     String? confirmText,
-  }) {
-    return showDialog<bool>(
+  }) => showDialog<bool>(
       context: context,
-      builder: (context) => CustomDialog(
+      builder: (BuildContext context) => CustomDialog(
         type: DialogType.error,
         title: title ?? '错误',
         content: content,
@@ -692,19 +668,16 @@ class DialogUtils {
         showCancelButton: false,
       ),
     );
-  }
 
   /// 显示确认对话框
   static Future<bool?> showConfirm(
     BuildContext context, {
-    String? title,
-    required String content,
+    required String content, String? title,
     String? confirmText,
     String? cancelText,
-  }) {
-    return showDialog<bool>(
+  }) => showDialog<bool>(
       context: context,
-      builder: (context) => CustomDialog(
+      builder: (BuildContext context) => CustomDialog(
         type: DialogType.confirm,
         title: title ?? '确认',
         content: content,
@@ -712,7 +685,6 @@ class DialogUtils {
         cancelText: cancelText,
       ),
     );
-  }
 
   /// 显示输入对话框
   static Future<String?> showInput(
@@ -726,10 +698,9 @@ class DialogUtils {
     TextInputType? keyboardType,
     int? maxLines,
     int? maxLength,
-  }) {
-    return showDialog<String>(
+  }) => showDialog<String>(
       context: context,
-      builder: (context) => InputDialog(
+      builder: (BuildContext context) => InputDialog(
         title: title,
         hint: hint,
         initialValue: initialValue,
@@ -741,22 +712,18 @@ class DialogUtils {
         maxLength: maxLength,
       ),
     );
-  }
 
   /// 显示列表选择对话框
   static Future<T?> showListSelection<T>(
     BuildContext context, {
-    String? title,
-    required List<T> items,
-    required String Function(T item) titleBuilder,
+    required List<T> items, required String Function(T item) titleBuilder, String? title,
     String? Function(T item)? subtitleBuilder,
     T? initialValue,
     String? confirmText,
     String? cancelText,
-  }) {
-    return showDialog<T>(
+  }) => showDialog<T>(
       context: context,
-      builder: (context) => ListSelectionDialog<T>(
+      builder: (BuildContext context) => ListSelectionDialog<T>(
         title: title,
         items: items,
         titleBuilder: titleBuilder,
@@ -766,22 +733,18 @@ class DialogUtils {
         cancelText: cancelText,
       ),
     );
-  }
 
   /// 显示多选对话框
   static Future<List<T>?> showMultiSelection<T>(
     BuildContext context, {
-    String? title,
-    required List<T> items,
-    required String Function(T item) titleBuilder,
+    required List<T> items, required String Function(T item) titleBuilder, String? title,
     String? Function(T item)? subtitleBuilder,
     List<T>? initialValues,
     String? confirmText,
     String? cancelText,
-  }) {
-    return showDialog<List<T>>(
+  }) => showDialog<List<T>>(
       context: context,
-      builder: (context) => ListSelectionDialog<T>(
+      builder: (BuildContext context) => ListSelectionDialog<T>(
         title: title,
         items: items,
         titleBuilder: titleBuilder,
@@ -792,28 +755,24 @@ class DialogUtils {
         cancelText: cancelText,
       ),
     );
-  }
 
   /// 显示底部选择对话框
   static Future<dynamic> showBottomSheet(
     BuildContext context, {
-    String? title,
-    required List<BottomSheetItem> items,
+    required List<BottomSheetItem> items, String? title,
     bool showCancelButton = true,
     String? cancelText,
-  }) {
-    return showModalBottomSheet(
+  }) => showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => BottomSheetDialog(
+      builder: (BuildContext context) => BottomSheetDialog(
         title: title,
         items: items,
         showCancelButton: showCancelButton,
         cancelText: cancelText,
       ),
     );
-  }
 
   /// 显示加载对话框
   static void showLoading(
@@ -825,7 +784,7 @@ class DialogUtils {
     showDialog(
       context: context,
       barrierDismissible: cancellable,
-      builder: (context) => LoadingDialog(
+      builder: (BuildContext context) => LoadingDialog(
         message: message,
         cancellable: cancellable,
         onCancel: onCancel,

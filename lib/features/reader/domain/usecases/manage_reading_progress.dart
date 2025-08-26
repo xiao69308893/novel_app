@@ -10,22 +10,16 @@ class SaveReadingProgress extends UseCase<void, SaveProgressParams> {
   final ReaderRepository repository;
 
   @override
-  ResultFuture<void> call(SaveProgressParams params) async {
-    return await repository.saveReadingProgress(
+  ResultFuture<void> call(SaveProgressParams params) async => repository.saveReadingProgress(
       novelId: params.novelId,
       chapterId: params.chapterId,
       position: params.position,
       progress: params.progress,
     );
-  }
 }
 
 /// 保存进度参数
 class SaveProgressParams extends Equatable {
-  final String novelId;
-  final String chapterId;
-  final int position;
-  final double progress;
 
   const SaveProgressParams({
     required this.novelId,
@@ -33,9 +27,13 @@ class SaveProgressParams extends Equatable {
     required this.position,
     required this.progress,
   });
+  final String novelId;
+  final String chapterId;
+  final int position;
+  final double progress;
 
   @override
-  List<Object> get props => [novelId, chapterId, position, progress];
+  List<Object> get props => <Object>[novelId, chapterId, position, progress];
 }
 
 /// 获取阅读进度用例
@@ -72,7 +70,7 @@ class UpdateReadingTimeParams extends Equatable {
   final int minutes;
 
   @override
-  List<Object> get props => [novelId, minutes];
+  List<Object> get props => <Object>[novelId, minutes];
 }
 
 /// 获取阅读统计用例
@@ -109,7 +107,7 @@ class CacheChapterParams extends Equatable {
   final String chapterId;
 
   @override
-  List<Object> get props => [novelId, chapterId];
+  List<Object> get props => <Object>[novelId, chapterId];
 }
 
 /// 获取缓存章节列表用例
@@ -134,10 +132,10 @@ class ClearCache extends UseCase<void, ClearCacheParams> {
 
 /// 清理缓存参数
 class ClearCacheParams extends Equatable {
-  final String? novelId;
 
   const ClearCacheParams({this.novelId});
+  final String? novelId;
 
   @override
-  List<Object?> get props => [novelId];
+  List<Object?> get props => <Object?>[novelId];
 }

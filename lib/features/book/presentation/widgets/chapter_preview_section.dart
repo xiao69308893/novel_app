@@ -4,22 +4,21 @@ import '../../../../app/themes/app_theme.dart';
 import '../../../../shared/models/chapter_model.dart';
 
 class ChapterPreviewSection extends StatelessWidget {
+
+  const ChapterPreviewSection({
+    required this.chapters, super.key,
+    this.readingProgress,
+    this.onViewAllChapters,
+    this.onChapterTap,
+  });
   final List<ChapterSimpleModel> chapters;
   final ReadingProgress? readingProgress;
   final VoidCallback? onViewAllChapters;
   final Function(ChapterSimpleModel)? onChapterTap;
 
-  const ChapterPreviewSection({
-    Key? key,
-    required this.chapters,
-    this.readingProgress,
-    this.onViewAllChapters,
-    this.onChapterTap,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     if (chapters.isEmpty) {
       return const SizedBox.shrink();
@@ -30,7 +29,7 @@ class ChapterPreviewSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(AppTheme.radiusRegular),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
@@ -40,13 +39,13 @@ class ChapterPreviewSection extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           // 标题栏
           Padding(
             padding: const EdgeInsets.all(AppTheme.spacingRegular),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+              children: <Widget>[
                 Text(
                   '目录',
                   style: theme.textTheme.titleMedium?.copyWith(
@@ -57,7 +56,7 @@ class ChapterPreviewSection extends StatelessWidget {
                   onTap: onViewAllChapters,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: [
+                    children: <Widget>[
                       Text(
                         '查看全部',
                         style: TextStyle(
@@ -80,8 +79,8 @@ class ChapterPreviewSection extends StatelessWidget {
           const Divider(height: 1),
 
           // 章节列表（显示前几章）
-          ...chapters.take(5).map((chapter) {
-            final isCurrentChapter = readingProgress?.chapterId == chapter.id;
+          ...chapters.take(5).map((ChapterSimpleModel chapter) {
+            final bool isCurrentChapter = readingProgress?.chapterId == chapter.id;
             
             return ListTile(
               title: Text(
@@ -94,7 +93,7 @@ class ChapterPreviewSection extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               subtitle: Row(
-                children: [
+                children: <Widget>[
                   Text(
                     chapter.formattedWordCount,
                     style: theme.textTheme.bodySmall,
@@ -107,7 +106,7 @@ class ChapterPreviewSection extends StatelessWidget {
                       fontSize: AppTheme.fontSizeXSmall,
                     ),
                   ),
-                  if (isCurrentChapter) ...[
+                  if (isCurrentChapter) ...<Widget>[
                     const SizedBox(width: AppTheme.spacingSmall),
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -134,7 +133,7 @@ class ChapterPreviewSection extends StatelessWidget {
                   : null,
               onTap: () => onChapterTap?.call(chapter),
             );
-          }).toList(),
+          }),
 
           if (chapters.length > 5)
             Padding(

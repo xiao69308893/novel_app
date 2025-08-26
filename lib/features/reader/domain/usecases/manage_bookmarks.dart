@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
+import 'package:novel_app/core/errors/app_error.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../../../core/utils/typedef.dart';
 import '../../../../shared/models/chapter_model.dart';
@@ -38,7 +39,7 @@ class AddBookmarkParams extends Equatable {
   final String? content;
 
   @override
-  List<Object?> get props => [novelId, chapterId, position, note, content];
+  List<Object?> get props => <Object?>[novelId, chapterId, position, note, content];
 }
 
 /// 删除书签用例
@@ -75,7 +76,7 @@ class GetBookmarksParams extends Equatable {
   final String? chapterId;
 
   @override
-  List<Object?> get props => [novelId, chapterId];
+  List<Object?> get props => <Object?>[novelId, chapterId];
 }
 
 /// 更新书签用例
@@ -102,7 +103,7 @@ class UpdateBookmarkParams extends Equatable {
   final String? note;
 
   @override
-  List<Object?> get props => [bookmarkId, note];
+  List<Object?> get props => <Object?>[bookmarkId, note];
 }
 
 /// 获取书签详情用例
@@ -127,10 +128,10 @@ class BatchDeleteBookmarks extends UseCase<void, List<String>> {
   @override
   ResultFuture<void> call(List<String> bookmarkIds) async {
     // 批量删除书签
-    for (final bookmarkId in bookmarkIds) {
+    for (final String bookmarkId in bookmarkIds) {
       await repository.deleteBookmark(bookmarkId: bookmarkId);
     }
-    return Future.value(null);
+    return Future.value();
 
   }
 }
@@ -143,20 +144,20 @@ class CheckBookmarkAtPosition extends UseCase<BookmarkModel?, CheckBookmarkParam
 
   @override
   ResultFuture<BookmarkModel?> call(CheckBookmarkParams params) async {
-    final result = await repository.getBookmarks(
+    final Either<AppError, List<BookmarkModel>> result = await repository.getBookmarks(
       novelId: params.novelId,
       chapterId: params.chapterId,
     );
     
     return result.fold(
-      (failure) => Future.value(null),
-      (bookmarks) {
-        for (final bookmark in bookmarks) {
+      (AppError failure) => Future.value(),
+      (List<BookmarkModel> bookmarks) {
+        for (final BookmarkModel bookmark in bookmarks) {
           if (bookmark.position == params.position) {
             return Future.value(Right(bookmark));
           }
         }
-        return Future.value(null);
+        return Future.value();
       },
     );
   }
@@ -164,16 +165,16 @@ class CheckBookmarkAtPosition extends UseCase<BookmarkModel?, CheckBookmarkParam
 
 /// 检查书签参数
 class CheckBookmarkParams extends Equatable {
-  final String novelId;
-  final String chapterId;
-  final int position;
 
   const CheckBookmarkParams({
     required this.novelId,
     required this.chapterId,
     required this.position,
   });
+  final String novelId;
+  final String chapterId;
+  final int position;
 
   @override
-  List<Object> get props => [novelId, chapterId, position];
+  List<Object> get props => <Object>[novelId, chapterId, position];
 }

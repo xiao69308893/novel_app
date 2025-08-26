@@ -31,6 +31,20 @@ enum PageMode {
 /// 阅读器配置实体
 class ReaderConfig extends Equatable {
 
+  const ReaderConfig({
+    this.fontSize = 18.0,
+    this.lineHeight = 1.5,
+    this.pageMargin = const EdgeInsets.all(20.0),
+    this.theme = ReaderTheme.light,
+    this.pageMode = PageMode.slide,
+    this.volumeKeyTurnPage = false,
+    this.keepScreenOn = true,
+    this.showStatusBar = true,
+    this.fullScreenMode = false,
+    this.autoPageInterval = 3,
+    this.fontFamily = 'System',
+  });
+
   /// 从Map创建
   factory ReaderConfig.fromMap(Map<String, dynamic> map) => ReaderConfig(
       fontSize: (map['fontSize'] as num?)?.toDouble() ?? 18.0,
@@ -42,11 +56,11 @@ class ReaderConfig extends Equatable {
         bottom: (map['pageMarginBottom'] as num?)?.toDouble() ?? 20.0,
       ),
       theme: ReaderTheme.values.firstWhere(
-        (theme) => theme.value == map['theme'],
+        (ReaderTheme theme) => theme.value == map['theme'],
         orElse: () => ReaderTheme.light,
       ),
       pageMode: PageMode.values.firstWhere(
-        (mode) => mode.value == map['pageMode'],
+        (PageMode mode) => mode.value == map['pageMode'],
         orElse: () => PageMode.slide,
       ),
       volumeKeyTurnPage: (map['volumeKeyTurnPage'] as bool?) ?? false,
@@ -89,20 +103,6 @@ class ReaderConfig extends Equatable {
   /// 字体名称
   final String fontFamily;
 
-  const ReaderConfig({
-    this.fontSize = 18.0,
-    this.lineHeight = 1.5,
-    this.pageMargin = const EdgeInsets.all(20.0),
-    this.theme = ReaderTheme.light,
-    this.pageMode = PageMode.slide,
-    this.volumeKeyTurnPage = false,
-    this.keepScreenOn = true,
-    this.showStatusBar = true,
-    this.fullScreenMode = false,
-    this.autoPageInterval = 3,
-    this.fontFamily = 'System',
-  });
-
   /// 获取文本样式
   TextStyle get textStyle => TextStyle(
     fontSize: fontSize,
@@ -139,7 +139,7 @@ class ReaderConfig extends Equatable {
     );
 
   /// 转换为Map
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toMap() => <String, dynamic>{
       'fontSize': fontSize,
       'lineHeight': lineHeight,
       'pageMarginLeft': pageMargin.left,
@@ -157,7 +157,7 @@ class ReaderConfig extends Equatable {
     };
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
     fontSize,
     lineHeight,
     pageMargin,

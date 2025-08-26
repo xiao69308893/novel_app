@@ -27,10 +27,10 @@ class Logger {
   
   // 初始化日志系统
   static Future<void> init() async {
-    final instance = Logger.instance;
+    final Logger instance = Logger.instance;
     
     // 创建日志输出器
-    final outputs = <logger.LogOutput>[];
+    final List<logger.LogOutput> outputs = <logger.LogOutput>[];
     
     // 在调试模式下添加控制台输出
     if (kDebugMode) {
@@ -40,8 +40,8 @@ class Logger {
     // 在生产模式下添加文件输出
     if (kReleaseMode) {
       try {
-        final directory = await getApplicationDocumentsDirectory();
-        final logFile = File('${directory.path}/app_logs.txt');
+        final Directory directory = await getApplicationDocumentsDirectory();
+        final File logFile = File('${directory.path}/app_logs.txt');
         outputs.add(FileOutput(file: logFile));
       } catch (e) {
         // 如果无法创建文件输出，则仅使用控制台输出
@@ -77,7 +77,7 @@ class Logger {
   // 调试日志
   static void debug(String tag, dynamic message) {
     if (kDebugMode) {
-      final formattedMessage = '[$tag] $message';
+      final String formattedMessage = '[$tag] $message';
       instance._logger.d(formattedMessage);
       developer.log(
         formattedMessage,
@@ -89,7 +89,7 @@ class Logger {
   
   // 信息日志
   static void info(String message, [String? tag]) {
-    final formattedMessage = tag != null ? '[$tag] $message' : message;
+    final String formattedMessage = tag != null ? '[$tag] $message' : message;
     instance._logger.i(formattedMessage);
     developer.log(
       message,
@@ -145,7 +145,7 @@ class Logger {
     Duration? duration,
   }) {
     if (kDebugMode) {
-      final logMessage = StringBuffer();
+      final StringBuffer logMessage = StringBuffer();
       logMessage.writeln('🌐 网络请求: $method $url');
       
       if (duration != null) {
@@ -161,7 +161,7 @@ class Logger {
       }
       
       if (statusCode != null) {
-        final statusEmoji = _getStatusEmoji(statusCode);
+        final String statusEmoji = _getStatusEmoji(statusCode);
         logMessage.writeln('📊 状态码: $statusEmoji $statusCode');
       }
       
@@ -175,7 +175,7 @@ class Logger {
   
   // 用户行为日志
   static void userAction(String action, [Map<String, dynamic>? parameters]) {
-    final message = parameters != null 
+    final String message = parameters != null 
         ? '👤 用户操作: $action, 参数: ${_formatJson(parameters)}'
         : '👤 用户操作: $action';
     
@@ -184,7 +184,7 @@ class Logger {
   
   // 性能日志
   static void performance(String operation, Duration duration, [Map<String, dynamic>? metadata]) {
-    final message = StringBuffer();
+    final StringBuffer message = StringBuffer();
     message.write('⚡ 性能统计: $operation 耗时 ${duration.inMilliseconds}ms');
     
     if (metadata != null && metadata.isNotEmpty) {
@@ -196,7 +196,7 @@ class Logger {
   
   // 缓存日志
   static void cache(String operation, String key, [String? details]) {
-    final message = details != null 
+    final String message = details != null 
         ? '💾 缓存操作: $operation - $key ($details)'
         : '💾 缓存操作: $operation - $key';
     
@@ -205,7 +205,7 @@ class Logger {
   
   // 数据库日志
   static void database(String operation, String table, [Map<String, dynamic>? data]) {
-    final message = StringBuffer();
+    final StringBuffer message = StringBuffer();
     message.write('🗄️  数据库操作: $operation - $table');
     
     if (data != null && data.isNotEmpty) {
@@ -217,7 +217,7 @@ class Logger {
   
   // 状态变化日志
   static void stateChange(String from, String to, [String? context]) {
-    final message = context != null 
+    final String message = context != null 
         ? '🔄 状态变化: $from -> $to ($context)'
         : '🔄 状态变化: $from -> $to';
     
@@ -242,9 +242,7 @@ class Logger {
   }
   
   // 格式化响应
-  static String _formatResponse(String response) {
-    return response.length > 1000 ? '${response.substring(0, 1000)}...' : response;
-  }
+  static String _formatResponse(String response) => response.length > 1000 ? '${response.substring(0, 1000)}...' : response;
   
   // 获取状态码对应的emoji
   static String _getStatusEmoji(int statusCode) {
@@ -258,15 +256,15 @@ class Logger {
 
 // 自定义日志打印器
 class CustomLogPrinter extends logger.LogPrinter {
-  static final _dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss.SSS');
+  static final DateFormat _dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss.SSS');
   
   @override
   List<String> log(logger.LogEvent event) {
-    final time = _dateFormat.format(DateTime.now());
-    final level = event.level.name.toUpperCase().padRight(7);
+    final String time = _dateFormat.format(DateTime.now());
+    final String level = event.level.name.toUpperCase().padRight(7);
     final message = event.message;
     
-    var output = '[$time] [$level] $message';
+    String output = '[$time] [$level] $message';
     
     if (event.error != null) {
       output += '\n错误: ${event.error}';
@@ -276,16 +274,16 @@ class CustomLogPrinter extends logger.LogPrinter {
       output += '\n堆栈跟踪:\n${event.stackTrace}';
     }
     
-    return [output];
+    return <String>[output];
   }
 }
 
 // 文件输出器
 class FileOutput extends logger.LogOutput {
-  final File file;
-  IOSink? _sink;
   
   FileOutput({required this.file});
+  final File file;
+  IOSink? _sink;
   
   @override
   Future<void> init() async {
@@ -296,7 +294,7 @@ class FileOutput extends logger.LogOutput {
   @override
   void output(logger.OutputEvent event) {
     if (_sink != null) {
-      for (final line in event.lines) {
+      for (final String line in event.lines) {
         _sink!.writeln(line);
       }
       _sink!.flush();
@@ -312,28 +310,28 @@ class FileOutput extends logger.LogOutput {
 
 // 多输出器
 class MultiOutput extends logger.LogOutput {
-  final List<logger.LogOutput> outputs;
   
   MultiOutput(this.outputs);
+  final List<logger.LogOutput> outputs;
   
   @override
   Future<void> init() async {
     super.init();
-    for (final output in outputs) {
+    for (final logger.LogOutput output in outputs) {
       await output.init();
     }
   }
   
   @override
   void output(logger.OutputEvent event) {
-    for (final output in outputs) {
+    for (final logger.LogOutput output in outputs) {
       output.output(event);
     }
   }
   
   @override
   Future<void> destroy() async {
-    for (final output in outputs) {
+    for (final logger.LogOutput output in outputs) {
       await output.destroy();
     }
     super.destroy();

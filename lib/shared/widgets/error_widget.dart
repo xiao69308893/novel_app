@@ -15,43 +15,10 @@ enum ErrorWidgetType {
 
 /// 通用错误组件
 class AppErrorWidget extends StatelessWidget {
-  /// 错误类型
-  final ErrorWidgetType type;
-  
-  /// 错误信息
-  final String message;
-  
-  /// 错误描述
-  final String? description;
-  
-  /// 错误图标
-  final IconData? icon;
-  
-  /// 错误图标大小
-  final double? iconSize;
-  
-  /// 错误图标颜色
-  final Color? iconColor;
-  
-  /// 重试按钮文本
-  final String? retryText;
-  
-  /// 重试回调
-  final VoidCallback? onRetry;
-  
-  /// 是否显示重试按钮
-  final bool showRetryButton;
-  
-  /// 是否紧凑布局
-  final bool compact;
-  
-  /// 自定义操作按钮
-  final List<Widget>? actions;
 
   const AppErrorWidget({
-    Key? key,
+    required this.message, super.key,
     this.type = ErrorWidgetType.simple,
-    required this.message,
     this.description,
     this.icon,
     this.iconSize,
@@ -61,7 +28,7 @@ class AppErrorWidget extends StatelessWidget {
     this.showRetryButton = true,
     this.compact = false,
     this.actions,
-  }) : super(key: key);
+  });
 
   /// 从AppError创建错误组件
   factory AppErrorWidget.fromError(
@@ -114,10 +81,42 @@ class AppErrorWidget extends StatelessWidget {
       compact: compact,
     );
   }
+  /// 错误类型
+  final ErrorWidgetType type;
+  
+  /// 错误信息
+  final String message;
+  
+  /// 错误描述
+  final String? description;
+  
+  /// 错误图标
+  final IconData? icon;
+  
+  /// 错误图标大小
+  final double? iconSize;
+  
+  /// 错误图标颜色
+  final Color? iconColor;
+  
+  /// 重试按钮文本
+  final String? retryText;
+  
+  /// 重试回调
+  final VoidCallback? onRetry;
+  
+  /// 是否显示重试按钮
+  final bool showRetryButton;
+  
+  /// 是否紧凑布局
+  final bool compact;
+  
+  /// 自定义操作按钮
+  final List<Widget>? actions;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     
     if (compact) {
       return _buildCompactError(theme);
@@ -127,13 +126,12 @@ class AppErrorWidget extends StatelessWidget {
   }
 
   /// 构建完整错误显示
-  Widget _buildFullError(ThemeData theme) {
-    return Center(
+  Widget _buildFullError(ThemeData theme) => Center(
       child: Padding(
         padding: const EdgeInsets.all(AppTheme.spacingLarge),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             // 错误图标
             Icon(
               _getErrorIcon(),
@@ -153,7 +151,7 @@ class AppErrorWidget extends StatelessWidget {
             ),
             
             // 错误描述
-            if (description != null) ...[
+            if (description != null) ...<Widget>[
               const SizedBox(height: AppTheme.spacingRegular),
               Text(
                 description!,
@@ -172,14 +170,12 @@ class AppErrorWidget extends StatelessWidget {
         ),
       ),
     );
-  }
 
   /// 构建紧凑错误显示
-  Widget _buildCompactError(ThemeData theme) {
-    return Container(
+  Widget _buildCompactError(ThemeData theme) => Container(
       padding: const EdgeInsets.all(AppTheme.spacingRegular),
       child: Row(
-        children: [
+        children: <Widget>[
           Icon(
             _getErrorIcon(),
             size: iconSize ?? 24,
@@ -190,12 +186,12 @@ class AppErrorWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
-              children: [
+              children: <Widget>[
                 Text(
                   message,
                   style: theme.textTheme.bodyMedium,
                 ),
-                if (description != null) ...[
+                if (description != null) ...<Widget>[
                   const SizedBox(height: AppTheme.spacingXSmall),
                   Text(
                     description!,
@@ -205,7 +201,7 @@ class AppErrorWidget extends StatelessWidget {
               ],
             ),
           ),
-          if (showRetryButton && onRetry != null) ...[
+          if (showRetryButton && onRetry != null) ...<Widget>[
             const SizedBox(width: AppTheme.spacingRegular),
             TextButton(
               onPressed: onRetry,
@@ -215,11 +211,10 @@ class AppErrorWidget extends StatelessWidget {
         ],
       ),
     );
-  }
 
   /// 构建操作按钮
   Widget _buildActions(ThemeData theme) {
-    final buttons = <Widget>[];
+    final List<Widget> buttons = <Widget>[];
     
     if (showRetryButton && onRetry != null) {
       buttons.add(
@@ -287,6 +282,13 @@ class AppErrorWidget extends StatelessWidget {
 
 /// 网络错误组件
 class NetworkErrorWidget extends StatelessWidget {
+
+  const NetworkErrorWidget({
+    super.key,
+    this.message,
+    this.onRetry,
+    this.compact = false,
+  });
   /// 错误信息
   final String? message;
   
@@ -296,27 +298,27 @@ class NetworkErrorWidget extends StatelessWidget {
   /// 是否紧凑布局
   final bool compact;
 
-  const NetworkErrorWidget({
-    Key? key,
-    this.message,
-    this.onRetry,
-    this.compact = false,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return AppErrorWidget(
+  Widget build(BuildContext context) => AppErrorWidget(
       type: ErrorWidgetType.network,
       message: message ?? AppConstants.networkErrorMessage,
       icon: Icons.wifi_off,
       onRetry: onRetry,
       compact: compact,
     );
-  }
 }
 
 /// 空数据组件
 class EmptyDataWidget extends StatelessWidget {
+
+  const EmptyDataWidget({
+    super.key,
+    this.message,
+    this.icon,
+    this.actionText,
+    this.onAction,
+    this.compact = false,
+  });
   /// 空数据信息
   final String? message;
   
@@ -332,18 +334,8 @@ class EmptyDataWidget extends StatelessWidget {
   /// 是否紧凑布局
   final bool compact;
 
-  const EmptyDataWidget({
-    Key? key,
-    this.message,
-    this.icon,
-    this.actionText,
-    this.onAction,
-    this.compact = false,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return AppErrorWidget(
+  Widget build(BuildContext context) => AppErrorWidget(
       type: ErrorWidgetType.empty,
       message: message ?? AppConstants.noDataMessage,
       icon: icon ?? Icons.inbox,
@@ -352,11 +344,18 @@ class EmptyDataWidget extends StatelessWidget {
       showRetryButton: onAction != null,
       compact: compact,
     );
-  }
 }
 
 /// 权限错误组件
 class PermissionErrorWidget extends StatelessWidget {
+
+  const PermissionErrorWidget({
+    super.key,
+    this.permission,
+    this.message,
+    this.onSettings,
+    this.compact = false,
+  });
   /// 权限名称
   final String? permission;
   
@@ -369,17 +368,9 @@ class PermissionErrorWidget extends StatelessWidget {
   /// 是否紧凑布局
   final bool compact;
 
-  const PermissionErrorWidget({
-    Key? key,
-    this.permission,
-    this.message,
-    this.onSettings,
-    this.compact = false,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    final errorMessage = message ?? 
+    final String errorMessage = message ?? 
         (permission != null ? '需要$permission权限' : '权限不足');
     
     return AppErrorWidget(
@@ -396,6 +387,14 @@ class PermissionErrorWidget extends StatelessWidget {
 
 /// 404错误组件
 class NotFoundWidget extends StatelessWidget {
+
+  const NotFoundWidget({
+    super.key,
+    this.resourceType,
+    this.message,
+    this.onBack,
+    this.compact = false,
+  });
   /// 资源类型
   final String? resourceType;
   
@@ -408,17 +407,9 @@ class NotFoundWidget extends StatelessWidget {
   /// 是否紧凑布局
   final bool compact;
 
-  const NotFoundWidget({
-    Key? key,
-    this.resourceType,
-    this.message,
-    this.onBack,
-    this.compact = false,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    final errorMessage = message ?? 
+    final String errorMessage = message ?? 
         (resourceType != null ? '$resourceType不存在' : '请求的资源不存在');
     
     return AppErrorWidget(
@@ -434,6 +425,12 @@ class NotFoundWidget extends StatelessWidget {
 
 /// 错误状态构建器
 class ErrorStateBuilder extends StatelessWidget {
+
+  const ErrorStateBuilder({
+    required this.hasError, required this.contentBuilder, super.key,
+    this.error,
+    this.errorBuilder,
+  });
   /// 是否有错误
   final bool hasError;
   
@@ -445,14 +442,6 @@ class ErrorStateBuilder extends StatelessWidget {
   
   /// 内容组件构建器
   final Widget Function() contentBuilder;
-
-  const ErrorStateBuilder({
-    Key? key,
-    required this.hasError,
-    this.error,
-    this.errorBuilder,
-    required this.contentBuilder,
-  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -466,6 +455,15 @@ class ErrorStateBuilder extends StatelessWidget {
 
 /// 多状态组件（加载、错误、空数据、内容）
 class MultiStateWidget extends StatelessWidget {
+
+  const MultiStateWidget({
+    required this.isLoading, required this.hasError, required this.isEmpty, required this.child, super.key,
+    this.error,
+    this.loadingWidget,
+    this.errorWidget,
+    this.emptyWidget,
+    this.onRetry,
+  });
   /// 是否正在加载
   final bool isLoading;
   
@@ -493,19 +491,6 @@ class MultiStateWidget extends StatelessWidget {
   /// 重试回调
   final VoidCallback? onRetry;
 
-  const MultiStateWidget({
-    Key? key,
-    required this.isLoading,
-    required this.hasError,
-    required this.isEmpty,
-    this.error,
-    this.loadingWidget,
-    this.errorWidget,
-    this.emptyWidget,
-    required this.child,
-    this.onRetry,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
@@ -531,6 +516,12 @@ class MultiStateWidget extends StatelessWidget {
 
 /// 错误边界组件
 class ErrorBoundary extends StatefulWidget {
+
+  const ErrorBoundary({
+    required this.child, super.key,
+    this.errorBuilder,
+    this.onError,
+  });
   /// 子组件
   final Widget child;
   
@@ -539,13 +530,6 @@ class ErrorBoundary extends StatefulWidget {
   
   /// 错误回调
   final void Function(Object error, StackTrace? stackTrace)? onError;
-
-  const ErrorBoundary({
-    Key? key,
-    required this.child,
-    this.errorBuilder,
-    this.onError,
-  }) : super(key: key);
 
   @override
   State<ErrorBoundary> createState() => _ErrorBoundaryState();
@@ -592,13 +576,11 @@ class ErrorWidgetUtils {
     String? message,
     VoidCallback? onRetry,
     bool compact = false,
-  }) {
-    return NetworkErrorWidget(
+  }) => NetworkErrorWidget(
       message: message,
       onRetry: onRetry,
       compact: compact,
     );
-  }
 
   /// 创建空数据组件
   static Widget emptyData({
@@ -607,15 +589,13 @@ class ErrorWidgetUtils {
     String? actionText,
     VoidCallback? onAction,
     bool compact = false,
-  }) {
-    return EmptyDataWidget(
+  }) => EmptyDataWidget(
       message: message,
       icon: icon,
       actionText: actionText,
       onAction: onAction,
       compact: compact,
     );
-  }
 
   /// 创建权限错误组件
   static Widget permissionError({
@@ -623,14 +603,12 @@ class ErrorWidgetUtils {
     String? message,
     VoidCallback? onSettings,
     bool compact = false,
-  }) {
-    return PermissionErrorWidget(
+  }) => PermissionErrorWidget(
       permission: permission,
       message: message,
       onSettings: onSettings,
       compact: compact,
     );
-  }
 
   /// 创建404错误组件
   static Widget notFound({
@@ -638,14 +616,12 @@ class ErrorWidgetUtils {
     String? message,
     VoidCallback? onBack,
     bool compact = false,
-  }) {
-    return NotFoundWidget(
+  }) => NotFoundWidget(
       resourceType: resourceType,
       message: message,
       onBack: onBack,
       compact: compact,
     );
-  }
 
   /// 显示错误对话框
   static void showErrorDialog(
@@ -658,14 +634,14 @@ class ErrorWidgetUtils {
   }) {
     showDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (BuildContext context) => AlertDialog(
         title: Text(title ?? '错误'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             Text(message),
-            if (description != null) ...[
+            if (description != null) ...<Widget>[
               const SizedBox(height: 8),
               Text(
                 description,
@@ -674,7 +650,7 @@ class ErrorWidgetUtils {
             ],
           ],
         ),
-        actions: [
+        actions: <Widget>[
           if (onRetry != null)
             TextButton(
               onPressed: () {

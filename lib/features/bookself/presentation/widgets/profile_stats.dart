@@ -4,16 +4,15 @@ import '../../../../app/themes/app_theme.dart';
 
 /// 个人统计组件
 class ProfileStats extends StatelessWidget {
-  final UserStats stats;
 
   const ProfileStats({
-    Key? key,
-    required this.stats,
-  }) : super(key: key);
+    required this.stats, super.key,
+  });
+  final UserStats stats;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: AppTheme.spacingRegular),
@@ -21,7 +20,7 @@ class ProfileStats extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(AppTheme.radiusRegular),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
@@ -31,7 +30,7 @@ class ProfileStats extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Text(
             '我的统计',
             style: theme.textTheme.titleMedium?.copyWith(
@@ -43,7 +42,7 @@ class ProfileStats extends StatelessWidget {
           
           // 第一行统计
           Row(
-            children: [
+            children: <Widget>[
               Expanded(
                 child: _buildStatItem(
                   icon: Icons.book_outlined,
@@ -67,7 +66,7 @@ class ProfileStats extends StatelessWidget {
           
           // 第二行统计
           Row(
-            children: [
+            children: <Widget>[
               Expanded(
                 child: _buildStatItem(
                   icon: Icons.favorite_outline,
@@ -91,7 +90,7 @@ class ProfileStats extends StatelessWidget {
           
           // 第三行统计
           Row(
-            children: [
+            children: <Widget>[
               Expanded(
                 child: _buildStatItem(
                   icon: Icons.checklist_outlined,
@@ -121,10 +120,10 @@ class ProfileStats extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
             ),
             child: Column(
-              children: [
+              children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
+                  children: <Widget>[
                     Text(
                       '平均阅读时长',
                       style: theme.textTheme.bodySmall,
@@ -140,7 +139,7 @@ class ProfileStats extends StatelessWidget {
                 const SizedBox(height: AppTheme.spacingSmall),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
+                  children: <Widget>[
                     Text(
                       '平均阅读速度',
                       style: theme.textTheme.bodySmall,
@@ -166,9 +165,8 @@ class ProfileStats extends StatelessWidget {
     required String label,
     required String value,
     required Color color,
-  }) {
-    return Column(
-      children: [
+  }) => Column(
+      children: <Widget>[
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
@@ -199,20 +197,19 @@ class ProfileStats extends StatelessWidget {
         ),
       ],
     );
-  }
 
   String _formatReadingTime(int seconds) {
-    final hours = seconds ~/ 3600;
-    final minutes = (seconds % 3600) ~/ 60;
+    final int hours = seconds ~/ 3600;
+    final int minutes = (seconds % 3600) ~/ 60;
     
     if (hours > 24) {
-      final days = hours ~/ 24;
-      final remainingHours = hours % 24;
-      return '${days}天${remainingHours}小时';
+      final int days = hours ~/ 24;
+      final int remainingHours = hours % 24;
+      return '$days天$remainingHours小时';
     } else if (hours > 0) {
-      return '${hours}小时${minutes}分钟';
+      return '$hours小时$minutes分钟';
     } else {
-      return '${minutes}分钟';
+      return '$minutes分钟';
     }
   }
 }

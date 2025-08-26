@@ -4,14 +4,14 @@ import '../../../../core/usecases/usecase.dart';
 import '../repositories/auth_repository.dart';
 
 class LogoutUseCase implements UseCase<bool, NoParams> {
-  final AuthRepository repository;
 
   LogoutUseCase(this.repository);
+  final AuthRepository repository;
 
   @override
   Future<Either<AppError, bool>> call(NoParams params) async {
     // 执行远程登出
-    final result = await repository.logout();
+    final Either<AppError, bool> result = await repository.logout();
     
     // 无论远程登出是否成功，都清除本地数据
     await repository.clearLocalData();

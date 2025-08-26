@@ -11,7 +11,7 @@ import '../widgets/profile_menu.dart';
 
 /// 个人中心页面
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({super.key});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -29,7 +29,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) => Scaffold(
       appBar: CommonAppBar(
         title: '个人中心',
-        actions: [
+        actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.settings_outlined),
             onPressed: () {
@@ -39,7 +39,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
       body: BlocBuilder<BookshelfBloc, BookshelfState>(
-        builder: (context, state) {
+        builder: (BuildContext context, BookshelfState state) {
           if (state is BookshelfLoading) {
             return const LoadingWidget(message: '正在加载个人信息...');
           }
@@ -48,7 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: <Widget>[
                   const Icon(
                     Icons.error_outline,
                     size: 64,
@@ -79,7 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
-                  children: [
+                  children: <Widget>[
                     // 用户信息头部
                     ProfileHeader(user: state.user! as UserModel),
 

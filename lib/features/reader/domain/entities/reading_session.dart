@@ -4,6 +4,18 @@ import '../../../../shared/models/chapter_model.dart';
 /// 阅读会话实体
 class ReadingSession extends Equatable {
 
+  const ReadingSession({
+    required this.id,
+    required this.userId,
+    required this.novelId,
+    required this.currentChapter,
+    required this.pages,
+    required this.startTime, this.currentPage = 0,
+    this.lastUpdateTime,
+    this.isAutoPage = false,
+    this.progressPercent = 0.0,
+  });
+
   /// 从Map创建
   factory ReadingSession.fromMap(Map<String, dynamic> map) => ReadingSession(
       id: (map['id'] as String?) ?? '',
@@ -49,19 +61,6 @@ class ReadingSession extends Equatable {
   /// 阅读进度百分比
   final double progressPercent;
 
-  const ReadingSession({
-    required this.id,
-    required this.userId,
-    required this.novelId,
-    required this.currentChapter,
-    required this.pages,
-    this.currentPage = 0,
-    required this.startTime,
-    this.lastUpdateTime,
-    this.isAutoPage = false,
-    this.progressPercent = 0.0,
-  });
-
   /// 获取当前页内容
   String get currentPageContent {
     if (pages.isEmpty || currentPage < 0 || currentPage >= pages.length) {
@@ -81,7 +80,7 @@ class ReadingSession extends Equatable {
 
   /// 阅读时长（分钟）
   int get readingDurationMinutes {
-    final endTime = lastUpdateTime ?? DateTime.now();
+    final DateTime endTime = lastUpdateTime ?? DateTime.now();
     return endTime.difference(startTime).inMinutes;
   }
 
@@ -157,7 +156,7 @@ class ReadingSession extends Equatable {
     );
 
   /// 转换为Map
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toMap() => <String, dynamic>{
       'id': id,
       'userId': userId,
       'novelId': novelId,
@@ -171,7 +170,7 @@ class ReadingSession extends Equatable {
     };
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
     id,
     userId,
     novelId,

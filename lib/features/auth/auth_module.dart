@@ -30,7 +30,7 @@ class AuthModule {
     );
 
     _getIt.registerLazySingleton<AuthLocalDataSource>(
-      () => AuthLocalDataSourceImpl(),
+      AuthLocalDataSourceImpl.new,
     );
 
     // ===================================

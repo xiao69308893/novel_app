@@ -5,6 +5,15 @@ import '../../../../shared/models/novel_model.dart';
 import 'novel_card.dart';
 
 class NovelGrid extends StatelessWidget {
+
+  const NovelGrid({
+    required this.novels, super.key,
+    this.crossAxisCount = 3,
+    this.childAspectRatio = 0.6,
+    this.shrinkWrap = false,
+    this.physics,
+    this.padding,
+  });
   final List<NovelSimpleModel> novels;
   final int crossAxisCount;
   final double childAspectRatio;
@@ -12,19 +21,8 @@ class NovelGrid extends StatelessWidget {
   final ScrollPhysics? physics;
   final EdgeInsets? padding;
 
-  const NovelGrid({
-    Key? key,
-    required this.novels,
-    this.crossAxisCount = 3,
-    this.childAspectRatio = 0.6,
-    this.shrinkWrap = false,
-    this.physics,
-    this.padding,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return GridView.builder(
+  Widget build(BuildContext context) => GridView.builder(
       shrinkWrap: shrinkWrap,
       physics: physics,
       padding: padding ?? const EdgeInsets.all(AppTheme.spacingRegular),
@@ -35,21 +33,17 @@ class NovelGrid extends StatelessWidget {
         mainAxisSpacing: AppTheme.spacingRegular,
       ),
       itemCount: novels.length,
-      itemBuilder: (context, index) {
-        return NovelCard(
+      itemBuilder: (BuildContext context, int index) => NovelCard(
           novel: novels[index],
-          showAuthor: true,
           onTap: () => _handleNovelTap(context, novels[index]),
-        );
-      },
+        ),
     );
-  }
 
   void _handleNovelTap(BuildContext context, NovelSimpleModel novel) {
     Navigator.pushNamed(
       context,
       '/novel/detail',
-      arguments: {'novelId': novel.id},
+      arguments: <String, String>{'novelId': novel.id},
     );
   }
 }

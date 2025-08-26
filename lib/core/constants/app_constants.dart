@@ -60,14 +60,14 @@ class AppConstants {
   static const int maxImageHeight = 1200; // 最大图片高度
   
   // 文件配置
-  static const List<String> supportedImageFormats = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-  static const List<String> supportedDocumentFormats = ['txt', 'epub', 'pdf'];
+  static const List<String> supportedImageFormats = <String>['jpg', 'jpeg', 'png', 'gif', 'webp'];
+  static const List<String> supportedDocumentFormats = <String>['txt', 'epub', 'pdf'];
   static const int maxFileSize = 50; // MB
   
   // 推送配置
   static const String fcmSenderId = '123456789';
   static const String firebaseAppId = 'your-firebase-app-id';
-  static const List<String> pushTopics = ['all', 'updates', 'recommendations'];
+  static const List<String> pushTopics = <String>['all', 'updates', 'recommendations'];
   
   // 广告配置（可选）
   static const String adMobAppId = 'ca-app-pub-xxxxxxxxxxxxxxxx~xxxxxxxxxx';
@@ -76,7 +76,7 @@ class AppConstants {
   static const String rewardedAdUnitId = 'ca-app-pub-xxxxxxxxxxxxxxxx/xxxxxxxxxx';
   
   // 社交分享配置
-  static const Map<String, String> socialPlatforms = {
+  static const Map<String, String> socialPlatforms = <String, String>{
     'weixin': 'WeChat',
     'weibo': 'Weibo',
     'qq': 'QQ',
@@ -139,7 +139,7 @@ class AppConstants {
   static const String resetSettingsConfirmMessage = '确定要重置设置吗？';
   
   // 小说分类
-  static const List<String> novelCategories = [
+  static const List<String> novelCategories = <String>[
     '都市言情',
     '古代言情',
     '玄幻奇幻',
@@ -153,7 +153,7 @@ class AppConstants {
   ];
   
   // 小说标签
-  static const List<String> novelTags = [
+  static const List<String> novelTags = <String>[
     '完结',
     '连载',
     '热门',
@@ -167,7 +167,7 @@ class AppConstants {
   ];
   
   // 排序方式
-  static const Map<String, String> sortOptions = {
+  static const Map<String, String> sortOptions = <String, String>{
     'update_time': '最近更新',
     'create_time': '最新发布',
     'popularity': '人气最高',
@@ -177,7 +177,7 @@ class AppConstants {
   };
   
   // 阅读统计
-  static const Map<String, String> readingStats = {
+  static const Map<String, String> readingStats = <String, String>{
     'total_time': '总阅读时长',
     'books_read': '已读书籍',
     'chapters_read': '已读章节',

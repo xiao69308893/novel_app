@@ -6,16 +6,12 @@ class CommentModel extends Comment {
   const CommentModel({
     required super.id,
     required super.targetId,
-    super.type,
-    required super.author,
-    required super.content,
+    required super.author, required super.content, required super.createdAt, required super.updatedAt, super.type,
     super.likeCount,
     super.replyCount,
     super.isLiked,
     super.isPinned,
     super.parentId,
-    required super.createdAt,
-    required super.updatedAt,
     super.replies,
   });
 
@@ -35,10 +31,10 @@ class CommentModel extends Comment {
       replies: (json['replies'] as List?)
           ?.map((reply) => CommentModel.fromJson(reply as Map<String, dynamic>))
           .cast<Comment>()
-          .toList() ?? [],
+          .toList() ?? <Comment>[],
     );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'id': id,
       'target_id': targetId,
       'type': type.value,
@@ -51,7 +47,7 @@ class CommentModel extends Comment {
       'parent_id': parentId,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
-      'replies': replies.map((reply) {
+      'replies': replies.map((Comment reply) {
         if (reply is CommentModel) {
           return reply.toJson();
         } else {

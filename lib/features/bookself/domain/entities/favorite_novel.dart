@@ -3,6 +3,28 @@ import '../../../../shared/models/novel_model.dart';
 
 /// 收藏小说实体
 class FavoriteNovel extends Equatable {
+
+  const FavoriteNovel({
+    required this.id,
+    required this.userId,
+    required this.novel,
+    required this.createdAt,
+    this.lastReadAt,
+    this.isFinished = false,
+    this.readChapters = 0,
+  });
+
+  factory FavoriteNovel.fromJson(Map<String, dynamic> json) => FavoriteNovel(
+      id: json['id'] as String,
+      userId: json['user_id'] as String,
+      novel: NovelSimpleModel.fromJson(json['novel'] as Map<String, dynamic>),
+      createdAt: DateTime.parse(json['created_at'] as String),
+      lastReadAt: json['last_read_at'] != null
+          ? DateTime.parse(json['last_read_at'] as String)
+          : null,
+      isFinished: json['is_finished'] as bool? ?? false,
+      readChapters: json['read_chapters'] as int? ?? 0,
+    );
   /// 收藏ID
   final String id;
   
@@ -24,32 +46,7 @@ class FavoriteNovel extends Equatable {
   /// 阅读进度（章节数）
   final int readChapters;
 
-  const FavoriteNovel({
-    required this.id,
-    required this.userId,
-    required this.novel,
-    required this.createdAt,
-    this.lastReadAt,
-    this.isFinished = false,
-    this.readChapters = 0,
-  });
-
-  factory FavoriteNovel.fromJson(Map<String, dynamic> json) {
-    return FavoriteNovel(
-      id: json['id'] as String,
-      userId: json['user_id'] as String,
-      novel: NovelSimpleModel.fromJson(json['novel'] as Map<String, dynamic>),
-      createdAt: DateTime.parse(json['created_at'] as String),
-      lastReadAt: json['last_read_at'] != null
-          ? DateTime.parse(json['last_read_at'] as String)
-          : null,
-      isFinished: json['is_finished'] as bool? ?? false,
-      readChapters: json['read_chapters'] as int? ?? 0,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'id': id,
       'user_id': userId,
       'novel': novel.toJson(),
@@ -58,7 +55,6 @@ class FavoriteNovel extends Equatable {
       'is_finished': isFinished,
       'read_chapters': readChapters,
     };
-  }
 
   /// 阅读进度百分比
   double get progressPercent {
@@ -67,12 +63,10 @@ class FavoriteNovel extends Equatable {
   }
 
   /// 进度显示文本
-  String get progressText {
-    return '$readChapters/${novel.chapterCount}章';
-  }
+  String get progressText => '$readChapters/${novel.chapterCount}章';
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         id,
         userId,
         novel,

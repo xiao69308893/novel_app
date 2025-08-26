@@ -5,18 +5,16 @@ import '../../domain/entities/reading_session.dart';
 
 /// 阅读器内容组件
 class ReaderContent extends StatefulWidget {
+
+  const ReaderContent({
+    required this.session, required this.config, super.key,
+    this.onTap,
+    this.onPageTurn,
+  });
   final ReadingSession session;
   final ReaderConfig config;
   final VoidCallback? onTap;
   final ValueChanged<bool>? onPageTurn;
-
-  const ReaderContent({
-    Key? key,
-    required this.session,
-    required this.config,
-    this.onTap,
-    this.onPageTurn,
-  }) : super(key: key);
 
   @override
   State<ReaderContent> createState() => _ReaderContentState();
@@ -74,17 +72,15 @@ class _ReaderContentState extends State<ReaderContent>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
+  Widget build(BuildContext context) => GestureDetector(
       onTap: widget.onTap,
-      child: Container(
+      child: ColoredBox(
         color: widget.config.theme.backgroundColor,
         child: SafeArea(
           child: _buildPageContent(),
         ),
       ),
     );
-  }
 
   Widget _buildPageContent() {
     switch (widget.config.pageMode) {
@@ -99,48 +95,37 @@ class _ReaderContentState extends State<ReaderContent>
     }
   }
 
-  Widget _buildSlidePageView() {
-    return PageView.builder(
+  Widget _buildSlidePageView() => PageView.builder(
       controller: _pageController,
       itemCount: widget.session.pages.length,
-      onPageChanged: (page) {
+      onPageChanged: (int page) {
         // 这里应该通知BLoC更新当前页
       },
-      itemBuilder: (context, index) {
-        return _buildPageText(widget.session.pages[index]);
-      },
+      itemBuilder: (BuildContext context, int index) => _buildPageText(widget.session.pages[index]),
     );
-  }
 
   Widget _buildCurlPageView() {
     // 仿真翻页效果，这里简化为滑动效果
     return _buildSlidePageView();
   }
 
-  Widget _buildFadePageView() {
-    return AnimatedBuilder(
+  Widget _buildFadePageView() => AnimatedBuilder(
       animation: _animation,
-      builder: (context, child) {
-        return FadeTransition(
+      builder: (BuildContext context, Widget? child) => FadeTransition(
           opacity: _animation,
           child: _buildPageText(widget.session.currentPageContent),
-        );
-      },
+        ),
     );
-  }
 
-  Widget _buildScrollView() {
-    return SingleChildScrollView(
+  Widget _buildScrollView() => SingleChildScrollView(
       child: _buildPageText(widget.session.pages.join('\n')),
     );
-  }
 
-  Widget _buildPageText(String content) {
-    return Container(
+  Widget _buildPageText(String content) => Container(
       padding: widget.config.pageMargin,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           // 章节标题
           if (widget.session.currentPage == 0)
             Padding(
@@ -169,7 +154,7 @@ class _ReaderContentState extends State<ReaderContent>
               padding: const EdgeInsets.only(top: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: <Widget>[
                   Text(
                     '${widget.session.currentPage + 1}/${widget.session.pages.length}',
                     style: TextStyle(
@@ -190,5 +175,4 @@ class _ReaderContentState extends State<ReaderContent>
         ],
       ),
     );
-  }
 }

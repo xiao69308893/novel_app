@@ -1,14 +1,15 @@
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
+import 'package:novel_app/features/auth/domain/entities/auth_user.dart';
 import '../../../../core/errors/app_error.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../entities/auth_token.dart';
 import '../repositories/auth_repository.dart';
 
 class LoginUseCase implements UseCase<AuthToken, LoginParams> {
-  final AuthRepository repository;
 
   LoginUseCase(this.repository);
+  final AuthRepository repository;
 
   @override
   Future<Either<AppError, AuthToken>> call(LoginParams params) async {
@@ -21,22 +22,22 @@ class LoginUseCase implements UseCase<AuthToken, LoginParams> {
     }
 
     // 执行登录
-    final result = await repository.loginWithPassword(
+    final Either<AppError, AuthToken> result = await repository.loginWithPassword(
       username: params.username,
       password: params.password,
     );
 
     return result.fold(
-      (error) => Left(error),
-      (token) async {
+      Left.new,
+      (AuthToken token) async {
         // 保存令牌到本地
         await repository.saveLocalToken(token);
         
         // 获取并保存用户信息
-        final userResult = await repository.getCurrentUser();
+        final Either<AppError, AuthUser> userResult = await repository.getCurrentUser();
         userResult.fold(
-          (error) => null, // 用户信息获取失败不影响登录
-          (user) => repository.saveLocalUser(user),
+          (AppError error) => null, // 用户信息获取失败不影响登录
+          repository.saveLocalUser,
         );
         
         return Right(token);
@@ -46,14 +47,14 @@ class LoginUseCase implements UseCase<AuthToken, LoginParams> {
 }
 
 class LoginParams extends Equatable {
-  final String username;
-  final String password;
 
   const LoginParams({
     required this.username,
     required this.password,
   });
+  final String username;
+  final String password;
 
   @override
-  List<Object> get props => [username, password];
+  List<Object> get props => <Object>[username, password];
 }

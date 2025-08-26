@@ -7,9 +7,9 @@ import '../../../../shared/models/novel_model.dart';
 import '../repositories/home_repository.dart';
 
 class SearchNovelsUseCase implements UseCase<List<NovelSimpleModel>, SearchNovelsParams> {
-  final HomeRepository repository;
 
   SearchNovelsUseCase(this.repository);
+  final HomeRepository repository;
 
   @override
   Future<Either<AppError, List<NovelSimpleModel>>> call(SearchNovelsParams params) async {
@@ -24,7 +24,7 @@ class SearchNovelsUseCase implements UseCase<List<NovelSimpleModel>, SearchNovel
     }
 
     // 执行搜索
-    return await repository.searchNovels(
+    return repository.searchNovels(
       keyword: params.keyword.trim(),
       categoryId: params.categoryId,
       status: params.status,
@@ -36,13 +36,6 @@ class SearchNovelsUseCase implements UseCase<List<NovelSimpleModel>, SearchNovel
 }
 
 class SearchNovelsParams extends Equatable {
-  final String keyword;
-  final String? categoryId;
-  final String? status;
-  final String? sortBy;
-  final int page;
-  final int limit;
-  final bool recordHistory;
 
   const SearchNovelsParams({
     required this.keyword,
@@ -53,9 +46,16 @@ class SearchNovelsParams extends Equatable {
     this.limit = 20,
     this.recordHistory = true,
   });
+  final String keyword;
+  final String? categoryId;
+  final String? status;
+  final String? sortBy;
+  final int page;
+  final int limit;
+  final bool recordHistory;
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
     keyword, categoryId, status, sortBy, 
     page, limit, recordHistory
   ];

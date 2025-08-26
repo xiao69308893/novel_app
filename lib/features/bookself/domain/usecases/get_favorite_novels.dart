@@ -6,12 +6,10 @@ import '../repositories/bookshelf_repository.dart';
 
 /// 获取收藏小说用例
 class GetFavoriteNovels implements UseCase<List<FavoriteNovel>, NoParams> {
-  final BookshelfRepository repository;
 
   GetFavoriteNovels(this.repository);
+  final BookshelfRepository repository;
 
   @override
-  Future<Either<AppError, List<FavoriteNovel>>> call(NoParams params) async {
-    return await repository.getFavoriteNovels();
-  }
+  Future<Either<AppError, List<FavoriteNovel>>> call(NoParams params) async => repository.getFavoriteNovels();
 }

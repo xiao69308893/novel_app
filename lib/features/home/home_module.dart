@@ -30,7 +30,7 @@ class HomeModule {
     );
 
     _getIt.registerLazySingleton<HomeLocalDataSource>(
-      () => HomeLocalDataSourceImpl(),
+      HomeLocalDataSourceImpl.new,
     );
 
     // ===================================

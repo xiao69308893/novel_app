@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:novel_app/shared/models/novel_model.dart';
 import '../../../../app/themes/app_theme.dart';
 import '../../../../shared/widgets/common_app_bar.dart';
 import '../../../../shared/widgets/loading_widget.dart';
@@ -10,12 +11,12 @@ import '../widgets/book_search_item.dart';
 
 /// 图书搜索页面
 class BookSearchPage extends StatefulWidget {
-  final String? initialKeyword;
 
   const BookSearchPage({
-    Key? key,
+    super.key,
     this.initialKeyword,
-  }) : super(key: key);
+  });
+  final String? initialKeyword;
 
   @override
   State<BookSearchPage> createState() => _BookSearchPageState();
@@ -42,7 +43,7 @@ class _BookSearchPageState extends State<BookSearchPage> {
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent * 0.8) {
-      final state = context.read<SearchCubit>().state;
+      final SearchState state = context.read<SearchCubit>().state;
       if (state is SearchLoaded && state.hasMore) {
         context.read<SearchCubit>().searchNovels(
           keyword: state.keyword,
@@ -53,7 +54,7 @@ class _BookSearchPageState extends State<BookSearchPage> {
   }
 
   void _onSearch() {
-    final keyword = _searchController.text.trim();
+    final String keyword = _searchController.text.trim();
     if (keyword.isNotEmpty) {
       context.read<SearchCubit>().searchNovels(keyword: keyword);
     }
@@ -67,20 +68,18 @@ class _BookSearchPageState extends State<BookSearchPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CommonAppBar(
+  Widget build(BuildContext context) => Scaffold(
+      appBar: const CommonAppBar(
         title: '搜索图书',
-        showBackButton: true,
       ),
       body: Column(
-        children: [
+        children: <Widget>[
           // 搜索框
           Container(
             padding: const EdgeInsets.all(AppTheme.spacingRegular),
             decoration: BoxDecoration(
               color: Colors.white,
-              boxShadow: [
+              boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 4,
@@ -89,7 +88,7 @@ class _BookSearchPageState extends State<BookSearchPage> {
               ],
             ),
             child: Row(
-              children: [
+              children: <Widget>[
                 Expanded(
                   child: TextField(
                     controller: _searchController,
@@ -126,7 +125,7 @@ class _BookSearchPageState extends State<BookSearchPage> {
           // 搜索结果
           Expanded(
             child: BlocBuilder<SearchCubit, SearchState>(
-              builder: (context, state) {
+              builder: (BuildContext context, SearchState state) {
                 if (state is SearchInitial) {
                   return const EmptyWidget(
                     icon: Icons.search,
@@ -141,7 +140,7 @@ class _BookSearchPageState extends State<BookSearchPage> {
                 if (state is SearchError) {
                   return AppErrorWidget(
                     message: state.message,
-                    onRetry: () => _onSearch(),
+                    onRetry: _onSearch,
                   );
                 }
                 
@@ -159,7 +158,7 @@ class _BookSearchPageState extends State<BookSearchPage> {
                       controller: _scrollController,
                       padding: const EdgeInsets.all(AppTheme.spacingRegular),
                       itemCount: state.novels.length + (state.hasMore ? 1 : 0),
-                      itemBuilder: (context, index) {
+                      itemBuilder: (BuildContext context, int index) {
                         if (index >= state.novels.length) {
                           return const Padding(
                             padding: EdgeInsets.all(AppTheme.spacingRegular),
@@ -167,7 +166,7 @@ class _BookSearchPageState extends State<BookSearchPage> {
                           );
                         }
                         
-                        final novel = state.novels[index];
+                        final NovelSimpleModel novel = state.novels[index];
                         return BookSearchItem(
                           novel: novel,
                           keyword: state.keyword,
@@ -175,7 +174,7 @@ class _BookSearchPageState extends State<BookSearchPage> {
                             Navigator.pushNamed(
                               context,
                               '/book/detail',
-                              arguments: {'bookId': novel.id},
+                              arguments: <String, String>{'bookId': novel.id},
                             );
                           },
                         );
@@ -191,5 +190,4 @@ class _BookSearchPageState extends State<BookSearchPage> {
         ],
       ),
     );
-  }
 }

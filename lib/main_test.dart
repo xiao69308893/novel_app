@@ -17,11 +17,10 @@ void main() async {
 }
 
 class TestApp extends StatelessWidget {
-  const TestApp({Key? key}) : super(key: key);
+  const TestApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context) => MaterialApp(
       title: '小说阅读器测试',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -30,15 +29,13 @@ class TestApp extends StatelessWidget {
       ),
       home: const TestHomePage(),
     );
-  }
 }
 
 class TestHomePage extends StatelessWidget {
-  const TestHomePage({Key? key}) : super(key: key);
+  const TestHomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
         title: const Text('小说阅读器'),
         backgroundColor: Colors.blue,
@@ -46,7 +43,7 @@ class TestHomePage extends StatelessWidget {
       body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             Icon(
               Icons.book,
               size: 100,
@@ -72,5 +69,4 @@ class TestHomePage extends StatelessWidget {
         ),
       ),
     );
-  }
 }

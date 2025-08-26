@@ -61,7 +61,7 @@ class AppTheme {
   static const double radiusCircular = 50.0;
   
   // 阴影
-  static List<BoxShadow> get shadowSmall => [
+  static List<BoxShadow> get shadowSmall => <BoxShadow>[
         BoxShadow(
           color: Colors.black.withValues(alpha: 0.1),
           blurRadius: 2,
@@ -69,7 +69,7 @@ class AppTheme {
         ),
       ];
       
-  static List<BoxShadow> get shadowMedium => [
+  static List<BoxShadow> get shadowMedium => <BoxShadow>[
         BoxShadow(
           color: Colors.black.withValues(alpha: 0.15),
           blurRadius: 4,
@@ -77,7 +77,7 @@ class AppTheme {
         ),
       ];
       
-  static List<BoxShadow> get shadowLarge => [
+  static List<BoxShadow> get shadowLarge => <BoxShadow>[
         BoxShadow(
           color: Colors.black.withValues(alpha: 0.2),
           blurRadius: 8,
@@ -146,9 +146,7 @@ enum ReaderTheme {
   }
   
   // 获取对应的导航栏样式
-  Color get navigationBarColor {
-    return backgroundColor;
-  }
+  Color get navigationBarColor => backgroundColor;
 }
 
 // 翻页模式枚举

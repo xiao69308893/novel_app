@@ -2,6 +2,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:dartz/dartz.dart';
+import 'package:novel_app/core/errors/app_error.dart';
 import '../../../../shared/models/novel_model.dart';
 import '../../domain/usecases/search_novels_usecase.dart';
 import '../../domain/repositories/home_repository.dart';
@@ -11,7 +12,7 @@ abstract class SearchState extends Equatable {
   const SearchState();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class SearchInitial extends SearchState {}
@@ -19,10 +20,6 @@ class SearchInitial extends SearchState {}
 class SearchLoading extends SearchState {}
 
 class SearchLoaded extends SearchState {
-  final List<NovelSimpleModel> novels;
-  final String keyword;
-  final bool hasMore;
-  final int currentPage;
 
   const SearchLoaded({
     required this.novels,
@@ -30,44 +27,48 @@ class SearchLoaded extends SearchState {
     this.hasMore = true,
     this.currentPage = 1,
   });
+  final List<NovelSimpleModel> novels;
+  final String keyword;
+  final bool hasMore;
+  final int currentPage;
 
   @override
-  List<Object> get props => [novels, keyword, hasMore, currentPage];
+  List<Object> get props => <Object>[novels, keyword, hasMore, currentPage];
 }
 
 class SearchError extends SearchState {
-  final String message;
 
   const SearchError(this.message);
+  final String message;
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 class SearchSuggestions extends SearchState {
+
+  const SearchSuggestions({
+    this.suggestions = const <String>[],
+    this.hotKeywords = const <String>[],
+    this.history = const <String>[],
+  });
   final List<String> suggestions;
   final List<String> hotKeywords;
   final List<String> history;
 
-  const SearchSuggestions({
-    this.suggestions = const [],
-    this.hotKeywords = const [],
-    this.history = const [],
-  });
-
   @override
-  List<Object> get props => [suggestions, hotKeywords, history];
+  List<Object> get props => <Object>[suggestions, hotKeywords, history];
 }
 
 // 搜索Cubit
 class SearchCubit extends Cubit<SearchState> {
-  final SearchNovelsUseCase searchNovelsUseCase;
-  final HomeRepository homeRepository;
 
   SearchCubit({
     required this.searchNovelsUseCase,
     required this.homeRepository,
   }) : super(SearchInitial());
+  final SearchNovelsUseCase searchNovelsUseCase;
+  final HomeRepository homeRepository;
 
   /// 搜索小说
   Future<void> searchNovels({
@@ -86,12 +87,12 @@ class SearchCubit extends Cubit<SearchState> {
       emit(SearchLoading());
     }
 
-    final currentState = state;
-    final page = loadMore && currentState is SearchLoaded 
+    final SearchState currentState = state;
+    final int page = loadMore && currentState is SearchLoaded 
         ? currentState.currentPage + 1 
         : 1;
 
-    final result = await searchNovelsUseCase(
+    final Either<AppError, List<NovelSimpleModel>> result = await searchNovelsUseCase(
       SearchNovelsParams(
         keyword: keyword.trim(),
         categoryId: categoryId,
@@ -103,11 +104,11 @@ class SearchCubit extends Cubit<SearchState> {
     );
 
     result.fold(
-      (error) => emit(SearchError(error.message)),
-      (novels) {
+      (AppError error) => emit(SearchError(error.message)),
+      (List<NovelSimpleModel> novels) {
         if (loadMore && currentState is SearchLoaded) {
           // 加载更多
-          final allNovels = [...currentState.novels, ...novels];
+          final List<NovelSimpleModel> allNovels = <NovelSimpleModel>[...currentState.novels, ...novels];
           emit(SearchLoaded(
             novels: allNovels,
             keyword: keyword.trim(),
@@ -131,29 +132,29 @@ class SearchCubit extends Cubit<SearchState> {
   Future<void> getSearchSuggestions({String? keyword}) async {
     try {
       // 并行获取数据
-      final suggestionsFuture = keyword != null && keyword.isNotEmpty
+      final Future<Object> suggestionsFuture = keyword != null && keyword.isNotEmpty
           ? homeRepository.getSearchSuggestions(keyword)
           : Future.value(const Right(<String>[]));
-      final hotKeywordsFuture = homeRepository.getHotSearchKeywords();
-      final historyFuture = homeRepository.getSearchHistory();
+      final Future<Either<AppError, List<String>>> hotKeywordsFuture = homeRepository.getHotSearchKeywords();
+      final Future<Either<AppError, List<String>>> historyFuture = homeRepository.getSearchHistory();
 
-      final results = await Future.wait([
+      final List<Object> results = await Future.wait(<Future<Object>>[
         suggestionsFuture,
         hotKeywordsFuture,
         historyFuture,
       ]);
 
-      final suggestions = (results[0] as Either).fold(
+      final List<String> suggestions = (results[0] as Either).fold(
         (error) => <String>[],
         (suggestions) => suggestions as List<String>,
       );
 
-      final hotKeywords = (results[1] as Either).fold(
+      final List<String> hotKeywords = (results[1] as Either).fold(
         (error) => <String>[],
         (keywords) => keywords as List<String>,
       );
 
-      final history = (results[2] as Either).fold(
+      final List<String> history = (results[2] as Either).fold(
         (error) => <String>[],
         (history) => history as List<String>,
       );
@@ -170,10 +171,10 @@ class SearchCubit extends Cubit<SearchState> {
 
   /// 清除搜索历史
   Future<void> clearSearchHistory() async {
-    final result = await homeRepository.clearSearchHistory();
+    final Either<AppError, bool> result = await homeRepository.clearSearchHistory();
     result.fold(
-      (error) => emit(SearchError(error.message)),
-      (success) => getSearchSuggestions(), // 重新获取建议
+      (AppError error) => emit(SearchError(error.message)),
+      (bool success) => getSearchSuggestions(), // 重新获取建议
     );
   }
 

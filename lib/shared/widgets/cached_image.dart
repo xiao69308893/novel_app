@@ -3,22 +3,21 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 /// 缓存图片组件
 class CachedImage extends StatelessWidget {
+
+  const CachedImage({
+    required this.imageUrl, super.key,
+    this.width,
+    this.height,
+    this.fit = BoxFit.cover,
+    this.placeholder,
+    this.errorWidget,
+  });
   final String imageUrl;
   final double? width;
   final double? height;
   final BoxFit fit;
   final Widget? placeholder;
   final Widget? errorWidget;
-
-  const CachedImage({
-    Key? key,
-    required this.imageUrl,
-    this.width,
-    this.height,
-    this.fit = BoxFit.cover,
-    this.placeholder,
-    this.errorWidget,
-  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +30,12 @@ class CachedImage extends StatelessWidget {
       width: width,
       height: height,
       fit: fit,
-      placeholder: (context, url) => placeholder ?? _buildPlaceholder(),
-      errorWidget: (context, url, error) => errorWidget ?? _buildErrorWidget(),
+      placeholder: (BuildContext context, String url) => placeholder ?? _buildPlaceholder(),
+      errorWidget: (BuildContext context, String url, Object error) => errorWidget ?? _buildErrorWidget(),
     );
   }
 
-  Widget _buildPlaceholder() {
-    return Container(
+  Widget _buildPlaceholder() => Container(
       width: width,
       height: height,
       color: Colors.grey[200],
@@ -47,10 +45,8 @@ class CachedImage extends StatelessWidget {
         ),
       ),
     );
-  }
 
-  Widget _buildErrorWidget() {
-    return Container(
+  Widget _buildErrorWidget() => Container(
       width: width,
       height: height,
       color: Colors.grey[200],
@@ -62,5 +58,4 @@ class CachedImage extends StatelessWidget {
             : 40,
       ),
     );
-  }
 }

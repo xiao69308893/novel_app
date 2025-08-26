@@ -4,6 +4,25 @@ import '../../app/themes/app_theme.dart';
 
 /// 通用AppBar组件
 class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
+
+  const CommonAppBar({
+    super.key,
+    this.title,
+    this.titleWidget,
+    this.showBackButton = true,
+    this.backButton,
+    this.onBackPressed,
+    this.actions,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.elevation,
+    this.centerTitle = true,
+    this.bottom,
+    this.systemOverlayStyle,
+    this.transparent = false,
+    this.titleStyle,
+    this.toolbarHeight,
+  });
   /// 标题
   final String? title;
   
@@ -49,29 +68,10 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// 工具栏高度
   final double? toolbarHeight;
 
-  const CommonAppBar({
-    Key? key,
-    this.title,
-    this.titleWidget,
-    this.showBackButton = true,
-    this.backButton,
-    this.onBackPressed,
-    this.actions,
-    this.backgroundColor,
-    this.foregroundColor,
-    this.elevation,
-    this.centerTitle = true,
-    this.bottom,
-    this.systemOverlayStyle,
-    this.transparent = false,
-    this.titleStyle,
-    this.toolbarHeight,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final appBarTheme = theme.appBarTheme;
+    final ThemeData theme = Theme.of(context);
+    final AppBarTheme appBarTheme = theme.appBarTheme;
     
     return AppBar(
       title: titleWidget ?? _buildTitle(context),
@@ -108,7 +108,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
     
     if (backButton != null) return backButton;
     
-    final canPop = Navigator.canPop(context);
+    final bool canPop = Navigator.canPop(context);
     if (!canPop) return null;
     
     return IconButton(
@@ -120,7 +120,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   /// 获取系统状态栏样式
   SystemUiOverlayStyle _getSystemOverlayStyle(BuildContext context) {
-    final brightness = Theme.of(context).brightness;
+    final Brightness brightness = Theme.of(context).brightness;
     
     if (transparent) {
       return brightness == Brightness.light
@@ -135,14 +135,26 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize {
-    final baseHeight = toolbarHeight ?? AppTheme.appBarHeight;
-    final bottomHeight = bottom?.preferredSize.height ?? 0;
+    final double baseHeight = toolbarHeight ?? AppTheme.appBarHeight;
+    final double bottomHeight = bottom?.preferredSize.height ?? 0;
     return Size.fromHeight(baseHeight + bottomHeight);
   }
 }
 
 /// 搜索AppBar
 class SearchAppBar extends StatefulWidget implements PreferredSizeWidget {
+
+  const SearchAppBar({
+    super.key,
+    this.hintText,
+    this.initialText,
+    this.onSearch,
+    this.onChanged,
+    this.autofocus = false,
+    this.actions,
+    this.backgroundColor,
+    this.onBackPressed,
+  });
   /// 搜索提示文本
   final String? hintText;
   
@@ -166,18 +178,6 @@ class SearchAppBar extends StatefulWidget implements PreferredSizeWidget {
   
   /// 返回按钮回调
   final VoidCallback? onBackPressed;
-
-  const SearchAppBar({
-    Key? key,
-    this.hintText,
-    this.initialText,
-    this.onSearch,
-    this.onChanged,
-    this.autofocus = false,
-    this.actions,
-    this.backgroundColor,
-    this.onBackPressed,
-  }) : super(key: key);
 
   @override
   State<SearchAppBar> createState() => _SearchAppBarState();
@@ -212,7 +212,7 @@ class _SearchAppBarState extends State<SearchAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     
     return AppBar(
       backgroundColor: widget.backgroundColor ?? theme.appBarTheme.backgroundColor,
@@ -238,7 +238,7 @@ class _SearchAppBarState extends State<SearchAppBar> {
         onChanged: widget.onChanged,
         onSubmitted: widget.onSearch,
       ),
-      actions: [
+      actions: <Widget>[
         if (_controller.text.isNotEmpty)
           IconButton(
             icon: const Icon(Icons.clear),
@@ -256,6 +256,18 @@ class _SearchAppBarState extends State<SearchAppBar> {
 
 /// 标签页AppBar
 class TabAppBar extends StatelessWidget implements PreferredSizeWidget {
+
+  const TabAppBar({
+    required this.tabController, required this.tabs, super.key,
+    this.title,
+    this.isScrollable = false,
+    this.indicatorColor,
+    this.labelColor,
+    this.unselectedLabelColor,
+    this.actions,
+    this.backgroundColor,
+    this.onBackPressed,
+  });
   /// 标题
   final String? title;
   
@@ -286,23 +298,9 @@ class TabAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// 返回按钮回调
   final VoidCallback? onBackPressed;
 
-  const TabAppBar({
-    Key? key,
-    this.title,
-    required this.tabController,
-    required this.tabs,
-    this.isScrollable = false,
-    this.indicatorColor,
-    this.labelColor,
-    this.unselectedLabelColor,
-    this.actions,
-    this.backgroundColor,
-    this.onBackPressed,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     
     return AppBar(
       title: title != null ? Text(title!) : null,
@@ -335,13 +333,23 @@ class TabAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize {
-    return const Size.fromHeight(AppTheme.appBarHeight + kTextTabBarHeight);
-  }
+  Size get preferredSize => const Size.fromHeight(AppTheme.appBarHeight + kTextTabBarHeight);
 }
 
 /// 渐变AppBar
 class GradientAppBar extends StatelessWidget implements PreferredSizeWidget {
+
+  const GradientAppBar({
+    required this.gradientColors, super.key,
+    this.title,
+    this.titleWidget,
+    this.gradientBegin = Alignment.centerLeft,
+    this.gradientEnd = Alignment.centerRight,
+    this.actions,
+    this.showBackButton = true,
+    this.onBackPressed,
+    this.centerTitle = true,
+  });
   /// 标题
   final String? title;
   
@@ -369,22 +377,8 @@ class GradientAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// 是否居中显示标题
   final bool centerTitle;
 
-  const GradientAppBar({
-    Key? key,
-    this.title,
-    this.titleWidget,
-    required this.gradientColors,
-    this.gradientBegin = Alignment.centerLeft,
-    this.gradientEnd = Alignment.centerRight,
-    this.actions,
-    this.showBackButton = true,
-    this.onBackPressed,
-    this.centerTitle = true,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context) => DecoratedBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: gradientColors,
@@ -407,7 +401,6 @@ class GradientAppBar extends StatelessWidget implements PreferredSizeWidget {
         foregroundColor: Colors.white,
       ),
     );
-  }
 
   @override
   Size get preferredSize => const Size.fromHeight(AppTheme.appBarHeight);
@@ -415,6 +408,20 @@ class GradientAppBar extends StatelessWidget implements PreferredSizeWidget {
 
 /// 可折叠AppBar
 class CollapsibleAppBar extends StatelessWidget {
+
+  const CollapsibleAppBar({
+    super.key,
+    this.expandedHeight = 200.0,
+    this.background,
+    this.title,
+    this.titleWidget,
+    this.pinned = true,
+    this.floating = false,
+    this.snap = false,
+    this.actions,
+    this.backgroundColor,
+    this.foregroundColor,
+  });
   /// 展开高度
   final double expandedHeight;
   
@@ -445,23 +452,8 @@ class CollapsibleAppBar extends StatelessWidget {
   /// 前景颜色
   final Color? foregroundColor;
 
-  const CollapsibleAppBar({
-    Key? key,
-    this.expandedHeight = 200.0,
-    this.background,
-    this.title,
-    this.titleWidget,
-    this.pinned = true,
-    this.floating = false,
-    this.snap = false,
-    this.actions,
-    this.backgroundColor,
-    this.foregroundColor,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return SliverAppBar(
+  Widget build(BuildContext context) => SliverAppBar(
       expandedHeight: expandedHeight,
       pinned: pinned,
       floating: floating,
@@ -476,7 +468,6 @@ class CollapsibleAppBar extends StatelessWidget {
         titlePadding: const EdgeInsets.only(bottom: 16),
       ),
     );
-  }
 }
 
 /// AppBar工具类
@@ -487,14 +478,12 @@ class AppBarUtils {
     List<Widget>? actions,
     VoidCallback? onBackPressed,
     bool showBackButton = true,
-  }) {
-    return CommonAppBar(
+  }) => CommonAppBar(
       title: title,
       actions: actions,
       onBackPressed: onBackPressed,
       showBackButton: showBackButton,
     );
-  }
 
   /// 创建搜索AppBar
   static PreferredSizeWidget search({
@@ -504,8 +493,7 @@ class AppBarUtils {
     ValueChanged<String>? onChanged,
     bool autofocus = false,
     VoidCallback? onBackPressed,
-  }) {
-    return SearchAppBar(
+  }) => SearchAppBar(
       hintText: hintText,
       initialText: initialText,
       onSearch: onSearch,
@@ -513,7 +501,6 @@ class AppBarUtils {
       autofocus: autofocus,
       onBackPressed: onBackPressed,
     );
-  }
 
   /// 创建透明AppBar
   static PreferredSizeWidget transparent({
@@ -521,30 +508,25 @@ class AppBarUtils {
     List<Widget>? actions,
     VoidCallback? onBackPressed,
     bool showBackButton = true,
-  }) {
-    return CommonAppBar(
+  }) => CommonAppBar(
       title: title,
       actions: actions,
       onBackPressed: onBackPressed,
       showBackButton: showBackButton,
       transparent: true,
     );
-  }
 
   /// 创建渐变AppBar
   static PreferredSizeWidget gradient({
-    String? title,
-    required List<Color> colors,
+    required List<Color> colors, String? title,
     List<Widget>? actions,
     VoidCallback? onBackPressed,
     bool showBackButton = true,
-  }) {
-    return GradientAppBar(
+  }) => GradientAppBar(
       title: title,
       gradientColors: colors,
       actions: actions,
       onBackPressed: onBackPressed,
       showBackButton: showBackButton,
     );
-  }
 }

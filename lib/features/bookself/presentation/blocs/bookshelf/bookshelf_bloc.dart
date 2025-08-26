@@ -7,7 +7,7 @@ abstract class BookshelfEvent extends Equatable {
   const BookshelfEvent();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class LoadBookshelf extends BookshelfEvent {
@@ -19,39 +19,39 @@ class LoadUserProfile extends BookshelfEvent {
 }
 
 class SortBookshelf extends BookshelfEvent {
-  final BookshelfSortType sortType;
 
   const SortBookshelf(this.sortType);
+  final BookshelfSortType sortType;
 
   @override
-  List<Object?> get props => [sortType];
+  List<Object?> get props => <Object?>[sortType];
 }
 
 class ChangeViewType extends BookshelfEvent {
-  final BookshelfViewType viewType;
 
   const ChangeViewType(this.viewType);
+  final BookshelfViewType viewType;
 
   @override
-  List<Object?> get props => [viewType];
+  List<Object?> get props => <Object?>[viewType];
 }
 
-class AddToBookshelf extends BookshelfEvent {
-  final String bookId;
+  class AddToBookshelf extends BookshelfEvent {
 
   const AddToBookshelf(this.bookId);
+  final String bookId;
 
   @override
-  List<Object?> get props => [bookId];
+  List<Object?> get props => <Object?>[bookId];
 }
 
 class RemoveFromBookshelf extends BookshelfEvent {
-  final String bookId;
 
   const RemoveFromBookshelf(this.bookId);
+  final String bookId;
 
   @override
-  List<Object?> get props => [bookId];
+  List<Object?> get props => <Object?>[bookId];
 }
 
 class RefreshBookshelf extends BookshelfEvent {
@@ -63,7 +63,7 @@ abstract class BookshelfState extends Equatable {
   const BookshelfState();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class BookshelfInitial extends BookshelfState {}
@@ -71,10 +71,6 @@ class BookshelfInitial extends BookshelfState {}
 class BookshelfLoading extends BookshelfState {}
 
 class BookshelfLoaded extends BookshelfState {
-  final List<dynamic> books;
-  final dynamic user;
-  final BookshelfSortType sortType;
-  final BookshelfViewType viewType;
 
   const BookshelfLoaded({
     required this.books,
@@ -82,32 +78,34 @@ class BookshelfLoaded extends BookshelfState {
     this.sortType = BookshelfSortType.recentRead,
     this.viewType = BookshelfViewType.grid,
   });
+  final List<dynamic> books;
+  final dynamic user;
+  final BookshelfSortType sortType;
+  final BookshelfViewType viewType;
 
   @override
-  List<Object?> get props => [books, user, sortType, viewType];
+  List<Object?> get props => <Object?>[books, user, sortType, viewType];
 
   BookshelfLoaded copyWith({
     List<dynamic>? books,
     dynamic user,
     BookshelfSortType? sortType,
     BookshelfViewType? viewType,
-  }) {
-    return BookshelfLoaded(
+  }) => BookshelfLoaded(
       books: books ?? this.books,
       user: user ?? this.user,
       sortType: sortType ?? this.sortType,
       viewType: viewType ?? this.viewType,
     );
-  }
 }
 
 class BookshelfError extends BookshelfState {
-  final String message;
 
   const BookshelfError(this.message);
+  final String message;
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => <Object?>[message];
 }
 
 // Bloc
@@ -131,12 +129,10 @@ class BookshelfBloc extends Bloc<BookshelfEvent, BookshelfState> {
       
       // 暂时使用模拟数据，避免网络请求错误
       await Future.delayed(const Duration(milliseconds: 500));
-      final books = <dynamic>[];
+      final List books = <dynamic>[];
       
       emit(BookshelfLoaded(
         books: books,
-        sortType: BookshelfSortType.recentRead,
-        viewType: BookshelfViewType.grid,
       ));
     } catch (e) {
       emit(BookshelfError('加载书架失败：${e.toString()}'));
@@ -149,9 +145,9 @@ class BookshelfBloc extends Bloc<BookshelfEvent, BookshelfState> {
   ) async {
     try {
       if (state is BookshelfLoaded) {
-        final currentState = state as BookshelfLoaded;
-        final user = null; // 暂时使用模拟数据
-        emit(currentState.copyWith(user: user));
+        final BookshelfLoaded currentState = state as BookshelfLoaded;
+// 暂时使用模拟数据
+        emit(currentState.copyWith());
       }
     } catch (e) {
       emit(BookshelfError('加载用户信息失败：${e.toString()}'));
@@ -163,8 +159,8 @@ class BookshelfBloc extends Bloc<BookshelfEvent, BookshelfState> {
     Emitter<BookshelfState> emit,
   ) async {
     if (state is BookshelfLoaded) {
-      final currentState = state as BookshelfLoaded;
-      final sortedBooks = List<dynamic>.from(currentState.books);
+      final BookshelfLoaded currentState = state as BookshelfLoaded;
+      final List sortedBooks = List<dynamic>.from(currentState.books);
       
       emit(currentState.copyWith(
         books: sortedBooks,
@@ -178,7 +174,7 @@ class BookshelfBloc extends Bloc<BookshelfEvent, BookshelfState> {
     Emitter<BookshelfState> emit,
   ) async {
     if (state is BookshelfLoaded) {
-      final currentState = state as BookshelfLoaded;
+      final BookshelfLoaded currentState = state as BookshelfLoaded;
       emit(currentState.copyWith(viewType: event.viewType));
     }
   }
@@ -189,7 +185,7 @@ class BookshelfBloc extends Bloc<BookshelfEvent, BookshelfState> {
   ) async {
     try {
       // 暂时使用模拟实现
-      emit(BookshelfError('添加到书架功能暂未实现'));
+      emit(const BookshelfError('添加到书架功能暂未实现'));
     } catch (e) {
       emit(BookshelfError('添加到书架失败：${e.toString()}'));
     }
@@ -201,8 +197,8 @@ class BookshelfBloc extends Bloc<BookshelfEvent, BookshelfState> {
   ) async {
     try {
       if (state is BookshelfLoaded) {
-        final currentState = state as BookshelfLoaded;
-        final updatedBooks = currentState.books
+        final BookshelfLoaded currentState = state as BookshelfLoaded;
+        final List updatedBooks = currentState.books
             .where((book) => book.id != event.bookId)
             .toList();
         

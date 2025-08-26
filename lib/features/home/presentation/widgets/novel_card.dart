@@ -4,34 +4,33 @@ import '../../../../app/themes/app_theme.dart';
 import '../../../../shared/models/novel_model.dart';
 
 class NovelCard extends StatelessWidget {
+
+  const NovelCard({
+    required this.novel, super.key,
+    this.showAuthor = true,
+    this.showStats = false,
+    this.onTap,
+  });
   final NovelSimpleModel novel;
   final bool showAuthor;
   final bool showStats;
   final VoidCallback? onTap;
 
-  const NovelCard({
-    Key? key,
-    required this.novel,
-    this.showAuthor = true,
-    this.showStats = false,
-    this.onTap,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return GestureDetector(
       onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           // 封面
           Expanded(
-            child: Container(
+            child: DecoratedBox(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-                boxShadow: [
+                boxShadow: <BoxShadow>[
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 4,
@@ -42,7 +41,7 @@ class NovelCard extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
                 child: Stack(
-                  children: [
+                  children: <Widget>[
                     // 封面图片
                     AspectRatio(
                       aspectRatio: 3 / 4,
@@ -50,9 +49,7 @@ class NovelCard extends StatelessWidget {
                           ? Image.network(
                               novel.coverUrl!,
                               fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return _buildPlaceholder();
-                              },
+                              errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) => _buildPlaceholder(),
                             )
                           : _buildPlaceholder(),
                     ),
@@ -123,7 +120,7 @@ class NovelCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
 
-          if (showAuthor) ...[
+          if (showAuthor) ...<Widget>[
             const SizedBox(height: 2),
             Text(
               novel.authorName,
@@ -135,10 +132,10 @@ class NovelCard extends StatelessWidget {
             ),
           ],
 
-          if (showStats) ...[
+          if (showStats) ...<Widget>[
             const SizedBox(height: 2),
             Row(
-              children: [
+              children: <Widget>[
                 Icon(
                   Icons.visibility,
                   size: 12,
@@ -159,8 +156,7 @@ class NovelCard extends StatelessWidget {
     );
   }
 
-  Widget _buildPlaceholder() {
-    return Container(
+  Widget _buildPlaceholder() => Container(
       color: Colors.grey[200],
       child: const Center(
         child: Icon(
@@ -170,5 +166,4 @@ class NovelCard extends StatelessWidget {
         ),
       ),
     );
-  }
 }

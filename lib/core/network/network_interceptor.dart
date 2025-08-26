@@ -5,15 +5,15 @@ import '../constants/api_constants.dart';
 
 class NetworkInterceptor extends Interceptor {
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+  Future<void> onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     // 添加用户令牌
-    final token = PreferencesHelper.getString(PreferenceKeys.userToken);
+    final String? token = PreferencesHelper.getString(PreferenceKeys.userToken);
     if (token != null && token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';
     }
 
     // 添加设备信息
-    options.headers.addAll({
+    options.headers.addAll(<String, dynamic>{
       'X-Device-ID': await _getDeviceId(),
       'X-App-Version': ApiConstants.appVersion,
       'X-Platform': ApiConstants.platform,
@@ -45,7 +45,7 @@ class NetworkInterceptor extends Interceptor {
 
     // 检查业务状态码
     if (response.data is Map<String, dynamic>) {
-      final data = response.data as Map<String, dynamic>;
+      final Map<String, dynamic> data = response.data as Map<String, dynamic>;
       final code = data['code'] ?? data['status_code'];
       
       // 处理特殊业务状态码
@@ -111,9 +111,7 @@ class NetworkInterceptor extends Interceptor {
   }
 
   // 生成请求ID
-  String _generateRequestId() {
-    return 'req_${DateTime.now().millisecondsSinceEpoch}_${DateTime.now().microsecond}';
-  }
+  String _generateRequestId() => 'req_${DateTime.now().millisecondsSinceEpoch}_${DateTime.now().microsecond}';
 
   // 处理token过期
   void _handleTokenExpired() {
@@ -132,10 +130,10 @@ class NetworkInterceptor extends Interceptor {
 // 认证拦截器 - 专门处理认证相关的逻辑
 class AuthInterceptor extends Interceptor {
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+  Future<void> onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     // 检查是否需要认证
     if (_requiresAuth(options.path)) {
-      final token = PreferencesHelper.getString(PreferenceKeys.userToken);
+      final String? token = PreferencesHelper.getString(PreferenceKeys.userToken);
       
       if (token == null || token.isEmpty) {
         // 没有token，拒绝请求
@@ -171,14 +169,14 @@ class AuthInterceptor extends Interceptor {
   }
 
   @override
-  void onError(DioException err, ErrorInterceptorHandler handler) async {
+  Future<void> onError(DioException err, ErrorInterceptorHandler handler) async {
     // 如果是401错误，尝试刷新token
     if (err.response?.statusCode == 401 && _requiresAuth(err.requestOptions.path)) {
       try {
         await _refreshToken();
         
         // 重新发送原始请求
-        final response = await Dio().fetch(err.requestOptions);
+        final Response response = await Dio().fetch(err.requestOptions);
         handler.resolve(response);
         return;
       } catch (e) {
@@ -191,7 +189,7 @@ class AuthInterceptor extends Interceptor {
 
   // 检查路径是否需要认证
   bool _requiresAuth(String path) {
-    final authRequiredPaths = [
+    final List<String> authRequiredPaths = <String>[
       '/user/',
       '/bookshelf/',
       '/reading/',
@@ -199,39 +197,39 @@ class AuthInterceptor extends Interceptor {
       '/notifications/',
     ];
     
-    return authRequiredPaths.any((authPath) => path.startsWith(authPath));
+    return authRequiredPaths.any((String authPath) => path.startsWith(authPath));
   }
 
   // 检查token是否即将过期
   Future<bool> _isTokenExpiringSoon() async {
-    final tokenTime = PreferencesHelper.getInt('token_time', 0);
+    final int tokenTime = PreferencesHelper.getInt('token_time');
     if (tokenTime == 0) return false;
     
-    final currentTime = DateTime.now().millisecondsSinceEpoch;
-    const tokenValidDuration = 7 * 24 * 60 * 60 * 1000; // 7天
-    const refreshThreshold = 24 * 60 * 60 * 1000; // 提前1天刷新
+    final int currentTime = DateTime.now().millisecondsSinceEpoch;
+    const int tokenValidDuration = 7 * 24 * 60 * 60 * 1000; // 7天
+    const int refreshThreshold = 24 * 60 * 60 * 1000; // 提前1天刷新
     
     return (currentTime - tokenTime) > (tokenValidDuration - refreshThreshold);
   }
 
   // 刷新token
   Future<void> _refreshToken() async {
-    final refreshToken = PreferencesHelper.getString(PreferenceKeys.refreshToken);
+    final String? refreshToken = PreferencesHelper.getString(PreferenceKeys.refreshToken);
     if (refreshToken == null || refreshToken.isEmpty) {
       throw Exception('没有刷新token');
     }
 
     try {
-      final dio = Dio();
-      final response = await dio.post(
+      final Dio dio = Dio();
+      final Response response = await dio.post(
         '${ApiConstants.apiPath}${ApiConstants.refreshToken}',
-        data: {'refresh_token': refreshToken},
+        data: <String, String>{'refresh_token': refreshToken},
       );
 
       if (response.statusCode == 200 && response.data != null) {
-        final data = response.data as Map<String, dynamic>;
-        final newToken = data['access_token'] as String?;
-        final newRefreshToken = data['refresh_token'] as String?;
+        final Map<String, dynamic> data = response.data as Map<String, dynamic>;
+        final String? newToken = data['access_token'] as String?;
+        final String? newRefreshToken = data['refresh_token'] as String?;
 
         if (newToken != null) {
           await PreferencesHelper.setString(PreferenceKeys.userToken, newToken);
@@ -255,7 +253,7 @@ class AuthInterceptor extends Interceptor {
 
 // 缓存拦截器 - 处理HTTP缓存
 class CacheInterceptor extends Interceptor {
-  final Map<String, CacheItem> _cache = {};
+  final Map<String, CacheItem> _cache = <String, CacheItem>{};
   final Duration defaultCacheDuration = const Duration(minutes: 5);
   final int maxCacheSize = 100;
 
@@ -267,18 +265,18 @@ class CacheInterceptor extends Interceptor {
       return;
     }
 
-    final cacheKey = _getCacheKey(options);
-    final cacheItem = _cache[cacheKey];
+    final String cacheKey = _getCacheKey(options);
+    final CacheItem? cacheItem = _cache[cacheKey];
 
     // 检查缓存是否存在且未过期
     if (cacheItem != null && !cacheItem.isExpired) {
       Logger.debug('CACHE', '使用缓存: ${options.path}');
       
-      final response = Response(
+      final Response<Object> response = Response(
         requestOptions: options,
         data: cacheItem.data,
         statusCode: 200,
-        headers: Headers.fromMap({'x-cache': ['HIT']}),
+        headers: Headers.fromMap(<String, List<String>>{'x-cache': <String>['HIT']}),
       );
       
       handler.resolve(response);
@@ -293,15 +291,15 @@ class CacheInterceptor extends Interceptor {
     // 只缓存成功的GET请求
     if (response.requestOptions.method.toUpperCase() == 'GET' &&
         response.statusCode == 200) {
-      final cacheKey = _getCacheKey(response.requestOptions);
+      final String cacheKey = _getCacheKey(response.requestOptions);
       
       // 清理过期缓存
       _cleanExpiredCache();
       
       // 如果缓存已满，删除最旧的条目
       if (_cache.length >= maxCacheSize) {
-        final oldestKey = _cache.entries
-            .reduce((a, b) => a.value.timestamp.isBefore(b.value.timestamp) ? a : b)
+        final String oldestKey = _cache.entries
+            .reduce((MapEntry<String, CacheItem> a, MapEntry<String, CacheItem> b) => a.value.timestamp.isBefore(b.value.timestamp) ? a : b)
             .key;
         _cache.remove(oldestKey);
       }
@@ -320,9 +318,7 @@ class CacheInterceptor extends Interceptor {
   }
 
   // 生成缓存键
-  String _getCacheKey(RequestOptions options) {
-    return '${options.method}_${options.uri.toString()}';
-  }
+  String _getCacheKey(RequestOptions options) => '${options.method}_${options.uri.toString()}';
 
   // 获取缓存时长
   Duration _getCacheDuration(String path) {
@@ -339,7 +335,7 @@ class CacheInterceptor extends Interceptor {
 
   // 清理过期缓存
   void _cleanExpiredCache() {
-    _cache.removeWhere((key, item) => item.isExpired);
+    _cache.removeWhere((String key, CacheItem item) => item.isExpired);
   }
 
   // 清空所有缓存
@@ -350,22 +346,22 @@ class CacheInterceptor extends Interceptor {
 
   // 删除指定路径的缓存
   void removeCache(String path) {
-    _cache.removeWhere((key, item) => key.contains(path));
+    _cache.removeWhere((String key, CacheItem item) => key.contains(path));
     Logger.debug('CACHE', '删除路径缓存: $path');
   }
 }
 
 // 缓存项
 class CacheItem {
-  final dynamic data;
-  final DateTime timestamp;
-  final Duration duration;
 
   CacheItem({
     required this.data,
     required this.timestamp,
     required this.duration,
   });
+  final dynamic data;
+  final DateTime timestamp;
+  final Duration duration;
 
   bool get isExpired => DateTime.now().isAfter(timestamp.add(duration));
 }

@@ -5,18 +5,16 @@ import '../../../../shared/models/novel_model.dart';
 import 'novel_card.dart';
 
 class HomeSectionWidget extends StatelessWidget {
+
+  const HomeSectionWidget({
+    required this.title, required this.novels, super.key,
+    this.onMoreTap,
+    this.maxItems = 6,
+  });
   final String title;
   final List<NovelSimpleModel> novels;
   final VoidCallback? onMoreTap;
   final int maxItems;
-
-  const HomeSectionWidget({
-    Key? key,
-    required this.title,
-    required this.novels,
-    this.onMoreTap,
-    this.maxItems = 6,
-  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,14 +22,14 @@ class HomeSectionWidget extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final theme = Theme.of(context);
-    final displayNovels = novels.take(maxItems).toList();
+    final ThemeData theme = Theme.of(context);
+    final List<NovelSimpleModel> displayNovels = novels.take(maxItems).toList();
 
     return Container(
       margin: const EdgeInsets.only(bottom: AppTheme.spacingLarge),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           // 标题栏
           Padding(
             padding: const EdgeInsets.symmetric(
@@ -39,7 +37,7 @@ class HomeSectionWidget extends StatelessWidget {
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+              children: <Widget>[
                 Text(
                   title,
                   style: theme.textTheme.titleMedium?.copyWith(
@@ -51,7 +49,7 @@ class HomeSectionWidget extends StatelessWidget {
                     onTap: onMoreTap,
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: [
+                      children: <Widget>[
                         Text(
                           '更多',
                           style: theme.textTheme.bodyMedium?.copyWith(
@@ -81,19 +79,16 @@ class HomeSectionWidget extends StatelessWidget {
                 horizontal: AppTheme.spacingRegular,
               ),
               itemCount: displayNovels.length,
-              itemBuilder: (context, index) {
-                return Container(
+              itemBuilder: (BuildContext context, int index) => Container(
                   width: 120,
                   margin: const EdgeInsets.only(
                     right: AppTheme.spacingRegular,
                   ),
                   child: NovelCard(
                     novel: displayNovels[index],
-                    showAuthor: true,
                     onTap: () => _handleNovelTap(context, displayNovels[index]),
                   ),
-                );
-              },
+                ),
             ),
           ),
         ],
@@ -105,7 +100,7 @@ class HomeSectionWidget extends StatelessWidget {
     Navigator.pushNamed(
       context,
       '/novel/detail',
-      arguments: {'novelId': novel.id},
+      arguments: <String, String>{'novelId': novel.id},
     );
   }
 }

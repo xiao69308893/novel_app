@@ -11,12 +11,10 @@ enum Gender {
   final int value;
   final String displayName;
 
-  static Gender fromValue(int? value) {
-    return Gender.values.firstWhere(
-      (g) => g.value == value,
+  static Gender fromValue(int? value) => Gender.values.firstWhere(
+      (Gender g) => g.value == value,
       orElse: () => Gender.unknown,
     );
-  }
 }
 
 /// 用户状态枚举
@@ -31,12 +29,10 @@ enum UserStatus {
   final int value;
   final String displayName;
 
-  static UserStatus fromValue(int? value) {
-    return UserStatus.values.firstWhere(
-      (s) => s.value == value,
+  static UserStatus fromValue(int? value) => UserStatus.values.firstWhere(
+      (UserStatus s) => s.value == value,
       orElse: () => UserStatus.normal,
     );
-  }
 }
 
 /// VIP等级枚举
@@ -54,18 +50,67 @@ enum VipLevel {
   final String displayName;
   final int? validDays; // VIP有效天数
 
-  static VipLevel fromValue(int? value) {
-    return VipLevel.values.firstWhere(
-      (v) => v.value == value,
+  static VipLevel fromValue(int? value) => VipLevel.values.firstWhere(
+      (VipLevel v) => v.value == value,
       orElse: () => VipLevel.none,
     );
-  }
 
   bool get isVip => this != VipLevel.none;
 }
 
 /// 用户模型
 class UserModel extends Equatable {
+
+  const UserModel({
+    required this.id,
+    required this.username,
+    required this.createdAt, required this.updatedAt, this.email,
+    this.phone,
+    this.nickname,
+    this.avatar,
+    this.gender = Gender.unknown,
+    this.birthday,
+    this.bio,
+    this.status = UserStatus.normal,
+    this.vipLevel = VipLevel.none,
+    this.vipExpiredAt,
+    this.lastLoginAt,
+    this.stats,
+    this.settings,
+    this.extra,
+  });
+
+  /// 从JSON创建用户模型
+  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+      id: json['id'] as String,
+      username: json['username'] as String,
+      email: json['email'] as String?,
+      phone: json['phone'] as String?,
+      nickname: json['nickname'] as String?,
+      avatar: json['avatar'] as String?,
+      gender: Gender.fromValue(json['gender'] as int?),
+      birthday: json['birthday'] != null 
+          ? DateTime.parse(json['birthday'] as String)
+          : null,
+      bio: json['bio'] as String?,
+      status: UserStatus.fromValue(json['status'] as int?),
+      vipLevel: VipLevel.fromValue(json['vip_level'] as int?),
+      vipExpiredAt: json['vip_expired_at'] != null
+          ? DateTime.parse(json['vip_expired_at'] as String)
+          : null,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
+      lastLoginAt: json['last_login_at'] != null
+          ? DateTime.parse(json['last_login_at'] as String)
+          : null,
+      stats: json['stats'] != null
+          ? UserStats.fromJson(json['stats'] as Map<String, dynamic>)
+          : null,
+      settings: json['settings'] != null
+          ? UserSettings.fromJson(json['settings'] as Map<String, dynamic>)
+          : null,
+      extra: json['extra'] as Map<String, dynamic>?,
+    );
   /// 用户ID
   final String id;
   
@@ -120,64 +165,8 @@ class UserModel extends Equatable {
   /// 扩展字段
   final Map<String, dynamic>? extra;
 
-  const UserModel({
-    required this.id,
-    required this.username,
-    this.email,
-    this.phone,
-    this.nickname,
-    this.avatar,
-    this.gender = Gender.unknown,
-    this.birthday,
-    this.bio,
-    this.status = UserStatus.normal,
-    this.vipLevel = VipLevel.none,
-    this.vipExpiredAt,
-    required this.createdAt,
-    required this.updatedAt,
-    this.lastLoginAt,
-    this.stats,
-    this.settings,
-    this.extra,
-  });
-
-  /// 从JSON创建用户模型
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
-      id: json['id'] as String,
-      username: json['username'] as String,
-      email: json['email'] as String?,
-      phone: json['phone'] as String?,
-      nickname: json['nickname'] as String?,
-      avatar: json['avatar'] as String?,
-      gender: Gender.fromValue(json['gender'] as int?),
-      birthday: json['birthday'] != null 
-          ? DateTime.parse(json['birthday'] as String)
-          : null,
-      bio: json['bio'] as String?,
-      status: UserStatus.fromValue(json['status'] as int?),
-      vipLevel: VipLevel.fromValue(json['vip_level'] as int?),
-      vipExpiredAt: json['vip_expired_at'] != null
-          ? DateTime.parse(json['vip_expired_at'] as String)
-          : null,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String),
-      lastLoginAt: json['last_login_at'] != null
-          ? DateTime.parse(json['last_login_at'] as String)
-          : null,
-      stats: json['stats'] != null
-          ? UserStats.fromJson(json['stats'] as Map<String, dynamic>)
-          : null,
-      settings: json['settings'] != null
-          ? UserSettings.fromJson(json['settings'] as Map<String, dynamic>)
-          : null,
-      extra: json['extra'] as Map<String, dynamic>?,
-    );
-  }
-
   /// 转换为JSON
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'id': id,
       'username': username,
       'email': email,
@@ -197,7 +186,6 @@ class UserModel extends Equatable {
       'settings': settings?.toJson(),
       'extra': extra,
     };
-  }
 
   /// 复制并修改用户信息
   UserModel copyWith({
@@ -219,8 +207,7 @@ class UserModel extends Equatable {
     UserStats? stats,
     UserSettings? settings,
     Map<String, dynamic>? extra,
-  }) {
-    return UserModel(
+  }) => UserModel(
       id: id ?? this.id,
       username: username ?? this.username,
       email: email ?? this.email,
@@ -240,7 +227,6 @@ class UserModel extends Equatable {
       settings: settings ?? this.settings,
       extra: extra ?? this.extra,
     );
-  }
 
   /// 显示名称（优先昵称，其次用户名）
   String get displayName => nickname ?? username;
@@ -251,15 +237,15 @@ class UserModel extends Equatable {
   /// VIP是否即将过期（7天内）
   bool get isVipExpiringSoon {
     if (!isVip || vipExpiredAt == null) return false;
-    final now = DateTime.now();
-    final diff = vipExpiredAt!.difference(now);
+    final DateTime now = DateTime.now();
+    final Duration diff = vipExpiredAt!.difference(now);
     return diff.inDays <= 7;
   }
 
   /// 年龄
   int? get age {
     if (birthday == null) return null;
-    final now = DateTime.now();
+    final DateTime now = DateTime.now();
     int age = now.year - birthday!.year;
     if (now.month < birthday!.month ||
         (now.month == birthday!.month && now.day < birthday!.day)) {
@@ -269,9 +255,7 @@ class UserModel extends Equatable {
   }
 
   /// 注册天数
-  int get registeredDays {
-    return DateTime.now().difference(createdAt).inDays;
-  }
+  int get registeredDays => DateTime.now().difference(createdAt).inDays;
 
   /// 是否活跃用户（最近30天内登录）
   bool get isActiveUser {
@@ -286,7 +270,7 @@ class UserModel extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         id,
         username,
         email,
@@ -308,13 +292,37 @@ class UserModel extends Equatable {
       ];
 
   @override
-  String toString() {
-    return 'UserModel{id: $id, username: $username, nickname: $nickname}';
-  }
+  String toString() => 'UserModel{id: $id, username: $username, nickname: $nickname}';
 }
 
 /// 用户统计信息
 class UserStats extends Equatable {
+
+  const UserStats({
+    this.totalReadingTime = 0,
+    this.booksRead = 0,
+    this.chaptersRead = 0,
+    this.wordsRead = 0,
+    this.favoritesCount = 0,
+    this.commentsCount = 0,
+    this.checkinDays = 0,
+    this.consecutiveCheckinDays = 0,
+    this.shareCount = 0,
+    this.inviteCount = 0,
+  });
+
+  factory UserStats.fromJson(Map<String, dynamic> json) => UserStats(
+      totalReadingTime: json['total_reading_time'] as int? ?? 0,
+      booksRead: json['books_read'] as int? ?? 0,
+      chaptersRead: json['chapters_read'] as int? ?? 0,
+      wordsRead: json['words_read'] as int? ?? 0,
+      favoritesCount: json['favorites_count'] as int? ?? 0,
+      commentsCount: json['comments_count'] as int? ?? 0,
+      checkinDays: json['checkin_days'] as int? ?? 0,
+      consecutiveCheckinDays: json['consecutive_checkin_days'] as int? ?? 0,
+      shareCount: json['share_count'] as int? ?? 0,
+      inviteCount: json['invite_count'] as int? ?? 0,
+    );
   /// 阅读总时长（秒）
   final int totalReadingTime;
   
@@ -345,36 +353,7 @@ class UserStats extends Equatable {
   /// 邀请人数
   final int inviteCount;
 
-  const UserStats({
-    this.totalReadingTime = 0,
-    this.booksRead = 0,
-    this.chaptersRead = 0,
-    this.wordsRead = 0,
-    this.favoritesCount = 0,
-    this.commentsCount = 0,
-    this.checkinDays = 0,
-    this.consecutiveCheckinDays = 0,
-    this.shareCount = 0,
-    this.inviteCount = 0,
-  });
-
-  factory UserStats.fromJson(Map<String, dynamic> json) {
-    return UserStats(
-      totalReadingTime: json['total_reading_time'] as int? ?? 0,
-      booksRead: json['books_read'] as int? ?? 0,
-      chaptersRead: json['chapters_read'] as int? ?? 0,
-      wordsRead: json['words_read'] as int? ?? 0,
-      favoritesCount: json['favorites_count'] as int? ?? 0,
-      commentsCount: json['comments_count'] as int? ?? 0,
-      checkinDays: json['checkin_days'] as int? ?? 0,
-      consecutiveCheckinDays: json['consecutive_checkin_days'] as int? ?? 0,
-      shareCount: json['share_count'] as int? ?? 0,
-      inviteCount: json['invite_count'] as int? ?? 0,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'total_reading_time': totalReadingTime,
       'books_read': booksRead,
       'chapters_read': chaptersRead,
@@ -386,7 +365,6 @@ class UserStats extends Equatable {
       'share_count': shareCount,
       'invite_count': inviteCount,
     };
-  }
 
   UserStats copyWith({
     int? totalReadingTime,
@@ -399,8 +377,7 @@ class UserStats extends Equatable {
     int? consecutiveCheckinDays,
     int? shareCount,
     int? inviteCount,
-  }) {
-    return UserStats(
+  }) => UserStats(
       totalReadingTime: totalReadingTime ?? this.totalReadingTime,
       booksRead: booksRead ?? this.booksRead,
       chaptersRead: chaptersRead ?? this.chaptersRead,
@@ -412,7 +389,6 @@ class UserStats extends Equatable {
       shareCount: shareCount ?? this.shareCount,
       inviteCount: inviteCount ?? this.inviteCount,
     );
-  }
 
   /// 平均阅读时长（小时）
   double get averageReadingHours {
@@ -423,11 +399,11 @@ class UserStats extends Equatable {
   /// 平均阅读速度（字/分钟）
   double get averageReadingSpeed {
     if (totalReadingTime == 0) return 0;
-    return (wordsRead / (totalReadingTime / 60));
+    return wordsRead / (totalReadingTime / 60);
   }
 
   @override
-  List<Object> get props => [
+  List<Object> get props => <Object>[
         totalReadingTime,
         booksRead,
         chaptersRead,
@@ -443,6 +419,26 @@ class UserStats extends Equatable {
 
 /// 用户设置
 class UserSettings extends Equatable {
+
+  const UserSettings({
+    required this.notifications,
+    required this.reader,
+    required this.privacy,
+    this.other,
+  });
+
+  factory UserSettings.fromJson(Map<String, dynamic> json) => UserSettings(
+      notifications: NotificationSettings.fromJson(
+        json['notifications'] as Map<String, dynamic>? ?? <String, dynamic>{},
+      ),
+      reader: ReaderSettings.fromJson(
+        json['reader'] as Map<String, dynamic>? ?? <String, dynamic>{},
+      ),
+      privacy: PrivacySettings.fromJson(
+        json['privacy'] as Map<String, dynamic>? ?? <String, dynamic>{},
+      ),
+      other: json['other'] as Map<String, dynamic>?,
+    );
   /// 通知设置
   final NotificationSettings notifications;
   
@@ -455,57 +451,53 @@ class UserSettings extends Equatable {
   /// 其他设置
   final Map<String, dynamic>? other;
 
-  const UserSettings({
-    required this.notifications,
-    required this.reader,
-    required this.privacy,
-    this.other,
-  });
-
-  factory UserSettings.fromJson(Map<String, dynamic> json) {
-    return UserSettings(
-      notifications: NotificationSettings.fromJson(
-        json['notifications'] as Map<String, dynamic>? ?? {},
-      ),
-      reader: ReaderSettings.fromJson(
-        json['reader'] as Map<String, dynamic>? ?? {},
-      ),
-      privacy: PrivacySettings.fromJson(
-        json['privacy'] as Map<String, dynamic>? ?? {},
-      ),
-      other: json['other'] as Map<String, dynamic>?,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'notifications': notifications.toJson(),
       'reader': reader.toJson(),
       'privacy': privacy.toJson(),
       'other': other,
     };
-  }
 
   UserSettings copyWith({
     NotificationSettings? notifications,
     ReaderSettings? reader,
     PrivacySettings? privacy,
     Map<String, dynamic>? other,
-  }) {
-    return UserSettings(
+  }) => UserSettings(
       notifications: notifications ?? this.notifications,
       reader: reader ?? this.reader,
       privacy: privacy ?? this.privacy,
       other: other ?? this.other,
     );
-  }
 
   @override
-  List<Object?> get props => [notifications, reader, privacy, other];
+  List<Object?> get props => <Object?>[notifications, reader, privacy, other];
 }
 
 /// 通知设置
 class NotificationSettings extends Equatable {
+
+  const NotificationSettings({
+    this.enabled = true,
+    this.updateNotification = true,
+    this.recommendationNotification = true,
+    this.commentNotification = true,
+    this.systemNotification = true,
+    this.marketingNotification = false,
+    this.doNotDisturbStart,
+    this.doNotDisturbEnd,
+  });
+
+  factory NotificationSettings.fromJson(Map<String, dynamic> json) => NotificationSettings(
+      enabled: json['enabled'] as bool? ?? true,
+      updateNotification: json['update_notification'] as bool? ?? true,
+      recommendationNotification: json['recommendation_notification'] as bool? ?? true,
+      commentNotification: json['comment_notification'] as bool? ?? true,
+      systemNotification: json['system_notification'] as bool? ?? true,
+      marketingNotification: json['marketing_notification'] as bool? ?? false,
+      doNotDisturbStart: json['do_not_disturb_start'] as String?,
+      doNotDisturbEnd: json['do_not_disturb_end'] as String?,
+    );
   /// 推送通知总开关
   final bool enabled;
   
@@ -530,32 +522,7 @@ class NotificationSettings extends Equatable {
   /// 免打扰时间段结束
   final String? doNotDisturbEnd;
 
-  const NotificationSettings({
-    this.enabled = true,
-    this.updateNotification = true,
-    this.recommendationNotification = true,
-    this.commentNotification = true,
-    this.systemNotification = true,
-    this.marketingNotification = false,
-    this.doNotDisturbStart,
-    this.doNotDisturbEnd,
-  });
-
-  factory NotificationSettings.fromJson(Map<String, dynamic> json) {
-    return NotificationSettings(
-      enabled: json['enabled'] as bool? ?? true,
-      updateNotification: json['update_notification'] as bool? ?? true,
-      recommendationNotification: json['recommendation_notification'] as bool? ?? true,
-      commentNotification: json['comment_notification'] as bool? ?? true,
-      systemNotification: json['system_notification'] as bool? ?? true,
-      marketingNotification: json['marketing_notification'] as bool? ?? false,
-      doNotDisturbStart: json['do_not_disturb_start'] as String?,
-      doNotDisturbEnd: json['do_not_disturb_end'] as String?,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'enabled': enabled,
       'update_notification': updateNotification,
       'recommendation_notification': recommendationNotification,
@@ -565,7 +532,6 @@ class NotificationSettings extends Equatable {
       'do_not_disturb_start': doNotDisturbStart,
       'do_not_disturb_end': doNotDisturbEnd,
     };
-  }
 
   NotificationSettings copyWith({
     bool? enabled,
@@ -576,8 +542,7 @@ class NotificationSettings extends Equatable {
     bool? marketingNotification,
     String? doNotDisturbStart,
     String? doNotDisturbEnd,
-  }) {
-    return NotificationSettings(
+  }) => NotificationSettings(
       enabled: enabled ?? this.enabled,
       updateNotification: updateNotification ?? this.updateNotification,
       recommendationNotification: recommendationNotification ?? this.recommendationNotification,
@@ -587,10 +552,9 @@ class NotificationSettings extends Equatable {
       doNotDisturbStart: doNotDisturbStart ?? this.doNotDisturbStart,
       doNotDisturbEnd: doNotDisturbEnd ?? this.doNotDisturbEnd,
     );
-  }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         enabled,
         updateNotification,
         recommendationNotification,
@@ -604,6 +568,30 @@ class NotificationSettings extends Equatable {
 
 /// 阅读器设置
 class ReaderSettings extends Equatable {
+
+  const ReaderSettings({
+    this.fontSize = 16.0,
+    this.lineSpacing = 1.5,
+    this.pageMargin = 24.0,
+    this.theme = 'light',
+    this.pageMode = 'slide',
+    this.keepScreenOn = false,
+    this.volumeKeyTurnPage = false,
+    this.autoBrightness = true,
+    this.brightness = 0.5,
+  });
+
+  factory ReaderSettings.fromJson(Map<String, dynamic> json) => ReaderSettings(
+      fontSize: (json['font_size'] as num?)?.toDouble() ?? 16.0,
+      lineSpacing: (json['line_spacing'] as num?)?.toDouble() ?? 1.5,
+      pageMargin: (json['page_margin'] as num?)?.toDouble() ?? 24.0,
+      theme: json['theme'] as String? ?? 'light',
+      pageMode: json['page_mode'] as String? ?? 'slide',
+      keepScreenOn: json['keep_screen_on'] as bool? ?? false,
+      volumeKeyTurnPage: json['volume_key_turn_page'] as bool? ?? false,
+      autoBrightness: json['auto_brightness'] as bool? ?? true,
+      brightness: (json['brightness'] as num?)?.toDouble() ?? 0.5,
+    );
   /// 字体大小
   final double fontSize;
   
@@ -631,34 +619,7 @@ class ReaderSettings extends Equatable {
   /// 手动亮度值
   final double brightness;
 
-  const ReaderSettings({
-    this.fontSize = 16.0,
-    this.lineSpacing = 1.5,
-    this.pageMargin = 24.0,
-    this.theme = 'light',
-    this.pageMode = 'slide',
-    this.keepScreenOn = false,
-    this.volumeKeyTurnPage = false,
-    this.autoBrightness = true,
-    this.brightness = 0.5,
-  });
-
-  factory ReaderSettings.fromJson(Map<String, dynamic> json) {
-    return ReaderSettings(
-      fontSize: (json['font_size'] as num?)?.toDouble() ?? 16.0,
-      lineSpacing: (json['line_spacing'] as num?)?.toDouble() ?? 1.5,
-      pageMargin: (json['page_margin'] as num?)?.toDouble() ?? 24.0,
-      theme: json['theme'] as String? ?? 'light',
-      pageMode: json['page_mode'] as String? ?? 'slide',
-      keepScreenOn: json['keep_screen_on'] as bool? ?? false,
-      volumeKeyTurnPage: json['volume_key_turn_page'] as bool? ?? false,
-      autoBrightness: json['auto_brightness'] as bool? ?? true,
-      brightness: (json['brightness'] as num?)?.toDouble() ?? 0.5,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'font_size': fontSize,
       'line_spacing': lineSpacing,
       'page_margin': pageMargin,
@@ -669,7 +630,6 @@ class ReaderSettings extends Equatable {
       'auto_brightness': autoBrightness,
       'brightness': brightness,
     };
-  }
 
   ReaderSettings copyWith({
     double? fontSize,
@@ -681,8 +641,7 @@ class ReaderSettings extends Equatable {
     bool? volumeKeyTurnPage,
     bool? autoBrightness,
     double? brightness,
-  }) {
-    return ReaderSettings(
+  }) => ReaderSettings(
       fontSize: fontSize ?? this.fontSize,
       lineSpacing: lineSpacing ?? this.lineSpacing,
       pageMargin: pageMargin ?? this.pageMargin,
@@ -693,10 +652,9 @@ class ReaderSettings extends Equatable {
       autoBrightness: autoBrightness ?? this.autoBrightness,
       brightness: brightness ?? this.brightness,
     );
-  }
 
   @override
-  List<Object> get props => [
+  List<Object> get props => <Object>[
         fontSize,
         lineSpacing,
         pageMargin,
@@ -711,6 +669,22 @@ class ReaderSettings extends Equatable {
 
 /// 隐私设置
 class PrivacySettings extends Equatable {
+
+  const PrivacySettings({
+    this.profileVisible = true,
+    this.readingHistoryVisible = false,
+    this.bookshelfVisible = false,
+    this.allowSearch = true,
+    this.allowFriendRequest = true,
+  });
+
+  factory PrivacySettings.fromJson(Map<String, dynamic> json) => PrivacySettings(
+      profileVisible: json['profile_visible'] as bool? ?? true,
+      readingHistoryVisible: json['reading_history_visible'] as bool? ?? false,
+      bookshelfVisible: json['bookshelf_visible'] as bool? ?? false,
+      allowSearch: json['allow_search'] as bool? ?? true,
+      allowFriendRequest: json['allow_friend_request'] as bool? ?? true,
+    );
   /// 个人资料可见性
   final bool profileVisible;
   
@@ -726,33 +700,13 @@ class PrivacySettings extends Equatable {
   /// 允许好友申请
   final bool allowFriendRequest;
 
-  const PrivacySettings({
-    this.profileVisible = true,
-    this.readingHistoryVisible = false,
-    this.bookshelfVisible = false,
-    this.allowSearch = true,
-    this.allowFriendRequest = true,
-  });
-
-  factory PrivacySettings.fromJson(Map<String, dynamic> json) {
-    return PrivacySettings(
-      profileVisible: json['profile_visible'] as bool? ?? true,
-      readingHistoryVisible: json['reading_history_visible'] as bool? ?? false,
-      bookshelfVisible: json['bookshelf_visible'] as bool? ?? false,
-      allowSearch: json['allow_search'] as bool? ?? true,
-      allowFriendRequest: json['allow_friend_request'] as bool? ?? true,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'profile_visible': profileVisible,
       'reading_history_visible': readingHistoryVisible,
       'bookshelf_visible': bookshelfVisible,
       'allow_search': allowSearch,
       'allow_friend_request': allowFriendRequest,
     };
-  }
 
   PrivacySettings copyWith({
     bool? profileVisible,
@@ -760,18 +714,16 @@ class PrivacySettings extends Equatable {
     bool? bookshelfVisible,
     bool? allowSearch,
     bool? allowFriendRequest,
-  }) {
-    return PrivacySettings(
+  }) => PrivacySettings(
       profileVisible: profileVisible ?? this.profileVisible,
       readingHistoryVisible: readingHistoryVisible ?? this.readingHistoryVisible,
       bookshelfVisible: bookshelfVisible ?? this.bookshelfVisible,
       allowSearch: allowSearch ?? this.allowSearch,
       allowFriendRequest: allowFriendRequest ?? this.allowFriendRequest,
     );
-  }
 
   @override
-  List<Object> get props => [
+  List<Object> get props => <Object>[
         profileVisible,
         readingHistoryVisible,
         bookshelfVisible,

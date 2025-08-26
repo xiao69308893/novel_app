@@ -1,5 +1,6 @@
 // 小说远程数据源
 import 'package:dio/dio.dart';
+import 'package:novel_app/core/network/api_response.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/errors/app_error.dart';
 import '../../../../core/errors/error_handler.dart';
@@ -74,14 +75,14 @@ abstract class BookRemoteDataSource {
 }
 
 class BookRemoteDataSourceImpl implements BookRemoteDataSource {
-  final ApiClient apiClient;
 
   BookRemoteDataSourceImpl({required this.apiClient});
+  final ApiClient apiClient;
 
   @override
   Future<BookDetailModel> getBookDetail(String bookId) async {
     try {
-      final response = await apiClient.get('/books/$bookId');
+      final ApiResponse response = await apiClient.get('/books/$bookId');
       return BookDetailModel.fromJson(response.data['data'] as Map<String, dynamic>);
 
     } on DioException catch (e) {
@@ -98,9 +99,9 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
     int limit = 50,
   }) async {
     try {
-      final response = await apiClient.get(
+      final ApiResponse response = await apiClient.get(
         '/books/$bookId/chapters',
-        queryParameters: {
+        queryParameters: <String, dynamic>{
           'page': page,
           'limit': limit,
         },
@@ -117,7 +118,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
   @override
   Future<ChapterModel> getChapterDetail(String chapterId) async {
     try {
-      final response = await apiClient.get('/chapters/$chapterId');
+      final ApiResponse response = await apiClient.get('/chapters/$chapterId');
       return ChapterModel.fromJson(response.data['data'] as Map<String, dynamic>);
 
     } on DioException catch (e) {
@@ -134,9 +135,9 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
     int limit = 20,
   }) async {
     try {
-      final response = await apiClient.get(
+      final ApiResponse response = await apiClient.get(
         '/books/$bookId/comments',
-        queryParameters: {
+        queryParameters: <String, dynamic>{
           'page': page,
           'limit': limit,
         },
@@ -157,9 +158,9 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
     int limit = 20,
   }) async {
     try {
-      final response = await apiClient.get(
+      final ApiResponse response = await apiClient.get(
         '/chapters/$chapterId/comments',
-        queryParameters: {
+        queryParameters: <String, dynamic>{
           'page': page,
           'limit': limit,
         },
@@ -181,9 +182,9 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
     String? parentId,
   }) async {
     try {
-      final response = await apiClient.post(
+      final ApiResponse response = await apiClient.post(
         '/comments',
-        data: {
+        data: <String, String>{
           'target_id': targetId,
           'type': type,
           'content': content,
@@ -267,7 +268,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
     try {
       await apiClient.post(
         '/books/$bookId/rate',
-        data: {
+        data: <String, Object>{
           'rating': rating,
           if (review != null) 'review': review,
         },
@@ -288,7 +289,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
     try {
       await apiClient.post(
         '/books/$bookId/share',
-        data: {
+        data: <String, String>{
           'platform': platform,
         },
       );
@@ -310,7 +311,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
     try {
       await apiClient.post(
         '/reports',
-        data: {
+        data: <String, String>{
           'target_id': targetId,
           'type': type,
           'reason': reason,
@@ -328,7 +329,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
   @override
   Future<String> downloadChapter(String chapterId) async {
     try {
-      final response = await apiClient.post(
+      final ApiResponse response = await apiClient.post(
         '/chapters/$chapterId/download',
       );
       return response.data['data']['task_id'] as String;
@@ -342,7 +343,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
   @override
   Future<String> downloadBook(String bookId) async {
     try {
-      final response = await apiClient.post(
+      final ApiResponse response = await apiClient.post(
         '/books/$bookId/download',
       );
       return response.data['data']['task_id'] as String;
@@ -368,8 +369,8 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
   @override
   Future<ReadingProgress?> getReadingProgress(String bookId) async {
     try {
-      final response = await apiClient.get('/books/$bookId/progress');
-      final data = response.data['data'] as Map<String, dynamic>;
+      final ApiResponse response = await apiClient.get('/books/$bookId/progress');
+      final Map<String, dynamic> data = response.data['data'] as Map<String, dynamic>;
       return data != null ? ReadingProgress.fromJson(data) : null;
     } on DioException catch (e) {
       throw DefaultErrorHandler.convertToAppError(e);
@@ -388,7 +389,7 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
     try {
       await apiClient.put(
         '/books/$bookId/progress',
-        data: {
+        data: <String, Object>{
           'chapter_id': chapterId,
           'position': position,
           'progress': progress,
@@ -408,9 +409,9 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
     int limit = 10,
   }) async {
     try {
-      final response = await apiClient.get(
+      final ApiResponse response = await apiClient.get(
         '/books/$bookId/similar',
-        queryParameters: {
+        queryParameters: <String, dynamic>{
           'limit': limit,
         },
       );
@@ -430,9 +431,9 @@ class BookRemoteDataSourceImpl implements BookRemoteDataSource {
     int limit = 10,
   }) async {
     try {
-      final response = await apiClient.get(
+      final ApiResponse response = await apiClient.get(
         '/authors/$authorId/books',
-        queryParameters: {
+        queryParameters: <String, dynamic>{
           if (excludeBookId != null) 'exclude': excludeBookId,
           'limit': limit,
         },

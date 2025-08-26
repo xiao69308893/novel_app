@@ -4,6 +4,29 @@ import '../../../../shared/models/chapter_model.dart';
 
 /// 阅读历史实体
 class ReadingHistory extends Equatable {
+
+  const ReadingHistory({
+    required this.id,
+    required this.userId,
+    required this.novel,
+    required this.lastReadAt, this.lastChapter,
+    this.progress,
+    this.readingTime = 0,
+  });
+
+  factory ReadingHistory.fromJson(Map<String, dynamic> json) => ReadingHistory(
+      id: json['id'] as String,
+      userId: json['user_id'] as String,
+      novel: NovelSimpleModel.fromJson(json['novel'] as Map<String, dynamic>),
+      lastChapter: json['last_chapter'] != null
+          ? ChapterSimpleModel.fromJson(json['last_chapter'] as Map<String, dynamic>)
+          : null,
+      progress: json['progress'] != null
+          ? ReadingProgress.fromJson(json['progress'] as Map<String, dynamic>)
+          : null,
+      readingTime: json['reading_time'] as int? ?? 0,
+      lastReadAt: DateTime.parse(json['last_read_at'] as String),
+    );
   /// 历史记录ID
   final String id;
   
@@ -25,34 +48,7 @@ class ReadingHistory extends Equatable {
   /// 最后阅读时间
   final DateTime lastReadAt;
 
-  const ReadingHistory({
-    required this.id,
-    required this.userId,
-    required this.novel,
-    this.lastChapter,
-    this.progress,
-    this.readingTime = 0,
-    required this.lastReadAt,
-  });
-
-  factory ReadingHistory.fromJson(Map<String, dynamic> json) {
-    return ReadingHistory(
-      id: json['id'] as String,
-      userId: json['user_id'] as String,
-      novel: NovelSimpleModel.fromJson(json['novel'] as Map<String, dynamic>),
-      lastChapter: json['last_chapter'] != null
-          ? ChapterSimpleModel.fromJson(json['last_chapter'] as Map<String, dynamic>)
-          : null,
-      progress: json['progress'] != null
-          ? ReadingProgress.fromJson(json['progress'] as Map<String, dynamic>)
-          : null,
-      readingTime: json['reading_time'] as int? ?? 0,
-      lastReadAt: DateTime.parse(json['last_read_at'] as String),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'id': id,
       'user_id': userId,
       'novel': novel.toJson(),
@@ -61,24 +57,23 @@ class ReadingHistory extends Equatable {
       'reading_time': readingTime,
       'last_read_at': lastReadAt.toIso8601String(),
     };
-  }
 
   /// 阅读时长显示
   String get readingTimeText {
-    final hours = readingTime ~/ 3600;
-    final minutes = (readingTime % 3600) ~/ 60;
+    final int hours = readingTime ~/ 3600;
+    final int minutes = (readingTime % 3600) ~/ 60;
     
     if (hours > 0) {
-      return '${hours}小时${minutes}分钟';
+      return '$hours小时$minutes分钟';
     } else {
-      return '${minutes}分钟';
+      return '$minutes分钟';
     }
   }
 
   /// 最后阅读时间显示
   String get lastReadTimeText {
-    final now = DateTime.now();
-    final diff = now.difference(lastReadAt);
+    final DateTime now = DateTime.now();
+    final Duration diff = now.difference(lastReadAt);
     
     if (diff.inDays == 0) {
       if (diff.inHours == 0) {
@@ -94,7 +89,7 @@ class ReadingHistory extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         id,
         userId,
         novel,

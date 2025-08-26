@@ -29,6 +29,9 @@ enum ErrorHandlingStrategy {
 
 /// 默认错误处理器实现
 class DefaultErrorHandler implements ErrorHandler {
+
+  // 私有构造函数
+  DefaultErrorHandler._internal();
   // 单例模式
   static DefaultErrorHandler? _instance;
   static DefaultErrorHandler get instance {
@@ -37,16 +40,13 @@ class DefaultErrorHandler implements ErrorHandler {
   }
 
   // 错误统计
-  final Map<String, int> _errorCounts = {};
-  final List<AppError> _recentErrors = [];
+  final Map<String, int> _errorCounts = <String, int>{};
+  final List<AppError> _recentErrors = <AppError>[];
   final int _maxRecentErrors = 50;
-
-  // 私有构造函数
-  DefaultErrorHandler._internal();
 
   @override
   Future<void> handleError(dynamic error, [StackTrace? stackTrace]) async {
-    final appError = convertToAppError(error, stackTrace);
+    final AppError appError = convertToAppError(error, stackTrace);
     
     // 记录错误
     logError(appError);
@@ -60,7 +60,7 @@ class DefaultErrorHandler implements ErrorHandler {
 
   @override
   void showError(BuildContext context, AppError error) {
-    final strategy = _getErrorHandlingStrategy(error);
+    final ErrorHandlingStrategy strategy = _getErrorHandlingStrategy(error);
     
     switch (strategy) {
       case ErrorHandlingStrategy.showDialog:
@@ -266,10 +266,9 @@ class DefaultErrorHandler implements ErrorHandler {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
+      builder: (BuildContext context) => AlertDialog(
           title: Row(
-            children: [
+            children: <Widget>[
               Icon(
                 _getErrorIcon(error.type),
                 color: _getErrorColor(error.severity),
@@ -281,9 +280,9 @@ class DefaultErrorHandler implements ErrorHandler {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               Text(error.message),
-              if (error.code != null) ...[
+              if (error.code != null) ...<Widget>[
                 const SizedBox(height: 8),
                 Text(
                   '错误代码: ${error.code}',
@@ -292,7 +291,7 @@ class DefaultErrorHandler implements ErrorHandler {
               ],
             ],
           ),
-          actions: [
+          actions: <Widget>[
             if (error.isRetriable)
               TextButton(
                 onPressed: () {
@@ -306,20 +305,19 @@ class DefaultErrorHandler implements ErrorHandler {
               child: const Text('确定'),
             ),
           ],
-        );
-      },
+        ),
     );
   }
 
   /// 显示错误SnackBar
   void _showErrorSnackBar(BuildContext context, AppError error) {
-    final messenger = ScaffoldMessenger.of(context);
+    final ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
     
     messenger.hideCurrentSnackBar();
     messenger.showSnackBar(
       SnackBar(
         content: Row(
-          children: [
+          children: <Widget>[
             Icon(
               _getErrorIcon(error.type),
               color: Colors.white,
@@ -349,7 +347,7 @@ class DefaultErrorHandler implements ErrorHandler {
 
   /// 显示错误Toast（这里简化为SnackBar）
   void _showErrorToast(BuildContext context, AppError error) {
-    final messenger = ScaffoldMessenger.of(context);
+    final ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
     
     messenger.hideCurrentSnackBar();
     messenger.showSnackBar(
@@ -399,7 +397,7 @@ class DefaultErrorHandler implements ErrorHandler {
     Navigator.pushNamedAndRemoveUntil(
       context,
       '/auth/login',
-      (route) => false,
+      (Route route) => false,
     );
   }
 
@@ -425,7 +423,7 @@ class DefaultErrorHandler implements ErrorHandler {
 
   /// 更新错误统计
   void _updateErrorStats(AppError error) {
-    final key = '${error.type.name}_${error.code ?? 'unknown'}';
+    final String key = '${error.type.name}_${error.code ?? 'unknown'}';
     _errorCounts[key] = (_errorCounts[key] ?? 0) + 1;
     
     // 保存错误统计到本地
@@ -434,7 +432,7 @@ class DefaultErrorHandler implements ErrorHandler {
 
   /// 保存错误统计
   void _saveErrorStats() {
-    final stats = {
+    final Map<String, Object> stats = <String, Object>{
       'error_counts': _errorCounts,
       'last_updated': DateTime.now().toIso8601String(),
     };
@@ -443,11 +441,11 @@ class DefaultErrorHandler implements ErrorHandler {
 
   /// 加载错误统计
   void _loadErrorStats() {
-    final stats = PreferencesHelper.getObject('error_stats');
+    final Map<String, dynamic>? stats = PreferencesHelper.getObject('error_stats');
     if (stats != null && stats['error_counts'] != null) {
       _errorCounts.clear();
-      final counts = stats['error_counts'] as Map<String, dynamic>;
-      counts.forEach((key, value) {
+      final Map<String, dynamic> counts = stats['error_counts'] as Map<String, dynamic>;
+      counts.forEach((String key, value) {
         _errorCounts[key] = value as int;
       });
     }
@@ -541,13 +539,11 @@ class DefaultErrorHandler implements ErrorHandler {
   }
 
   /// 获取错误统计信息
-  Map<String, dynamic> getErrorStats() {
-    return {
+  Map<String, dynamic> getErrorStats() => <String, dynamic>{
       'error_counts': Map.from(_errorCounts),
       'recent_errors_count': _recentErrors.length,
-      'total_errors': _errorCounts.values.fold<int>(0, (sum, count) => sum + count),
+      'total_errors': _errorCounts.values.fold<int>(0, (int sum, int count) => sum + count),
     };
-  }
 
   /// 获取最近的错误
   List<AppError> getRecentErrors({int? limit}) {
@@ -590,7 +586,7 @@ class ErrorHandlerUtils {
       return await operation();
     } catch (error, stackTrace) {
       if (!silent) {
-        final handler = errorHandler ?? DefaultErrorHandler.instance;
+        final ErrorHandler handler = errorHandler ?? DefaultErrorHandler.instance;
         await handler.handleError(error, stackTrace);
       }
       return null;
@@ -607,7 +603,7 @@ class ErrorHandlerUtils {
       return operation();
     } catch (error, stackTrace) {
       if (!silent) {
-        final handler = errorHandler ?? DefaultErrorHandler.instance;
+        final ErrorHandler handler = errorHandler ?? DefaultErrorHandler.instance;
         handler.handleError(error, stackTrace);
       }
       return null;
@@ -617,7 +613,7 @@ class ErrorHandlerUtils {
   /// 检查网络连接状态
   static Future<bool> isNetworkAvailable() async {
     try {
-      final result = await InternetAddress.lookup('google.com');
+      final List<InternetAddress> result = await InternetAddress.lookup('google.com');
       return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
     } catch (e) {
       return false;

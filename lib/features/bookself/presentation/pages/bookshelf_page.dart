@@ -11,7 +11,7 @@ import '../widgets/bookshelf_filter_bar.dart';
 
 /// 书架页面
 class BookshelfPage extends StatefulWidget {
-  const BookshelfPage({Key? key}) : super(key: key);
+  const BookshelfPage({super.key});
 
   @override
   State<BookshelfPage> createState() => _BookshelfPageState();
@@ -35,11 +35,11 @@ class _BookshelfPageState extends State<BookshelfPage>
   void _showSortOptions() {
     showModalBottomSheet(
       context: context,
-      builder: (context) => Container(
+      builder: (BuildContext context) => Container(
         padding: const EdgeInsets.all(AppTheme.spacingRegular),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: <Widget>[
             const Text(
               '排序方式',
               style: TextStyle(
@@ -97,11 +97,11 @@ class _BookshelfPageState extends State<BookshelfPage>
   void _showViewOptions() {
     showModalBottomSheet(
       context: context,
-      builder: (context) => Container(
+      builder: (BuildContext context) => Container(
         padding: const EdgeInsets.all(AppTheme.spacingRegular),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: <Widget>[
             const Text(
               '显示方式',
               style: TextStyle(
@@ -143,7 +143,7 @@ class _BookshelfPageState extends State<BookshelfPage>
     return Scaffold(
       appBar: AppBarUtils.simple(
         title: '我的书架',
-        actions: [
+        actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.sort),
             onPressed: _showSortOptions,
@@ -161,7 +161,7 @@ class _BookshelfPageState extends State<BookshelfPage>
         ],
       ),
       body: BlocBuilder<BookshelfBloc, BookshelfState>(
-        builder: (context, state) {
+        builder: (BuildContext context, BookshelfState state) {
           if (state is BookshelfLoading) {
             return const LoadingWidget();
           }
@@ -187,17 +187,17 @@ class _BookshelfPageState extends State<BookshelfPage>
             }
             
             return Column(
-              children: [
+              children: <Widget>[
                 // 筛选栏
                 BookshelfFilterBar(
                   sortType: state.sortType,
                   viewType: state.viewType,
-                  onSortChanged: (sortType) {
+                  onSortChanged: (BookshelfSortType sortType) {
                     context.read<BookshelfBloc>().add(
                       SortBookshelf(sortType),
                     );
                   },
-                  onViewChanged: (viewType) {
+                  onViewChanged: (BookshelfViewType viewType) {
                     context.read<BookshelfBloc>().add(
                       ChangeViewType(viewType),
                     );
@@ -223,8 +223,7 @@ class _BookshelfPageState extends State<BookshelfPage>
     );
   }
 
-  Widget _buildGridView(BookshelfLoaded state) {
-    return GridView.builder(
+  Widget _buildGridView(BookshelfLoaded state) => GridView.builder(
       padding: const EdgeInsets.all(AppTheme.spacingRegular),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
@@ -233,7 +232,7 @@ class _BookshelfPageState extends State<BookshelfPage>
         mainAxisSpacing: AppTheme.spacingRegular,
       ),
       itemCount: state.books.length,
-      itemBuilder: (context, index) {
+      itemBuilder: (BuildContext context, int index) {
         final book = state.books[index];
         return BookshelfItem(
           book: book,
@@ -242,7 +241,7 @@ class _BookshelfPageState extends State<BookshelfPage>
             Navigator.pushNamed(
               context,
               '/book/detail',
-              arguments: {'bookId': book.id},
+              arguments: <String, dynamic>{'bookId': book.id},
             );
           },
           onLongPress: () {
@@ -251,13 +250,11 @@ class _BookshelfPageState extends State<BookshelfPage>
         );
       },
     );
-  }
 
-  Widget _buildListView(BookshelfLoaded state) {
-    return ListView.builder(
+  Widget _buildListView(BookshelfLoaded state) => ListView.builder(
       padding: const EdgeInsets.all(AppTheme.spacingRegular),
       itemCount: state.books.length,
-      itemBuilder: (context, index) {
+      itemBuilder: (BuildContext context, int index) {
         final book = state.books[index];
         return BookshelfItem(
           book: book,
@@ -266,7 +263,7 @@ class _BookshelfPageState extends State<BookshelfPage>
             Navigator.pushNamed(
               context,
               '/book/detail',
-              arguments: {'bookId': book.id},
+              arguments: <String, dynamic>{'bookId': book.id},
             );
           },
           onLongPress: () {
@@ -275,16 +272,15 @@ class _BookshelfPageState extends State<BookshelfPage>
         );
       },
     );
-  }
 
   void _showBookOptions(dynamic book) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => Container(
+      builder: (BuildContext context) => Container(
         padding: const EdgeInsets.all(AppTheme.spacingRegular),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: <Widget>[
             ListTile(
               leading: const Icon(Icons.play_arrow),
               title: const Text('继续阅读'),
@@ -293,7 +289,7 @@ class _BookshelfPageState extends State<BookshelfPage>
                 Navigator.pushNamed(
                   context,
                   '/reader',
-                  arguments: {
+                  arguments: <String, dynamic>{
                     'bookId': book.id,
                     'chapterId': book.lastChapterId,
                   },
@@ -308,7 +304,7 @@ class _BookshelfPageState extends State<BookshelfPage>
                 Navigator.pushNamed(
                   context,
                   '/book/detail',
-                  arguments: {'bookId': book.id},
+                  arguments: <String, dynamic>{'bookId': book.id},
                 );
               },
             ),

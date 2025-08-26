@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
 import 'dart:ui';
+import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../../../../../shared/models/chapter_model.dart';
+import 'package:novel_app/core/errors/app_error.dart';
+import 'package:novel_app/features/reader/domain/repositories/reader_repository.dart' ;
+import '../../../../../shared/models/chapter_model.dart' hide ReadingProgress;
 import '../../../../../shared/models/novel_model.dart';
 import '../../../domain/entities/reader_config.dart';
 import '../../../domain/entities/reading_session.dart';
@@ -18,57 +21,57 @@ abstract class ReaderEvent extends Equatable {
   const ReaderEvent();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 /// 初始化阅读器事件
 class InitializeReader extends ReaderEvent {
-  final String novelId;
-  final String? chapterId;
-  final int? chapterNumber;
 
   const InitializeReader({
     required this.novelId,
     this.chapterId,
     this.chapterNumber,
   });
+  final String novelId;
+  final String? chapterId;
+  final int? chapterNumber;
 
   @override
-  List<Object?> get props => [novelId, chapterId, chapterNumber];
+  List<Object?> get props => <Object?>[novelId, chapterId, chapterNumber];
 }
 
 /// 加载章节事件
 class LoadChapter extends ReaderEvent {
-  final String novelId;
-  final String chapterId;
 
   const LoadChapter({
     required this.novelId,
     required this.chapterId,
   });
+  final String novelId;
+  final String chapterId;
 
   @override
-  List<Object> get props => [novelId, chapterId];
+  List<Object> get props => <Object>[novelId, chapterId];
 }
 
 /// 翻页事件
-class TurnPage extends ReaderEvent {
-  final bool forward; // true为下一页，false为上一页
+class TurnPage extends ReaderEvent { // true为下一页，false为上一页
 
   const TurnPage(this.forward);
+  final bool forward;
 
   @override
-  List<Object> get props => [forward];
+  List<Object> get props => <Object>[forward];
 }
 
 /// 跳转到指定页事件
 class JumpToPage extends ReaderEvent {
-  final int page;
 
   const JumpToPage(this.page);
+  final int page;
 
   @override
-  List<Object> get props => [page];
+  List<Object> get props => <Object>[page];
 }
 
 /// 切换章节事件
@@ -78,7 +81,7 @@ class SwitchChapter extends ReaderEvent { // true为下一章，false为上一�
   final bool next;
 
   @override
-  List<Object> get props => [next];
+  List<Object> get props => <Object>[next];
 }
 
 /// 更新阅读器配置事件
@@ -88,7 +91,7 @@ class UpdateReaderConfig extends ReaderEvent {
   final ReaderConfig config;
 
   @override
-  List<Object> get props => [config];
+  List<Object> get props => <Object>[config];
 }
 
 /// 添加书签事件
@@ -98,7 +101,7 @@ class AddBookmarkEvent extends ReaderEvent {
   final String? note;
 
   @override
-  List<Object?> get props => [note];
+  List<Object?> get props => <Object?>[note];
 }
 
 /// 切换界面显示事件
@@ -121,7 +124,7 @@ abstract class ReaderState extends Equatable {
   const ReaderState();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 /// 阅读器初始状态
@@ -136,7 +139,7 @@ class ReaderLoading extends ReaderState {
   final String message;
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 /// 阅读器加载成功状态
@@ -146,9 +149,9 @@ class ReaderLoaded extends ReaderState {
     required this.novel,
     required this.session,
     required this.config,
-    this.chapterList = const [],
-    this.adjacentChapters = const {},
-    this.bookmarks = const [],
+    this.chapterList = const <ChapterSimpleModel>[],
+    this.adjacentChapters = const <String, ChapterSimpleModel?>{},
+    this.bookmarks = const <BookmarkModel>[],
     this.isUIVisible = false,
     this.error,
   });
@@ -182,7 +185,7 @@ class ReaderLoaded extends ReaderState {
     );
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         novel,
         session,
         config,
@@ -196,26 +199,16 @@ class ReaderLoaded extends ReaderState {
 
 /// 阅读器加载失败状态
 class ReaderError extends ReaderState {
-  final String message;
 
   const ReaderError(this.message);
+  final String message;
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 /// 阅读器BLoC
 class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
-  final LoadChapter loadChapter;
-  final SaveReadingProgress saveReadingProgress;
-  final GetReadingProgress getReadingProgress;
-  final AddBookmark addBookmark;
-  final GetBookmarks getBookmarks;
-  final SaveReaderConfig saveReaderConfig;
-  final GetReaderConfig getReaderConfig;
-
-  Timer? _autoPageTimer;
-  Timer? _progressSaveTimer;
 
   ReaderBloc({
     required this.loadChapter,
@@ -237,6 +230,16 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
     on<ToggleAutoPage>(_onToggleAutoPage);
     on<SaveProgress>(_onSaveProgress);
   }
+  final LoadChapter loadChapter;
+  final SaveReadingProgress saveReadingProgress;
+  final GetReadingProgress getReadingProgress;
+  final AddBookmark addBookmark;
+  final GetBookmarks getBookmarks;
+  final SaveReaderConfig saveReaderConfig;
+  final GetReaderConfig getReaderConfig;
+
+  Timer? _autoPageTimer;
+  Timer? _progressSaveTimer;
 
   @override
   Future<void> close() {
@@ -253,10 +256,10 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
 
     try {
       // 获取阅读进度
-      final progressResult = await getReadingProgress(event.novelId);
-      final progress = progressResult.fold(
-        (failure) => null,
-        (progress) => progress,
+      final Either<AppError, ReadingProgress?> progressResult = await getReadingProgress(event.novelId);
+      final ReadingProgress? progress = progressResult.fold(
+        (AppError failure) => null,
+        (ReadingProgress? progress) => progress,
       );
 
       // 确定要加载的章节ID
@@ -282,7 +285,7 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
     LoadChapter event,
     Emitter<ReaderState> emit,
   ) async {
-    final currentState = state;
+    final ReaderState currentState = state;
     if (currentState is! ReaderLoaded) {
       emit(const ReaderLoading(message: '正在加载章节...'));
     }
@@ -300,21 +303,21 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
       );
 
       // 获取配置
-      final config = currentState is ReaderLoaded 
+      final ReaderConfig config = currentState is ReaderLoaded 
           ? currentState.config 
           : const ReaderConfig();
 
       // 计算页面分页
       // 这里需要屏幕尺寸信息，实际实现时可能需要从UI层传入
-      const screenSize = Size(375, 667); // 示例尺寸
-      final pages = PageCalculator.calculatePages(
+      const Size screenSize = Size(375, 667); // 示例尺寸
+      final List<String> pages = PageCalculator.calculatePages(
         content: chapter.content ?? '',
         config: config,
         screenSize: screenSize,
       );
 
       // 创建阅读会话
-      final session = ReadingSession(
+      final ReadingSession session = ReadingSession(
         id: '${event.novelId}_${event.chapterId}',
         userId: 'current_user',
         novelId: event.novelId,
@@ -324,13 +327,13 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
       );
 
       // 获取书签
-      final bookmarksResult = await getBookmarks(GetBookmarksParams(
+      final Either<AppError, List<BookmarkModel>> bookmarksResult = await getBookmarks(GetBookmarksParams(
         novelId: event.novelId,
         chapterId: event.chapterId,
       ));
-      final bookmarks = bookmarksResult.fold(
-        (failure) => <BookmarkModel>[],
-        (bookmarks) => bookmarks,
+      final List<BookmarkModel> bookmarks = bookmarksResult.fold(
+        (AppError failure) => <BookmarkModel>[],
+        (List<BookmarkModel> bookmarks) => bookmarks,
       );
 
       if (currentState is ReaderLoaded) {
@@ -344,7 +347,7 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
           novel: NovelModel(
             id: event.novelId,
             title: '小说标题',
-            author: NovelAuthor(id: '1', name: '作者'),
+            author: const NovelAuthor(id: '1', name: '作者'),
             publishTime: DateTime.now(),
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
@@ -366,10 +369,10 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
     TurnPage event,
     Emitter<ReaderState> emit,
   ) async {
-    final currentState = state;
+    final ReaderState currentState = state;
     if (currentState is! ReaderLoaded) return;
 
-    final session = currentState.session;
+    final ReadingSession session = currentState.session;
     int newPage;
 
     if (event.forward) {
@@ -390,7 +393,7 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
       }
     }
 
-    final updatedSession = session.copyWith(currentPage: newPage);
+    final ReadingSession updatedSession = session.copyWith(currentPage: newPage);
     emit(currentState.copyWith(session: updatedSession));
   }
 
@@ -398,12 +401,12 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
     JumpToPage event,
     Emitter<ReaderState> emit,
   ) async {
-    final currentState = state;
+    final ReaderState currentState = state;
     if (currentState is! ReaderLoaded) return;
 
-    final session = currentState.session;
+    final ReadingSession session = currentState.session;
     if (event.page >= 0 && event.page < session.pages.length) {
-      final updatedSession = session.copyWith(currentPage: event.page);
+      final ReadingSession updatedSession = session.copyWith(currentPage: event.page);
       emit(currentState.copyWith(session: updatedSession));
     }
   }
@@ -412,7 +415,7 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
     SwitchChapter event,
     Emitter<ReaderState> emit,
   ) async {
-    final currentState = state;
+    final ReaderState currentState = state;
     if (currentState is! ReaderLoaded) return;
 
     // 这里需要实现章节切换逻辑
@@ -426,31 +429,31 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
     UpdateReaderConfig event,
     Emitter<ReaderState> emit,
   ) async {
-    final currentState = state;
+    final ReaderState currentState = state;
     if (currentState is! ReaderLoaded) return;
 
     // 保存配置
     await saveReaderConfig(event.config);
 
     // 重新计算页面分页
-    const screenSize = Size(375, 667);
-    final pages = PageCalculator.calculatePages(
+    const Size screenSize = Size(375, 667);
+    final List<String> pages = PageCalculator.calculatePages(
       content: currentState.session.currentChapter.content ?? '',
       config: event.config,
       screenSize: screenSize,
     );
 
     // 重新计算当前页码
-    final currentPosition = PageCalculator.calculatePositionFromPage(
+    final int currentPosition = PageCalculator.calculatePositionFromPage(
       pages: currentState.session.pages,
       page: currentState.session.currentPage,
     );
-    final newPage = PageCalculator.calculatePageFromPosition(
+    final int newPage = PageCalculator.calculatePageFromPosition(
       pages: pages,
       position: currentPosition,
     );
 
-    final updatedSession = currentState.session.copyWith(
+    final ReadingSession updatedSession = currentState.session.copyWith(
       pages: pages,
       currentPage: newPage,
     );
@@ -465,17 +468,17 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
     AddBookmarkEvent event,
     Emitter<ReaderState> emit,
   ) async {
-    final currentState = state;
+    final ReaderState currentState = state;
     if (currentState is! ReaderLoaded) return;
 
     try {
-      final session = currentState.session;
-      final position = PageCalculator.calculatePositionFromPage(
+      final ReadingSession session = currentState.session;
+      final int position = PageCalculator.calculatePositionFromPage(
         pages: session.pages,
         page: session.currentPage,
       );
 
-      final bookmarkResult = await addBookmark(AddBookmarkParams(
+      final Either<AppError, BookmarkModel> bookmarkResult = await addBookmark(AddBookmarkParams(
         novelId: session.novelId,
         chapterId: session.currentChapter.id,
         position: position,
@@ -484,11 +487,11 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
       ));
 
       bookmarkResult.fold(
-        (failure) {
+        (AppError failure) {
           emit(currentState.copyWith(error: failure.message));
         },
-        (bookmark) {
-          final updatedBookmarks = [...currentState.bookmarks, bookmark];
+        (BookmarkModel bookmark) {
+          final List<BookmarkModel> updatedBookmarks = <BookmarkModel>[...currentState.bookmarks, bookmark];
           emit(currentState.copyWith(bookmarks: updatedBookmarks));
         },
       );
@@ -501,7 +504,7 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
     ToggleUIVisibility event,
     Emitter<ReaderState> emit,
   ) async {
-    final currentState = state;
+    final ReaderState currentState = state;
     if (currentState is! ReaderLoaded) return;
 
     emit(currentState.copyWith(isUIVisible: !currentState.isUIVisible));
@@ -511,10 +514,10 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
     ToggleAutoPage event,
     Emitter<ReaderState> emit,
   ) async {
-    final currentState = state;
+    final ReaderState currentState = state;
     if (currentState is! ReaderLoaded) return;
 
-    final session = currentState.session;
+    final ReadingSession session = currentState.session;
     if (session.isAutoPage) {
       _autoPageTimer?.cancel();
       emit(currentState.copyWith(
@@ -532,12 +535,12 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
     SaveProgress event,
     Emitter<ReaderState> emit,
   ) async {
-    final currentState = state;
+    final ReaderState currentState = state;
     if (currentState is! ReaderLoaded) return;
 
     try {
-      final session = currentState.session;
-      final position = PageCalculator.calculatePositionFromPage(
+      final ReadingSession session = currentState.session;
+      final int position = PageCalculator.calculatePositionFromPage(
         pages: session.pages,
         page: session.currentPage,
       );
@@ -554,13 +557,13 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
   }
 
   void _startAutoPageTimer() {
-    final currentState = state;
+    final ReaderState currentState = state;
     if (currentState is! ReaderLoaded) return;
 
     _autoPageTimer?.cancel();
     _autoPageTimer = Timer.periodic(
       Duration(seconds: currentState.config.autoPageInterval),
-      (timer) {
+      (Timer timer) {
         add(const TurnPage(true));
       },
     );
@@ -570,7 +573,7 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
     _progressSaveTimer?.cancel();
     _progressSaveTimer = Timer.periodic(
       const Duration(seconds: 10), // 每10秒保存一次进度
-      (timer) {
+      (Timer timer) {
         add(const SaveProgress());
       },
     );

@@ -29,7 +29,7 @@ class BookModule {
     );
 
     _getIt.registerLazySingleton<BookLocalDataSource>(
-      () => BookLocalDataSourceImpl(),
+      BookLocalDataSourceImpl.new,
     );
 
     // ===================================

@@ -4,21 +4,20 @@ import '../../../../shared/models/novel_model.dart';
 import '../../../../shared/models/chapter_model.dart';
 
 class BookDetail extends Equatable {
+
+  const BookDetail({
+    required this.novel,
+    required this.stats, this.chapters = const <ChapterSimpleModel>[],
+    this.readingProgress,
+    this.isFavorited = false,
+    this.isDownloaded = false,
+  });
   final NovelModel novel;
   final List<ChapterSimpleModel> chapters;
   final ReadingProgress? readingProgress;
   final bool isFavorited;
   final bool isDownloaded;
   final BookStats stats;
-
-  const BookDetail({
-    required this.novel,
-    this.chapters = const [],
-    this.readingProgress,
-    this.isFavorited = false,
-    this.isDownloaded = false,
-    required this.stats,
-  });
 
   /// 是否有阅读进度
   bool get hasProgress => readingProgress != null;
@@ -28,7 +27,7 @@ class BookDetail extends Equatable {
     if (readingProgress == null) return null;
     try {
       return chapters.firstWhere(
-        (chapter) => chapter.id == readingProgress!.chapterId,
+        (ChapterSimpleModel chapter) => chapter.id == readingProgress!.chapterId,
       );
     } catch (e) {
       return chapters.isNotEmpty ? chapters.first : null;
@@ -37,10 +36,10 @@ class BookDetail extends Equatable {
 
   /// 下一章节
   ChapterSimpleModel? get nextChapter {
-    final current = currentChapter;
+    final ChapterSimpleModel? current = currentChapter;
     if (current == null) return chapters.isNotEmpty ? chapters.first : null;
     
-    final currentIndex = chapters.indexWhere((c) => c.id == current.id);
+    final int currentIndex = chapters.indexWhere((ChapterSimpleModel c) => c.id == current.id);
     if (currentIndex >= 0 && currentIndex < chapters.length - 1) {
       return chapters[currentIndex + 1];
     }
@@ -48,25 +47,16 @@ class BookDetail extends Equatable {
   }
 
   /// 可阅读章节数
-  int get readableChapterCount {
-    return chapters.where((chapter) => chapter.canRead).length;
-  }
+  int get readableChapterCount => chapters.where((ChapterSimpleModel chapter) => chapter.canRead).length;
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
     novel, chapters, readingProgress, 
     isFavorited, isDownloaded, stats
   ];
 }
 
 class BookStats extends Equatable {
-  final int totalViews;
-  final int todayViews;
-  final int favoriteCount;
-  final int commentCount;
-  final int shareCount;
-  final double averageRating;
-  final int ratingCount;
 
   const BookStats({
     this.totalViews = 0,
@@ -77,11 +67,18 @@ class BookStats extends Equatable {
     this.averageRating = 0.0,
     this.ratingCount = 0,
   });
+  final int totalViews;
+  final int todayViews;
+  final int favoriteCount;
+  final int commentCount;
+  final int shareCount;
+  final double averageRating;
+  final int ratingCount;
 
   /// 格式化阅读量显示
   String get formattedViews {
     if (totalViews < 10000) {
-      return '${totalViews}次阅读';
+      return '$totalViews次阅读';
     } else if (totalViews < 100000000) {
       return '${(totalViews / 10000).toStringAsFixed(1)}万次阅读';
     } else {
@@ -92,14 +89,14 @@ class BookStats extends Equatable {
   /// 格式化收藏量显示
   String get formattedFavorites {
     if (favoriteCount < 10000) {
-      return '${favoriteCount}收藏';
+      return '$favoriteCount收藏';
     } else {
       return '${(favoriteCount / 10000).toStringAsFixed(1)}万收藏';
     }
   }
 
   @override
-  List<Object> get props => [
+  List<Object> get props => <Object>[
     totalViews, todayViews, favoriteCount, 
     commentCount, shareCount, averageRating, ratingCount
   ];

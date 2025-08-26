@@ -12,15 +12,25 @@ enum CommentType {
   final int value;
   final String displayName;
 
-  static CommentType fromValue(int? value) {
-    return CommentType.values.firstWhere(
-      (t) => t.value == value,
+  static CommentType fromValue(int? value) => CommentType.values.firstWhere(
+      (CommentType t) => t.value == value,
       orElse: () => CommentType.book,
     );
-  }
 }
 
 class Comment extends Equatable {
+
+  const Comment({
+    required this.id,
+    required this.targetId,
+    required this.author, required this.content, required this.createdAt, required this.updatedAt, this.type = CommentType.book,
+    this.likeCount = 0,
+    this.replyCount = 0,
+    this.isLiked = false,
+    this.isPinned = false,
+    this.parentId,
+    this.replies = const <Comment>[],
+  });
   final String id;
   final String targetId; // 小说ID或章节ID
   final CommentType type;
@@ -35,29 +45,13 @@ class Comment extends Equatable {
   final DateTime updatedAt;
   final List<Comment> replies;
 
-  const Comment({
-    required this.id,
-    required this.targetId,
-    this.type = CommentType.book,
-    required this.author,
-    required this.content,
-    this.likeCount = 0,
-    this.replyCount = 0,
-    this.isLiked = false,
-    this.isPinned = false,
-    this.parentId,
-    required this.createdAt,
-    required this.updatedAt,
-    this.replies = const [],
-  });
-
   /// 是否为回复
   bool get isReply => parentId != null;
 
   /// 发布时间显示
   String get timeDisplay {
-    final now = DateTime.now();
-    final diff = now.difference(createdAt);
+    final DateTime now = DateTime.now();
+    final Duration diff = now.difference(createdAt);
     
     if (diff.inMinutes < 1) {
       return '刚刚';
@@ -73,7 +67,7 @@ class Comment extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
     id, targetId, type, author, content, likeCount, 
     replyCount, isLiked, isPinned, parentId, 
     createdAt, updatedAt, replies

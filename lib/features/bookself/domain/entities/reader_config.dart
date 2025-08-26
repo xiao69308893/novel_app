@@ -2,6 +2,38 @@ import 'package:equatable/equatable.dart';
 
 /// 阅读器配置
 class ReaderConfig extends Equatable {
+
+  const ReaderConfig({
+    this.fontSize = 16.0,
+    this.lineHeight = 1.5,
+    this.fontFamily = 'System',
+    this.backgroundColor = '#FFFFFF',
+    this.textColor = '#000000',
+    this.pageMargin = 16.0,
+    this.isDarkMode = false,
+    this.brightness = 1.0,
+    this.autoTurnPage = false,
+    this.turnPageInterval = 5,
+    this.showProgress = true,
+    this.showTime = true,
+    this.showBattery = true,
+  });
+
+  factory ReaderConfig.fromJson(Map<String, dynamic> json) => ReaderConfig(
+      fontSize: (json['fontSize'] as num?)?.toDouble() ?? 16.0,
+      lineHeight: (json['lineHeight'] as num?)?.toDouble() ?? 1.5,
+      fontFamily: json['fontFamily'] as String? ?? 'System',
+      backgroundColor: json['backgroundColor'] as String? ?? '#FFFFFF',
+      textColor: json['textColor'] as String? ?? '#000000',
+      pageMargin: (json['pageMargin'] as num?)?.toDouble() ?? 16.0,
+      isDarkMode: json['isDarkMode'] as bool? ?? false,
+      brightness: (json['brightness'] as num?)?.toDouble() ?? 1.0,
+      autoTurnPage: json['autoTurnPage'] as bool? ?? false,
+      turnPageInterval: json['turnPageInterval'] as int? ?? 5,
+      showProgress: json['showProgress'] as bool? ?? true,
+      showTime: json['showTime'] as bool? ?? true,
+      showBattery: json['showBattery'] as bool? ?? true,
+    );
   /// 字体大小
   final double fontSize;
   
@@ -41,24 +73,8 @@ class ReaderConfig extends Equatable {
   /// 是否显示电量
   final bool showBattery;
 
-  const ReaderConfig({
-    this.fontSize = 16.0,
-    this.lineHeight = 1.5,
-    this.fontFamily = 'System',
-    this.backgroundColor = '#FFFFFF',
-    this.textColor = '#000000',
-    this.pageMargin = 16.0,
-    this.isDarkMode = false,
-    this.brightness = 1.0,
-    this.autoTurnPage = false,
-    this.turnPageInterval = 5,
-    this.showProgress = true,
-    this.showTime = true,
-    this.showBattery = true,
-  });
-
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         fontSize,
         lineHeight,
         fontFamily,
@@ -88,8 +104,7 @@ class ReaderConfig extends Equatable {
     bool? showProgress,
     bool? showTime,
     bool? showBattery,
-  }) {
-    return ReaderConfig(
+  }) => ReaderConfig(
       fontSize: fontSize ?? this.fontSize,
       lineHeight: lineHeight ?? this.lineHeight,
       fontFamily: fontFamily ?? this.fontFamily,
@@ -104,10 +119,8 @@ class ReaderConfig extends Equatable {
       showTime: showTime ?? this.showTime,
       showBattery: showBattery ?? this.showBattery,
     );
-  }
 
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'fontSize': fontSize,
       'lineHeight': lineHeight,
       'fontFamily': fontFamily,
@@ -122,23 +135,4 @@ class ReaderConfig extends Equatable {
       'showTime': showTime,
       'showBattery': showBattery,
     };
-  }
-
-  factory ReaderConfig.fromJson(Map<String, dynamic> json) {
-    return ReaderConfig(
-      fontSize: (json['fontSize'] as num?)?.toDouble() ?? 16.0,
-      lineHeight: (json['lineHeight'] as num?)?.toDouble() ?? 1.5,
-      fontFamily: json['fontFamily'] as String? ?? 'System',
-      backgroundColor: json['backgroundColor'] as String? ?? '#FFFFFF',
-      textColor: json['textColor'] as String? ?? '#000000',
-      pageMargin: (json['pageMargin'] as num?)?.toDouble() ?? 16.0,
-      isDarkMode: json['isDarkMode'] as bool? ?? false,
-      brightness: (json['brightness'] as num?)?.toDouble() ?? 1.0,
-      autoTurnPage: json['autoTurnPage'] as bool? ?? false,
-      turnPageInterval: json['turnPageInterval'] as int? ?? 5,
-      showProgress: json['showProgress'] as bool? ?? true,
-      showTime: json['showTime'] as bool? ?? true,
-      showBattery: json['showBattery'] as bool? ?? true,
-    );
-  }
 }

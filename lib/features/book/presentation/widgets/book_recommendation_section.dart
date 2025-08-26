@@ -5,18 +5,16 @@ import '../../../../shared/models/novel_model.dart';
 import '../../../../shared/widgets/novel_card.dart';
 
 class BookRecommendationSection extends StatelessWidget {
+
+  const BookRecommendationSection({
+    required this.title, required this.books, super.key,
+  });
   final String title;
   final List<NovelSimpleModel> books;
 
-  const BookRecommendationSection({
-    Key? key,
-    required this.title,
-    required this.books,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     if (books.isEmpty) {
       return const SizedBox.shrink();
@@ -29,7 +27,7 @@ class BookRecommendationSection extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: AppTheme.spacingSmall,
@@ -52,19 +50,16 @@ class BookRecommendationSection extends StatelessWidget {
                 horizontal: AppTheme.spacingSmall,
               ),
               itemCount: books.length,
-              itemBuilder: (context, index) {
-                return Container(
+              itemBuilder: (BuildContext context, int index) => Container(
                   width: 120,
                   margin: const EdgeInsets.only(
                     right: AppTheme.spacingRegular,
                   ),
                   child: NovelCard(
                     novel: books[index],
-                    showAuthor: true,
                     onTap: () => _handleBookTap(context, books[index]),
                   ),
-                );
-              },
+                ),
             ),
           ),
         ],
@@ -76,7 +71,7 @@ class BookRecommendationSection extends StatelessWidget {
     Navigator.pushNamed(
       context,
       '/book/detail',
-      arguments: {'bookId': book.id},
+      arguments: <String, String>{'bookId': book.id},
     );
   }
 }

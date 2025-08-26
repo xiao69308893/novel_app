@@ -7,9 +7,9 @@ import '../entities/book_detail.dart';
 import '../repositories/book_repository.dart';
 
 class GetBookDetailUseCase implements UseCase<BookDetail, GetBookDetailParams> {
-  final BookRepository repository;
 
   GetBookDetailUseCase(this.repository);
+  final BookRepository repository;
 
   @override
   Future<Either<AppError, BookDetail>> call(GetBookDetailParams params) async {
@@ -18,15 +18,15 @@ class GetBookDetailUseCase implements UseCase<BookDetail, GetBookDetailParams> {
       return Left(DataError.validation(message: '小说ID不能为空'));
     }
 
-    return await repository.getBookDetail(params.bookId);
+    return repository.getBookDetail(params.bookId);
   }
 }
 
 class GetBookDetailParams extends Equatable {
-  final String bookId;
 
   const GetBookDetailParams({required this.bookId});
+  final String bookId;
 
   @override
-  List<Object> get props => [bookId];
+  List<Object> get props => <Object>[bookId];
 }

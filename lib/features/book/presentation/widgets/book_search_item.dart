@@ -5,20 +5,16 @@ import '../../../../shared/models/novel_model.dart';
 
 /// 图书搜索项组件
 class BookSearchItem extends StatelessWidget {
+
+  const BookSearchItem({
+    required this.novel, required this.keyword, required this.onTap, super.key,
+  });
   final NovelSimpleModel novel;
   final String keyword;
   final VoidCallback onTap;
 
-  const BookSearchItem({
-    Key? key,
-    required this.novel,
-    required this.keyword,
-    required this.onTap,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return Card(
+  Widget build(BuildContext context) => Card(
       margin: const EdgeInsets.only(bottom: AppTheme.spacingRegular),
       child: InkWell(
         onTap: onTap,
@@ -27,7 +23,7 @@ class BookSearchItem extends StatelessWidget {
           padding: const EdgeInsets.all(AppTheme.spacingRegular),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               // 封面图片
               ClipRRect(
                 borderRadius: BorderRadius.circular(6),
@@ -35,7 +31,6 @@ class BookSearchItem extends StatelessWidget {
                   imageUrl: novel.coverUrl ?? '',
                   width: 60,
                   height: 80,
-                  fit: BoxFit.cover,
                 ),
               ),
               const SizedBox(width: AppTheme.spacingRegular),
@@ -44,7 +39,7 @@ class BookSearchItem extends StatelessWidget {
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     // 书名
                     _buildHighlightText(
                       novel.title,
@@ -68,7 +63,7 @@ class BookSearchItem extends StatelessWidget {
                     
                     // 分类和状态
                     Row(
-                      children: [
+                      children: <Widget>[
                         if (novel.categoryName != null)
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -116,7 +111,7 @@ class BookSearchItem extends StatelessWidget {
                     
                     // 统计信息
                     Row(
-                      children: [
+                      children: <Widget>[
                         Icon(
                           Icons.book,
                           size: 14,
@@ -154,16 +149,15 @@ class BookSearchItem extends StatelessWidget {
         ),
       ),
     );
-  }
 
   Widget _buildHighlightText(String text, String keyword, TextStyle style) {
     if (keyword.isEmpty) {
       return Text(text, style: style);
     }
 
-    final lowerText = text.toLowerCase();
-    final lowerKeyword = keyword.toLowerCase();
-    final index = lowerText.indexOf(lowerKeyword);
+    final String lowerText = text.toLowerCase();
+    final String lowerKeyword = keyword.toLowerCase();
+    final int index = lowerText.indexOf(lowerKeyword);
 
     if (index == -1) {
       return Text(text, style: style);
@@ -172,7 +166,7 @@ class BookSearchItem extends StatelessWidget {
     return RichText(
       text: TextSpan(
         style: style,
-        children: [
+        children: <InlineSpan>[
           if (index > 0)
             TextSpan(text: text.substring(0, index)),
           TextSpan(

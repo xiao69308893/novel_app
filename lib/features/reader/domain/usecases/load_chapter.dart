@@ -28,7 +28,7 @@ class LoadChapterParams extends Equatable {
   final String chapterId;
 
   @override
-  List<Object> get props => [novelId, chapterId];
+  List<Object> get props => <Object>[novelId, chapterId];
 }
 
 /// 获取章节列表用例
@@ -43,12 +43,12 @@ class GetChapterList extends UseCase<List<ChapterSimpleModel>, GetChapterListPar
 
 /// 获取章节列表参数
 class GetChapterListParams extends Equatable {
-  final String novelId;
 
   const GetChapterListParams({required this.novelId});
+  final String novelId;
 
   @override
-  List<Object> get props => [novelId];
+  List<Object> get props => <Object>[novelId];
 }
 
 /// 获取相邻章节用例
@@ -75,7 +75,7 @@ class GetAdjacentChaptersParams extends Equatable {
   final String chapterId;
 
   @override
-  List<Object> get props => [novelId, chapterId];
+  List<Object> get props => <Object>[novelId, chapterId];
 }
 
 /// 搜索章节用例
@@ -85,7 +85,7 @@ class SearchChapters extends UseCase<List<ChapterSimpleModel>, SearchChaptersPar
   final ReaderRepository repository;
 
   @override
-  ResultFuture<List<ChapterSimpleModel>> call(SearchChaptersParams params) async => await repository.searchChapters(
+  ResultFuture<List<ChapterSimpleModel>> call(SearchChaptersParams params) async => repository.searchChapters(
       novelId: params.novelId,
       keyword: params.keyword,
     );
@@ -102,7 +102,7 @@ class SearchChaptersParams extends Equatable {
   final String keyword;
 
   @override
-  List<Object> get props => [novelId, keyword];
+  List<Object> get props => <Object>[novelId, keyword];
 }
 
 /// 购买章节用例
@@ -129,5 +129,5 @@ class PurchaseChapterParams extends Equatable {
   final String chapterId;
 
   @override
-  List<Object> get props => [novelId, chapterId];
+  List<Object> get props => <Object>[novelId, chapterId];
 }

@@ -5,24 +5,20 @@ import '../repositories/bookshelf_repository.dart';
 
 /// 用户签到用例
 class UserCheckIn implements UseCase<Map<String, dynamic>, NoParams> {
-  final BookshelfRepository repository;
 
   UserCheckIn(this.repository);
+  final BookshelfRepository repository;
 
   @override
-  Future<Either<AppError, Map<String, dynamic>>> call(NoParams params) async {
-    return await repository.checkIn();
-  }
+  Future<Either<AppError, Map<String, dynamic>>> call(NoParams params) async => repository.checkIn();
 }
 
 /// 获取签到状态用例
 class GetCheckInStatus implements UseCase<bool, NoParams> {
-  final BookshelfRepository repository;
 
   GetCheckInStatus(this.repository);
+  final BookshelfRepository repository;
 
   @override
-  Future<Either<AppError, bool>> call(NoParams params) async {
-    return await repository.getCheckInStatus();
-  }
+  Future<Either<AppError, bool>> call(NoParams params) async => repository.getCheckInStatus();
 }

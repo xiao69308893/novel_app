@@ -19,9 +19,9 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   @override
   Future<AuthUserModel?> getUser() async {
     try {
-      final userJson = await PreferencesHelper.getString(_userKey);
+      final String? userJson = PreferencesHelper.getString(_userKey);
       if (userJson != null) {
-        final userMap = json.decode(userJson) as Map<String, dynamic>;
+        final Map<String, dynamic> userMap = json.decode(userJson) as Map<String, dynamic>;
         return AuthUserModel.fromJson(userMap);
       }
       return null;
@@ -32,16 +32,16 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
 
   @override
   Future<void> saveUser(AuthUserModel user) async {
-    final userJson = json.encode(user.toJson());
+    final String userJson = json.encode(user.toJson());
     await PreferencesHelper.setString(_userKey, userJson);
   }
 
   @override
   Future<AuthTokenModel?> getToken() async {
     try {
-      final tokenJson = await PreferencesHelper.getString(_tokenKey);
+      final String? tokenJson = PreferencesHelper.getString(_tokenKey);
       if (tokenJson != null) {
-        final tokenMap = json.decode(tokenJson) as Map<String, dynamic>;
+        final Map<String, dynamic> tokenMap = json.decode(tokenJson) as Map<String, dynamic>;
         return AuthTokenModel.fromJson(tokenMap);
       }
       return null;
@@ -52,7 +52,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
 
   @override
   Future<void> saveToken(AuthTokenModel token) async {
-    final tokenJson = json.encode(token.toJson());
+    final String tokenJson = json.encode(token.toJson());
     await PreferencesHelper.setString(_tokenKey, tokenJson);
   }
 

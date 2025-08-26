@@ -6,24 +6,23 @@ import 'cached_image.dart';
 
 /// 小说卡片组件
 class NovelCard extends StatelessWidget {
+
+  const NovelCard({
+    required this.novel, super.key,
+    this.showAuthor = true,
+    this.onTap,
+    this.width,
+    this.height,
+  });
   final NovelSimpleModel novel;
   final bool showAuthor;
   final VoidCallback? onTap;
   final double? width;
   final double? height;
 
-  const NovelCard({
-    Key? key,
-    required this.novel,
-    this.showAuthor = true,
-    this.onTap,
-    this.width,
-    this.height,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     
     return GestureDetector(
       onTap: onTap,
@@ -32,7 +31,7 @@ class NovelCard extends StatelessWidget {
         height: height ?? 200.h,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 4,
@@ -42,7 +41,7 @@ class NovelCard extends StatelessWidget {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             // 封面图片
             Expanded(
               flex: 3,
@@ -54,8 +53,7 @@ class NovelCard extends StatelessWidget {
                   imageUrl: novel.coverUrl ?? '',
                   width: double.infinity,
                   height: double.infinity,
-                  fit: BoxFit.cover,
-                  placeholder: Container(
+                  placeholder: ColoredBox(
                     color: theme.colorScheme.surfaceContainerHighest,
                     child: Icon(
                       Icons.book,
@@ -80,7 +78,7 @@ class NovelCard extends StatelessWidget {
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     // 标题
                     Text(
                       novel.title,
@@ -91,7 +89,7 @@ class NovelCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     
-                    if (showAuthor) ...[
+                    if (showAuthor) ...<Widget>[
                       SizedBox(height: 4.h),
                       // 作者
                       Text(
@@ -108,7 +106,7 @@ class NovelCard extends StatelessWidget {
                     
                     // 状态信息
                     Row(
-                      children: [
+                      children: <Widget>[
                         Container(
                           padding: EdgeInsets.symmetric(
                             horizontal: 6.w,

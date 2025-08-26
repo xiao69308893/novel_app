@@ -4,16 +4,16 @@ import '../../../../app/themes/app_theme.dart';
 
 /// 亮度控制组件
 class BrightnessControl extends StatefulWidget {
-  final double initialBrightness;
-  final ValueChanged<double>? onBrightnessChanged;
-  final VoidCallback? onClose;
 
   const BrightnessControl({
-    Key? key,
+    super.key,
     this.initialBrightness = 0.5,
     this.onBrightnessChanged,
     this.onClose,
-  }) : super(key: key);
+  });
+  final double initialBrightness;
+  final ValueChanged<double>? onBrightnessChanged;
+  final VoidCallback? onClose;
 
   @override
   State<BrightnessControl> createState() => _BrightnessControlState();
@@ -71,10 +71,9 @@ class _BrightnessControlState extends State<BrightnessControl>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
+  Widget build(BuildContext context) => GestureDetector(
       onTap: _close,
-      child: Container(
+      child: ColoredBox(
         color: Colors.black.withValues(alpha: 0.5),
         child: FadeTransition(
           opacity: _animation,
@@ -90,10 +89,10 @@ class _BrightnessControlState extends State<BrightnessControl>
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: [
+                  children: <Widget>[
                     // 标题
                     Row(
-                      children: [
+                      children: <Widget>[
                         const Icon(Icons.brightness_6),
                         const SizedBox(width: AppTheme.spacingSmall),
                         const Text(
@@ -115,13 +114,12 @@ class _BrightnessControlState extends State<BrightnessControl>
                     
                     // 亮度滑块
                     Row(
-                      children: [
+                      children: <Widget>[
                         const Icon(Icons.brightness_low),
                         Expanded(
                           child: Slider(
                             value: _brightness,
                             min: 0.1,
-                            max: 1.0,
                             divisions: 9,
                             label: '${(_brightness * 100).round()}%',
                             onChanged: _setBrightness,
@@ -136,7 +134,7 @@ class _BrightnessControlState extends State<BrightnessControl>
                     // 快捷按钮
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
+                      children: <Widget>[
                         _buildQuickButton('最暗', 0.1),
                         _buildQuickButton('较暗', 0.3),
                         _buildQuickButton('适中', 0.5),
@@ -152,10 +150,9 @@ class _BrightnessControlState extends State<BrightnessControl>
         ),
       ),
     );
-  }
 
   Widget _buildQuickButton(String label, double brightness) {
-    final isSelected = (_brightness - brightness).abs() < 0.05;
+    final bool isSelected = (_brightness - brightness).abs() < 0.05;
     
     return GestureDetector(
       onTap: () => _setBrightness(brightness),

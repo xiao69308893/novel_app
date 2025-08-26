@@ -6,6 +6,15 @@ import '../../../../app/themes/app_theme.dart';
 
 /// 阅读器顶部导航栏
 class ReaderAppBar extends StatelessWidget implements PreferredSizeWidget {
+
+  const ReaderAppBar({
+    required this.novel, required this.chapter, super.key,
+    this.isVisible = true,
+    this.onBackPressed,
+    this.onMenuPressed,
+    this.onBookmarkPressed,
+    this.hasBookmark = false,
+  });
   final NovelModel novel;
   final ChapterModel chapter;
   final bool isVisible;
@@ -14,20 +23,8 @@ class ReaderAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onBookmarkPressed;
   final bool hasBookmark;
 
-  const ReaderAppBar({
-    Key? key,
-    required this.novel,
-    required this.chapter,
-    this.isVisible = true,
-    this.onBackPressed,
-    this.onMenuPressed,
-    this.onBookmarkPressed,
-    this.hasBookmark = false,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
+  Widget build(BuildContext context) => AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       transform: Matrix4.translationValues(0, isVisible ? 0 : -100, 0),
       child: AppBar(
@@ -41,7 +38,7 @@ class ReaderAppBar extends StatelessWidget implements PreferredSizeWidget {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: <Widget>[
             Text(
               novel.title,
               style: const TextStyle(
@@ -63,7 +60,7 @@ class ReaderAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ],
         ),
-        actions: [
+        actions: <Widget>[
           IconButton(
             icon: Icon(
               hasBookmark ? Icons.bookmark : Icons.bookmark_border,
@@ -78,7 +75,6 @@ class ReaderAppBar extends StatelessWidget implements PreferredSizeWidget {
         ],
       ),
     );
-  }
 
   @override
   Size get preferredSize => const Size.fromHeight(AppTheme.appBarHeight);

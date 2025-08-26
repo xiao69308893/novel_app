@@ -4,12 +4,11 @@ import '../../../../app/themes/app_theme.dart';
 import '../../domain/entities/banner.dart' as home_banner;
 
 class HomeBanner extends StatefulWidget {
-  final List<home_banner.Banner> banners;
 
   const HomeBanner({
-    Key? key,
-    required this.banners,
-  }) : super(key: key);
+    required this.banners, super.key,
+  });
+  final List<home_banner.Banner> banners;
 
   @override
   State<HomeBanner> createState() => _HomeBannerState();
@@ -39,7 +38,7 @@ class _HomeBannerState extends State<HomeBanner> {
   void _startAutoPlay() {
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
-        final nextIndex = (_currentIndex + 1) % widget.banners.length;
+        final int nextIndex = (_currentIndex + 1) % widget.banners.length;
         _pageController.animateToPage(
           nextIndex,
           duration: const Duration(milliseconds: 300),
@@ -60,19 +59,17 @@ class _HomeBannerState extends State<HomeBanner> {
       height: 180,
       margin: const EdgeInsets.all(AppTheme.spacingRegular),
       child: Stack(
-        children: [
+        children: <Widget>[
           // 轮播图
           PageView.builder(
             controller: _pageController,
-            onPageChanged: (index) {
+            onPageChanged: (int index) {
               setState(() {
                 _currentIndex = index;
               });
             },
             itemCount: widget.banners.length,
-            itemBuilder: (context, index) {
-              return _buildBannerItem(widget.banners[index]);
-            },
+            itemBuilder: (BuildContext context, int index) => _buildBannerItem(widget.banners[index]),
           ),
           
           // 指示器
@@ -88,10 +85,9 @@ class _HomeBannerState extends State<HomeBanner> {
     );
   }
 
-  Widget _buildBannerItem(home_banner.Banner banner) {
-    return GestureDetector(
+  Widget _buildBannerItem(home_banner.Banner banner) => GestureDetector(
       onTap: () => _handleBannerTap(banner),
-      child: Container(
+      child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppTheme.radiusRegular),
           image: DecorationImage(
@@ -105,7 +101,7 @@ class _HomeBannerState extends State<HomeBanner> {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [
+              colors: <Color>[
                 Colors.transparent,
                 Colors.black.withValues(alpha: 0.3),
               ],
@@ -115,7 +111,7 @@ class _HomeBannerState extends State<HomeBanner> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               Text(
                 banner.title,
                 style: const TextStyle(
@@ -141,14 +137,12 @@ class _HomeBannerState extends State<HomeBanner> {
         ),
       ),
     );
-  }
 
-  Widget _buildIndicator() {
-    return Row(
+  Widget _buildIndicator() => Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: widget.banners.asMap().entries.map((entry) {
-        final index = entry.key;
-        final isActive = index == _currentIndex;
+      children: widget.banners.asMap().entries.map((MapEntry<int, home_banner.Banner> entry) {
+        final int index = entry.key;
+        final bool isActive = index == _currentIndex;
         
         return Container(
           width: isActive ? 16 : 8,
@@ -161,7 +155,6 @@ class _HomeBannerState extends State<HomeBanner> {
         );
       }).toList(),
     );
-  }
 
   void _handleBannerTap(home_banner.Banner banner) {
     switch (banner.type) {
@@ -170,7 +163,7 @@ class _HomeBannerState extends State<HomeBanner> {
           Navigator.pushNamed(
             context,
             '/novel/detail',
-            arguments: {'novelId': banner.targetId},
+            arguments: <String, String?>{'novelId': banner.targetId},
           );
         }
         break;

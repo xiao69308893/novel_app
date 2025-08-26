@@ -6,18 +6,15 @@ class RecommendationModel extends Recommendation {
   const RecommendationModel({
     required super.id,
     required super.title,
-    super.description,
+    required super.createdAt, required super.updatedAt, super.description,
     super.type,
     super.novels,
     super.coverUrl,
     super.sort,
     super.isActive,
-    required super.createdAt,
-    required super.updatedAt,
   });
 
-  factory RecommendationModel.fromJson(Map<String, dynamic> json) {
-    return RecommendationModel(
+  factory RecommendationModel.fromJson(Map<String, dynamic> json) => RecommendationModel(
       id: json['id'] as String,
       title: json['title'] as String,
       description: json['description'] as String?,
@@ -25,32 +22,28 @@ class RecommendationModel extends Recommendation {
       novels: (json['novels'] as List?)
           ?.map((novel) => NovelSimpleModel.fromJson(novel as Map<String, dynamic>))
           .cast<NovelSimpleModel>()
-          .toList() ?? [],
+          .toList() ?? <NovelSimpleModel>[],
       coverUrl: json['cover_url'] as String?,
       sort: json['sort'] as int? ?? 0,
       isActive: json['is_active'] as bool? ?? true,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
     );
-  }
 
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson() => <String, dynamic>{
       'id': id,
       'title': title,
       'description': description,
       'type': type.value,
-      'novels': novels.map((novel) => novel.toJson()).toList(),
+      'novels': novels.map((NovelSimpleModel novel) => novel.toJson()).toList(),
       'cover_url': coverUrl,
       'sort': sort,
       'is_active': isActive,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };
-  }
 
-  Recommendation toEntity() {
-    return Recommendation(
+  Recommendation toEntity() => Recommendation(
       id: id,
       title: title,
       description: description,
@@ -62,5 +55,4 @@ class RecommendationModel extends Recommendation {
       createdAt: createdAt,
       updatedAt: updatedAt,
     );
-  }
 }

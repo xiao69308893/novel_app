@@ -6,7 +6,7 @@ import '../blocs/bookshelf/bookshelf_bloc.dart';
 
 /// 设置页面
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+  const SettingsPage({super.key});
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -14,22 +14,21 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CommonAppBar(title: '设置'),
+  Widget build(BuildContext context) => Scaffold(
+      appBar: const CommonAppBar(title: '设置'),
       body: BlocBuilder<BookshelfBloc, BookshelfState>(
-        builder: (context, state) {
+        builder: (BuildContext context, BookshelfState state) {
           if (state is BookshelfLoaded && state.user?.settings != null) {
             final settings = state.user!.settings!;
             
             return ListView(
               padding: const EdgeInsets.all(AppTheme.spacingRegular),
-              children: [
+              children: <Widget>[
                 // 阅读器设置
                 _buildSettingsSection(
                   context,
                   title: '阅读器设置',
-                  children: [
+                  children: <Widget>[
                     _buildSliderSetting(
                       context,
                       title: '字体大小',
@@ -37,7 +36,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       min: 12.0,
                       max: 24.0,
                       divisions: 12,
-                      onChanged: (value) {
+                      onChanged: (double value) {
                         // 更新字体大小
                       },
                     ),
@@ -48,7 +47,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       min: 1.0,
                       max: 2.5,
                       divisions: 15,
-                      onChanged: (value) {
+                      onChanged: (double value) {
                         // 更新行间距
                       },
                     ),
@@ -56,12 +55,12 @@ class _SettingsPageState extends State<SettingsPage> {
                       context,
                       title: '阅读主题',
                       value: settings.reader.theme as String,
-                      items: const {
+                      items: const <String, String>{
                         'light': '明亮主题',
                         'dark': '暗黑主题',
                         'sepia': '护眼主题',
                       },
-                      onChanged: (value) {
+                      onChanged: (String? value) {
                         // 更新阅读主题
                       },
                     ),
@@ -70,7 +69,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       title: '屏幕常亮',
                       subtitle: '阅读时保持屏幕常亮',
                       value: settings.reader.keepScreenOn as bool,
-                      onChanged: (value) {
+                      onChanged: (bool value) {
                         // 更新屏幕常亮设置
                       },
                     ),
@@ -79,7 +78,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       title: '音量键翻页',
                       subtitle: '使用音量键进行翻页',
                       value: settings.reader.volumeKeyTurnPage as bool,
-                      onChanged: (value) {
+                      onChanged: (bool value) {
                         // 更新音量键翻页设置
                       },
                     ),
@@ -92,13 +91,13 @@ class _SettingsPageState extends State<SettingsPage> {
                 _buildSettingsSection(
                   context,
                   title: '通知设置',
-                  children: [
+                  children: <Widget>[
                     _buildSwitchSetting(
                       context,
                       title: '推送通知',
                       subtitle: '接收应用推送通知',
                       value: settings.notifications.enabled as bool,
-                      onChanged: (value) {
+                      onChanged: (bool value) {
                         // 更新推送通知设置
                       },
                     ),
@@ -107,7 +106,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       title: '更新通知',
                       subtitle: '小说更新时通知',
                       value: settings.notifications.updateNotification as bool,
-                      onChanged: (value) {
+                      onChanged: (bool value) {
                         // 更新更新通知设置
                       },
                     ),
@@ -116,7 +115,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       title: '推荐通知',
                       subtitle: '接收小说推荐通知',
                       value: settings.notifications.recommendationNotification as bool,
-                      onChanged: (value) {
+                      onChanged: (bool value) {
                         // 更新推荐通知设置
                       },
                     ),
@@ -129,13 +128,13 @@ class _SettingsPageState extends State<SettingsPage> {
                 _buildSettingsSection(
                   context,
                   title: '隐私设置',
-                  children: [
+                  children: <Widget>[
                     _buildSwitchSetting(
                       context,
                       title: '个人资料可见',
                       subtitle: '允许他人查看你的个人资料',
                       value: settings.privacy.profileVisible as bool,
-                      onChanged: (value) {
+                      onChanged: (bool value) {
                         // 更新个人资料可见性
                       },
                     ),
@@ -144,7 +143,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       title: '阅读记录可见',
                       subtitle: '允许他人查看你的阅读记录',
                       value: settings.privacy.readingHistoryVisible as bool,
-                      onChanged: (value) {
+                      onChanged: (bool value) {
                         // 更新阅读记录可见性
                       },
                     ),
@@ -153,7 +152,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       title: '允许搜索',
                       subtitle: '允许其他用户搜索到你',
                       value: settings.privacy.allowSearch as bool,
-                      onChanged: (value) {
+                      onChanged: (bool value) {
                         // 更新搜索可见性
                       },
                     ),
@@ -166,7 +165,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 _buildSettingsSection(
                   context,
                   title: '其他设置',
-                  children: [
+                  children: <Widget>[
                     ListTile(
                       title: const Text('清理缓存'),
                       subtitle: const Text('清理应用缓存数据'),
@@ -203,20 +202,19 @@ class _SettingsPageState extends State<SettingsPage> {
         },
       ),
     );
-  }
 
   Widget _buildSettingsSection(
     BuildContext context, {
     required String title,
     required List<Widget> children,
   }) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     
-    return Container(
+    return DecoratedBox(
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(AppTheme.radiusRegular),
-        boxShadow: [
+        boxShadow: <BoxShadow>[
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
@@ -226,7 +224,7 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(AppTheme.spacingRegular),
             child: Text(
@@ -245,17 +243,13 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildSwitchSetting(
     BuildContext context, {
     required String title,
-    String? subtitle,
-    required bool value,
-    required ValueChanged<bool> onChanged,
-  }) {
-    return SwitchListTile(
+    required bool value, required ValueChanged<bool> onChanged, String? subtitle,
+  }) => SwitchListTile(
       title: Text(title),
       subtitle: subtitle != null ? Text(subtitle) : null,
       value: value,
       onChanged: onChanged,
     );
-  }
 
   Widget _buildSliderSetting(
     BuildContext context, {
@@ -263,10 +257,8 @@ class _SettingsPageState extends State<SettingsPage> {
     required double value,
     required double min,
     required double max,
-    int? divisions,
-    required ValueChanged<double> onChanged,
-  }) {
-    return ListTile(
+    required ValueChanged<double> onChanged, int? divisions,
+  }) => ListTile(
       title: Text(title),
       subtitle: Slider(
         value: value,
@@ -277,7 +269,6 @@ class _SettingsPageState extends State<SettingsPage> {
         onChanged: onChanged,
       ),
     );
-  }
 
   Widget _buildDropdownSetting(
     BuildContext context, {
@@ -285,13 +276,12 @@ class _SettingsPageState extends State<SettingsPage> {
     required String value,
     required Map<String, String> items,
     required ValueChanged<String?> onChanged,
-  }) {
-    return ListTile(
+  }) => ListTile(
       title: Text(title),
       trailing: DropdownButton<String>(
         value: value,
         items: items.entries
-            .map((entry) => DropdownMenuItem(
+            .map((MapEntry<String, String> entry) => DropdownMenuItem(
                   value: entry.key,
                   child: Text(entry.value),
                 ))
@@ -300,15 +290,14 @@ class _SettingsPageState extends State<SettingsPage> {
         underline: const SizedBox.shrink(),
       ),
     );
-  }
 
   void _showClearCacheDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (BuildContext context) => AlertDialog(
         title: const Text('清理缓存'),
         content: const Text('确定要清理所有缓存数据吗？清理后需要重新下载。'),
-        actions: [
+        actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('取消'),
@@ -336,10 +325,10 @@ class _SettingsPageState extends State<SettingsPage> {
   void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (BuildContext context) => AlertDialog(
         title: const Text('退出登录'),
         content: const Text('确定要退出登录吗？'),
-        actions: [
+        actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('取消'),
@@ -351,7 +340,7 @@ class _SettingsPageState extends State<SettingsPage> {
               Navigator.pushNamedAndRemoveUntil(
                 context,
                 '/auth/login',
-                (route) => false,
+                (Route route) => false,
               );
             },
             style: ElevatedButton.styleFrom(

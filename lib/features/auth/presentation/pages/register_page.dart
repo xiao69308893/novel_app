@@ -10,20 +10,20 @@ import '../widgets/auth_input_field.dart';
 import '../widgets/auth_button.dart';
 
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({Key? key}) : super(key: key);
+  const RegisterPage({super.key});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _inviteCodeController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _inviteCodeController = TextEditingController();
   
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -41,14 +41,12 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       appBar: const CommonAppBar(
         title: '注册',
-        showBackButton: true,
       ),
       body: BlocListener<AuthCubit, AuthState>(
-        listener: (context, state) {
+        listener: (BuildContext context, AuthState state) {
           if (state is AuthError) {
             DialogUtils.showError(
               context,
@@ -62,14 +60,13 @@ class _RegisterPageState extends State<RegisterPage> {
               Navigator.pushNamedAndRemoveUntil(
                 context,
                 '/home',
-                (route) => false,
+                (Route route) => false,
               );
             });
           }
         },
         child: BlocBuilder<AuthCubit, AuthState>(
-          builder: (context, state) {
-            return LoadingOverlay(
+          builder: (BuildContext context, AuthState state) => LoadingOverlay(
               isLoading: state is AuthLoading,
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(AppTheme.spacingLarge),
@@ -77,14 +74,14 @@ class _RegisterPageState extends State<RegisterPage> {
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
+                    children: <Widget>[
                       // 用户名
                       AuthInputField(
                         controller: _usernameController,
                         labelText: '用户名',
                         hintText: '请输入用户名',
                         prefixIcon: Icons.person,
-                        validator: (value) {
+                        validator: (String? value) {
                           if (value == null || value.isEmpty) {
                             return '请输入用户名';
                           }
@@ -117,7 +114,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             });
                           },
                         ),
-                        validator: (value) {
+                        validator: (String? value) {
                           if (value == null || value.isEmpty) {
                             return '请输入密码';
                           }
@@ -147,7 +144,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             });
                           },
                         ),
-                        validator: (value) {
+                        validator: (String? value) {
                           if (value == null || value.isEmpty) {
                             return '请确认密码';
                           }
@@ -167,7 +164,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         hintText: '请输入手机号',
                         prefixIcon: Icons.phone,
                         keyboardType: TextInputType.phone,
-                        validator: (value) {
+                        validator: (String? value) {
                           if (value != null && value.isNotEmpty) {
                             if (!RegExp(r'^1[3-9]\d{9}$').hasMatch(value)) {
                               return '请输入正确的手机号';
@@ -186,7 +183,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         hintText: '请输入邮箱',
                         prefixIcon: Icons.email,
                         keyboardType: TextInputType.emailAddress,
-                        validator: (value) {
+                        validator: (String? value) {
                           if (value != null && value.isNotEmpty) {
                             if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
                               return '请输入正确的邮箱格式';
@@ -227,21 +224,19 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
               ),
-            );
-          },
+            ),
         ),
       ),
     );
-  }
 
   Widget _buildTermsCheckbox() {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     
     return Row(
-      children: [
+      children: <Widget>[
         Checkbox(
           value: _agreeTerms,
-          onChanged: (value) {
+          onChanged: (bool? value) {
             setState(() {
               _agreeTerms = value ?? false;
             });
@@ -249,7 +244,7 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
         Expanded(
           child: Wrap(
-            children: [
+            children: <Widget>[
               Text('我已阅读并同意', style: theme.textTheme.bodyMedium),
               GestureDetector(
                 onTap: () {
@@ -286,11 +281,11 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _buildLoginLink() {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
+      children: <Widget>[
         Text(
           '已有账号？',
           style: theme.textTheme.bodyMedium,
@@ -309,7 +304,7 @@ class _RegisterPageState extends State<RegisterPage> {
     if (_formKey.currentState!.validate()) {
       context.read<AuthCubit>().register(
         _emailController.text.trim().isEmpty 
-            ? _usernameController.text.trim() + '@example.com'
+            ? '${_usernameController.text.trim()}@example.com'
             : _emailController.text.trim(),
         _passwordController.text.trim(),
         _usernameController.text.trim(),

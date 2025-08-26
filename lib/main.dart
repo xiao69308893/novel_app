@@ -63,7 +63,7 @@ void main() async {
 
 /// 初始化依赖注入
 Future<void> _initializeDependencies() async {
-  final getIt = GetIt.instance;
+  final GetIt getIt = GetIt.instance;
 
   // 注册核心服务
   getIt.registerLazySingleton(() => ApiClient.instance);

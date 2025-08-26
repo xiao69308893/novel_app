@@ -11,7 +11,7 @@ import '../widgets/auth_button.dart';
 import '../widgets/verification_input.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -21,14 +21,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   late TabController _tabController;
   
   // 密码登录表单
-  final _passwordFormKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final GlobalKey<FormState> _passwordFormKey = GlobalKey<FormState>();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   
   // 验证码登录表单
-  final _phoneFormKey = GlobalKey<FormState>();
-  final _phoneController = TextEditingController();
-  final _codeController = TextEditingController();
+  final GlobalKey<FormState> _phoneFormKey = GlobalKey<FormState>();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _codeController = TextEditingController();
   
   bool _obscurePassword = true;
   bool _rememberMe = false;
@@ -51,15 +51,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     
     return Scaffold(
       appBar: const CommonAppBar(
         title: '登录',
-        showBackButton: true,
       ),
       body: BlocListener<AuthCubit, AuthState>(
-        listener: (context, state) {
+        listener: (BuildContext context, AuthState state) {
           if (state is AuthError) {
             DialogUtils.showError(
               context,
@@ -69,18 +68,17 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             Navigator.pushNamedAndRemoveUntil(
               context,
               '/home',
-              (route) => false,
+              (Route route) => false,
             );
           }
         },
         child: BlocBuilder<AuthCubit, AuthState>(
-          builder: (context, state) {
-            return LoadingOverlay(
+          builder: (BuildContext context, AuthState state) => LoadingOverlay(
               isLoading: state is AuthLoading,
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(AppTheme.spacingLarge),
                 child: Column(
-                  children: [
+                  children: <Widget>[
                     // Logo区域
                     _buildLogo(),
                     
@@ -116,15 +114,13 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                   ],
                 ),
               ),
-            );
-          },
+            ),
         ),
       ),
     );
   }
 
-  Widget _buildLogo() {
-    return Container(
+  Widget _buildLogo() => Container(
       width: 100,
       height: 100,
       decoration: BoxDecoration(
@@ -137,10 +133,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         color: Colors.white,
       ),
     );
-  }
 
-  Widget _buildTabBar(ThemeData theme) {
-    return Container(
+  Widget _buildTabBar(ThemeData theme) => DecoratedBox(
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppTheme.radiusRegular),
@@ -155,38 +149,34 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         ),
         labelColor: Colors.white,
         unselectedLabelColor: theme.textTheme.bodyMedium?.color,
-        tabs: const [
+        tabs: const <Widget>[
           Tab(text: '密码登录'),
           Tab(text: '验证码登录'),
         ],
       ),
     );
-  }
 
-  Widget _buildLoginForm() {
-    return SizedBox(
+  Widget _buildLoginForm() => SizedBox(
       height: 200,
       child: TabBarView(
         controller: _tabController,
-        children: [
+        children: <Widget>[
           _buildPasswordForm(),
           _buildPhoneForm(),
         ],
       ),
     );
-  }
 
-  Widget _buildPasswordForm() {
-    return Form(
+  Widget _buildPasswordForm() => Form(
       key: _passwordFormKey,
       child: Column(
-        children: [
+        children: <Widget>[
           AuthInputField(
             controller: _usernameController,
             labelText: '用户名',
             hintText: '请输入用户名/手机号/邮箱',
             prefixIcon: Icons.person,
-            validator: (value) {
+            validator: (String? value) {
               if (value == null || value.isEmpty) {
                 return '请输入用户名';
               }
@@ -212,7 +202,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 });
               },
             ),
-            validator: (value) {
+            validator: (String? value) {
               if (value == null || value.isEmpty) {
                 return '请输入密码';
               }
@@ -222,20 +212,18 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         ],
       ),
     );
-  }
 
-  Widget _buildPhoneForm() {
-    return Form(
+  Widget _buildPhoneForm() => Form(
       key: _phoneFormKey,
       child: Column(
-        children: [
+        children: <Widget>[
           AuthInputField(
             controller: _phoneController,
             labelText: '手机号',
             hintText: '请输入手机号',
             prefixIcon: Icons.phone,
             keyboardType: TextInputType.phone,
-            validator: (value) {
+            validator: (String? value) {
               if (value == null || value.isEmpty) {
                 return '请输入手机号';
               }
@@ -256,18 +244,16 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         ],
       ),
     );
-  }
 
-  Widget _buildOptions() {
-    return Row(
+  Widget _buildOptions() => Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
+      children: <Widget>[
         // 记住我
         Row(
-          children: [
+          children: <Widget>[
             Checkbox(
               value: _rememberMe,
-              onChanged: (value) {
+              onChanged: (bool? value) {
                 setState(() {
                   _rememberMe = value ?? false;
                 });
@@ -286,19 +272,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         ),
       ],
     );
-  }
 
-  Widget _buildLoginButton() {
-    return AuthButton(
+  Widget _buildLoginButton() => AuthButton(
       text: '登录',
       onPressed: _handleLogin,
     );
-  }
 
-  Widget _buildRegisterLink(ThemeData theme) {
-    return Row(
+  Widget _buildRegisterLink(ThemeData theme) => Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
+      children: <Widget>[
         Text(
           '还没有账号？',
           style: theme.textTheme.bodyMedium,
@@ -311,16 +293,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         ),
       ],
     );
-  }
 
-  Widget _buildSkipLoginButton() {
-    return TextButton(
+  Widget _buildSkipLoginButton() => TextButton(
       onPressed: () {
         // 临时跳过登录，直接进入主页
         Navigator.pushNamedAndRemoveUntil(
           context,
           '/home',
-          (route) => false,
+          (Route route) => false,
         );
       },
       child: Text(
@@ -331,7 +311,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         ),
       ),
     );
-  }
 
   void _handleLogin() {
     if (_tabController.index == 0) {

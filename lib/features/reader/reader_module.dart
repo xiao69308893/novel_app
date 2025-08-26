@@ -12,7 +12,7 @@ import 'presentation/blocs/reader/reader_bloc.dart' hide LoadChapter;
 /// 阅读器模块依赖注入
 class ReaderModule {
   static void init() {
-    final getIt = GetIt.instance;
+    final GetIt getIt = GetIt.instance;
 
     // 数据源
     getIt.registerLazySingleton<ReaderRemoteDataSource>(

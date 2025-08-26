@@ -30,14 +30,14 @@ class BookshelfItem extends StatelessWidget {
       onLongPress: onLongPress,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           // 封面
           Expanded(
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
-                boxShadow: [
+                boxShadow: <BoxShadow>[
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 4,
@@ -46,14 +46,13 @@ class BookshelfItem extends StatelessWidget {
                 ],
               ),
               child: Stack(
-                children: [
+                children: <Widget>[
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: CachedImage(
                       imageUrl: book.coverUrl as String ?? '',
                       width: double.infinity,
                       height: double.infinity,
-                      fit: BoxFit.cover,
                     ),
                   ),
                   
@@ -131,17 +130,16 @@ class BookshelfItem extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(AppTheme.spacingRegular),
           child: Row(
-            children: [
+            children: <Widget>[
               // 封面
               Stack(
-                children: [
+                children: <Widget>[
                   ClipRRect(
                     borderRadius: BorderRadius.circular(6),
                     child: CachedImage(
                       imageUrl: book.coverUrl as String ?? '',
                       width: 50,
                       height: 70,
-                      fit: BoxFit.cover,
                     ),
                   ),
                   
@@ -167,7 +165,7 @@ class BookshelfItem extends StatelessWidget {
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: <Widget>[
                     // 书名
                     Text(
                       book.title as String ?? '',
@@ -207,7 +205,7 @@ class BookshelfItem extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(top: AppTheme.spacingSmall),
                         child: Row(
-                          children: [
+                          children: <Widget>[
                             Expanded(
                               child: LinearProgressIndicator(
                                 value: (book.readingProgress as num) / 100,

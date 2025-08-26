@@ -15,15 +15,24 @@ enum RecommendationType {
   final int value;
   final String displayName;
 
-  static RecommendationType fromValue(int? value) {
-    return RecommendationType.values.firstWhere(
-      (t) => t.value == value,
+  static RecommendationType fromValue(int? value) => RecommendationType.values.firstWhere(
+      (RecommendationType t) => t.value == value,
       orElse: () => RecommendationType.hot,
     );
-  }
 }
 
 class Recommendation extends Equatable {
+
+  const Recommendation({
+    required this.id,
+    required this.title,
+    required this.createdAt, required this.updatedAt, this.description,
+    this.type = RecommendationType.hot,
+    this.novels = const <NovelSimpleModel>[],
+    this.coverUrl,
+    this.sort = 0,
+    this.isActive = true,
+  });
   final String id;
   final String title;
   final String? description;
@@ -35,21 +44,8 @@ class Recommendation extends Equatable {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  const Recommendation({
-    required this.id,
-    required this.title,
-    this.description,
-    this.type = RecommendationType.hot,
-    this.novels = const [],
-    this.coverUrl,
-    this.sort = 0,
-    this.isActive = true,
-    required this.createdAt,
-    required this.updatedAt,
-  });
-
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
     id, title, description, type, novels, coverUrl,
     sort, isActive, createdAt, updatedAt
   ];

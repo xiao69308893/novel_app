@@ -3,6 +3,18 @@ import 'package:flutter/material.dart';
 import '../../../../app/themes/app_theme.dart';
 
 class AuthInputField extends StatelessWidget {
+
+  const AuthInputField({
+    required this.controller, required this.labelText, required this.hintText, super.key,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.obscureText = false,
+    this.keyboardType,
+    this.validator,
+    this.onChanged,
+    this.enabled = true,
+    this.maxLength,
+  });
   final TextEditingController controller;
   final String labelText;
   final String hintText;
@@ -15,24 +27,9 @@ class AuthInputField extends StatelessWidget {
   final bool enabled;
   final int? maxLength;
 
-  const AuthInputField({
-    Key? key,
-    required this.controller,
-    required this.labelText,
-    required this.hintText,
-    this.prefixIcon,
-    this.suffixIcon,
-    this.obscureText = false,
-    this.keyboardType,
-    this.validator,
-    this.onChanged,
-    this.enabled = true,
-    this.maxLength,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
     
     return TextFormField(
       controller: controller,

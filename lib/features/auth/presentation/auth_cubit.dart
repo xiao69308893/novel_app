@@ -1,6 +1,9 @@
 // 认证状态管理
+import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:novel_app/core/errors/app_error.dart';
+import 'package:novel_app/features/auth/domain/entities/auth_token.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../domain/entities/auth_user.dart';
 import '../domain/usecases/auto_login_usecase.dart';
@@ -13,7 +16,7 @@ abstract class AuthState extends Equatable {
   const AuthState();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class AuthInitial extends AuthState {}
@@ -21,31 +24,27 @@ class AuthInitial extends AuthState {}
 class AuthLoading extends AuthState {}
 
 class AuthAuthenticated extends AuthState {
-  final AuthUser user;
 
   const AuthAuthenticated(this.user);
+  final AuthUser user;
 
   @override
-  List<Object> get props => [user];
+  List<Object> get props => <Object>[user];
 }
 
 class AuthUnauthenticated extends AuthState {}
 
 class AuthError extends AuthState {
-  final String message;
 
   const AuthError(this.message);
+  final String message;
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 // 认证Cubit
 class AuthCubit extends Cubit<AuthState> {
-  final LoginUseCase loginUseCase;
-  final RegisterUseCase registerUseCase;
-  final LogoutUseCase logoutUseCase;
-  final AutoLoginUseCase autoLoginUseCase;
 
   AuthCubit({
     required this.loginUseCase,
@@ -53,16 +52,20 @@ class AuthCubit extends Cubit<AuthState> {
     required this.logoutUseCase,
     required this.autoLoginUseCase,
   }) : super(AuthInitial());
+  final LoginUseCase loginUseCase;
+  final RegisterUseCase registerUseCase;
+  final LogoutUseCase logoutUseCase;
+  final AutoLoginUseCase autoLoginUseCase;
 
   /// 自动登录检查
   Future<void> checkAuthStatus() async {
     emit(AuthLoading());
 
-    final result = await autoLoginUseCase(const NoParams());
+    final Either<AppError, AuthUser> result = await autoLoginUseCase(const NoParams());
 
     result.fold(
-      (error) => emit(AuthUnauthenticated()),
-      (user) => emit(AuthAuthenticated(user)),
+      (AppError error) => emit(AuthUnauthenticated()),
+      (AuthUser user) => emit(AuthAuthenticated(user)),
     );
   }
 
@@ -73,13 +76,13 @@ class AuthCubit extends Cubit<AuthState> {
   }) async {
     emit(AuthLoading());
 
-    final result = await loginUseCase(
+    final Either<AppError, AuthToken> result = await loginUseCase(
       LoginParams(username: username, password: password),
     );
 
     result.fold(
-      (error) => emit(AuthError(error.message)),
-      (token) async {
+      (AppError error) => emit(AuthError(error.message)),
+      (AuthToken token) async {
         // 登录成功后再次检查认证状态获取用户信息
         await checkAuthStatus();
       },
@@ -96,7 +99,7 @@ class AuthCubit extends Cubit<AuthState> {
   }) async {
     emit(AuthLoading());
 
-    final result = await registerUseCase(
+    final Either<AppError, AuthUser> result = await registerUseCase(
       RegisterParams(
         username: username,
         password: password,
@@ -107,8 +110,8 @@ class AuthCubit extends Cubit<AuthState> {
     );
 
     result.fold(
-      (error) => emit(AuthError(error.message)),
-      (user) => emit(AuthAuthenticated(user)),
+      (AppError error) => emit(AuthError(error.message)),
+      (AuthUser user) => emit(AuthAuthenticated(user)),
     );
   }
 
@@ -116,11 +119,11 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> logout() async {
     emit(AuthLoading());
 
-    final result = await logoutUseCase(const NoParams());
+    final Either<AppError, bool> result = await logoutUseCase(const NoParams());
 
     result.fold(
-      (error) => emit(AuthError(error.message)),
-      (success) => emit(AuthUnauthenticated()),
+      (AppError error) => emit(AuthError(error.message)),
+      (bool success) => emit(AuthUnauthenticated()),
     );
   }
 

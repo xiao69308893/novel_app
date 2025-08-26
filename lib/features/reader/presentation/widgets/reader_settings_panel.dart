@@ -4,16 +4,15 @@ import '../../domain/entities/reader_config.dart';
 
 /// 阅读器设置面板组件
 class ReaderSettingsPanel extends StatefulWidget {
+
+  const ReaderSettingsPanel({
+    required this.config, super.key,
+    this.onConfigChanged,
+    this.onClose,
+  });
   final ReaderConfig config;
   final ValueChanged<ReaderConfig>? onConfigChanged;
   final VoidCallback? onClose;
-
-  const ReaderSettingsPanel({
-    Key? key,
-    required this.config,
-    this.onConfigChanged,
-    this.onClose,
-  }) : super(key: key);
 
   @override
   State<ReaderSettingsPanel> createState() => _ReaderSettingsPanelState();
@@ -65,10 +64,9 @@ class _ReaderSettingsPanelState extends State<ReaderSettingsPanel>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
+  Widget build(BuildContext context) => GestureDetector(
       onTap: _closePanel,
-      child: Container(
+      child: ColoredBox(
         color: Colors.black.withValues(alpha: 0.5),
         child: SlideTransition(
           position: _slideAnimation,
@@ -85,7 +83,7 @@ class _ReaderSettingsPanelState extends State<ReaderSettingsPanel>
                   ),
                 ),
                 child: Column(
-                  children: [
+                  children: <Widget>[
                     // 头部
                     _buildHeader(),
                     
@@ -101,21 +99,18 @@ class _ReaderSettingsPanelState extends State<ReaderSettingsPanel>
         ),
       ),
     );
-  }
 
-  Widget _buildHeader() {
-    return Container(
+  Widget _buildHeader() => Container(
       padding: const EdgeInsets.all(AppTheme.spacingRegular),
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
             color: Colors.grey[300]!,
-            width: 1,
           ),
         ),
       ),
       child: Row(
-        children: [
+        children: <Widget>[
           const Text(
             '阅读设置',
             style: TextStyle(
@@ -131,14 +126,12 @@ class _ReaderSettingsPanelState extends State<ReaderSettingsPanel>
         ],
       ),
     );
-  }
 
-  Widget _buildSettingsContent() {
-    return SingleChildScrollView(
+  Widget _buildSettingsContent() => SingleChildScrollView(
       padding: const EdgeInsets.all(AppTheme.spacingRegular),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
           // 阅读主题
           _buildThemeSection(),
           
@@ -159,12 +152,10 @@ class _ReaderSettingsPanelState extends State<ReaderSettingsPanel>
         ],
       ),
     );
-  }
 
-  Widget _buildThemeSection() {
-    return Column(
+  Widget _buildThemeSection() => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         const Text(
           '阅读主题',
           style: TextStyle(
@@ -176,8 +167,8 @@ class _ReaderSettingsPanelState extends State<ReaderSettingsPanel>
         const SizedBox(height: AppTheme.spacingRegular),
         
         Row(
-          children: ReaderTheme.values.map((theme) {
-            final isSelected = _currentConfig.theme == theme;
+          children: ReaderTheme.values.map((ReaderTheme theme) {
+            final bool isSelected = _currentConfig.theme == theme;
             return Expanded(
               child: GestureDetector(
                 onTap: () {
@@ -195,7 +186,7 @@ class _ReaderSettingsPanelState extends State<ReaderSettingsPanel>
                     borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
                   ),
                   child: Column(
-                    children: [
+                    children: <Widget>[
                       Container(
                         width: 20,
                         height: 20,
@@ -222,12 +213,10 @@ class _ReaderSettingsPanelState extends State<ReaderSettingsPanel>
         ),
       ],
     );
-  }
 
-  Widget _buildFontSection() {
-    return Column(
+  Widget _buildFontSection() => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         const Text(
           '字体设置',
           style: TextStyle(
@@ -245,7 +234,7 @@ class _ReaderSettingsPanelState extends State<ReaderSettingsPanel>
           min: 12.0,
           max: 32.0,
           divisions: 20,
-          onChanged: (value) {
+          onChanged: (double value) {
             _updateConfig(_currentConfig.copyWith(fontSize: value));
           },
         ),
@@ -259,7 +248,7 @@ class _ReaderSettingsPanelState extends State<ReaderSettingsPanel>
           min: 1.0,
           max: 3.0,
           divisions: 20,
-          onChanged: (value) {
+          onChanged: (double value) {
             _updateConfig(_currentConfig.copyWith(lineHeight: value));
           },
         ),
@@ -268,7 +257,7 @@ class _ReaderSettingsPanelState extends State<ReaderSettingsPanel>
         
         // 页边距
         Row(
-          children: [
+          children: <Widget>[
             const Text('页边距'),
             const Spacer(),
             _buildMarginButton('紧凑', 12.0),
@@ -278,12 +267,10 @@ class _ReaderSettingsPanelState extends State<ReaderSettingsPanel>
         ),
       ],
     );
-  }
 
-  Widget _buildPageSection() {
-    return Column(
+  Widget _buildPageSection() => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         const Text(
           '翻页设置',
           style: TextStyle(
@@ -296,8 +283,8 @@ class _ReaderSettingsPanelState extends State<ReaderSettingsPanel>
         
         // 翻页模式
         Row(
-          children: PageMode.values.map((mode) {
-            final isSelected = _currentConfig.pageMode == mode;
+          children: PageMode.values.map((PageMode mode) {
+            final bool isSelected = _currentConfig.pageMode == mode;
             return Expanded(
               child: GestureDetector(
                 onTap: () {
@@ -331,19 +318,17 @@ class _ReaderSettingsPanelState extends State<ReaderSettingsPanel>
           title: const Text('音量键翻页'),
           subtitle: const Text('使用音量键进行翻页'),
           value: _currentConfig.volumeKeyTurnPage,
-          onChanged: (value) {
+          onChanged: (bool value) {
             _updateConfig(_currentConfig.copyWith(volumeKeyTurnPage: value));
           },
           contentPadding: EdgeInsets.zero,
         ),
       ],
     );
-  }
 
-  Widget _buildOtherSection() {
-    return Column(
+  Widget _buildOtherSection() => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         const Text(
           '其他设置',
           style: TextStyle(
@@ -359,7 +344,7 @@ class _ReaderSettingsPanelState extends State<ReaderSettingsPanel>
           title: const Text('屏幕常亮'),
           subtitle: const Text('阅读时保持屏幕常亮'),
           value: _currentConfig.keepScreenOn,
-          onChanged: (value) {
+          onChanged: (bool value) {
             _updateConfig(_currentConfig.copyWith(keepScreenOn: value));
           },
           contentPadding: EdgeInsets.zero,
@@ -370,7 +355,7 @@ class _ReaderSettingsPanelState extends State<ReaderSettingsPanel>
           title: const Text('显示状态栏'),
           subtitle: const Text('显示页码和时间信息'),
           value: _currentConfig.showStatusBar,
-          onChanged: (value) {
+          onChanged: (bool value) {
             _updateConfig(_currentConfig.copyWith(showStatusBar: value));
           },
           contentPadding: EdgeInsets.zero,
@@ -381,28 +366,25 @@ class _ReaderSettingsPanelState extends State<ReaderSettingsPanel>
           title: const Text('全屏模式'),
           subtitle: const Text('隐藏系统状态栏'),
           value: _currentConfig.fullScreenMode,
-          onChanged: (value) {
+          onChanged: (bool value) {
             _updateConfig(_currentConfig.copyWith(fullScreenMode: value));
           },
           contentPadding: EdgeInsets.zero,
         ),
       ],
     );
-  }
 
   Widget _buildSliderSetting({
     required String label,
     required double value,
     required double min,
     required double max,
-    int? divisions,
-    required ValueChanged<double> onChanged,
-  }) {
-    return Column(
-      children: [
+    required ValueChanged<double> onChanged, int? divisions,
+  }) => Column(
+      children: <Widget>[
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
+          children: <Widget>[
             Text(label),
             Text(
               value.toStringAsFixed(1),
@@ -422,10 +404,9 @@ class _ReaderSettingsPanelState extends State<ReaderSettingsPanel>
         ),
       ],
     );
-  }
 
   Widget _buildMarginButton(String label, double margin) {
-    final isSelected = _currentConfig.pageMargin.left == margin;
+    final bool isSelected = _currentConfig.pageMargin.left == margin;
     return GestureDetector(
       onTap: () {
         _updateConfig(_currentConfig.copyWith(
